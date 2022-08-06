@@ -26,7 +26,7 @@ EOD;
             ->setName('eep:section:listcontent')
             ->setAliases(array('eep:se:listcontent'))
             ->setDescription('Returns content list by section identifier')
-            ->addArgument('sectionIdentifier', InputArgument::REQUIRED, 'Section identifier')
+            ->addArgument('section-identifier', InputArgument::REQUIRED, 'Section identifier')
             ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->addOption('offset', null, InputOption::VALUE_OPTIONAL, 'Offset')
             ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit')
@@ -36,7 +36,7 @@ EOD;
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $inputSectionIdentifier = $input->getArgument('sectionIdentifier');
+        $inputSectionIdentifier = $input->getArgument('section-identifier');
         $inputUserId = $input->getOption('user-id');
 
         if ($inputSectionIdentifier)

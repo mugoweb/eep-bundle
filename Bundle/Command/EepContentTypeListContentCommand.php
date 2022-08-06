@@ -26,7 +26,7 @@ EOD;
             ->setName('eep:contenttype:listcontent')
             ->setAliases(array('eep:ct:listcontent'))
             ->setDescription('Returns content information by content type identifier')
-            ->addArgument('contentTypeIdentifier', InputArgument::REQUIRED, 'Content type identifier')
+            ->addArgument('content-type-identifier', InputArgument::REQUIRED, 'Content type identifier')
             ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->addOption('offset', null, InputOption::VALUE_OPTIONAL, 'Offset')
             ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit')
@@ -36,7 +36,7 @@ EOD;
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $inputContentTypeIdentifier = $input->getArgument('contentTypeIdentifier');
+        $inputContentTypeIdentifier = $input->getArgument('content-type-identifier');
         $inputUserId = $input->getOption('user-id');
 
         if ($inputContentTypeIdentifier)

@@ -24,7 +24,7 @@ EOD;
             ->setName('eep:contenttype:info')
             ->setAliases(array('eep:ct:info'))
             ->setDescription('Returns content type information')
-            ->addArgument('contentTypeIdentifier', InputArgument::REQUIRED, 'Content type identifier')
+            ->addArgument('content-type-identifier', InputArgument::REQUIRED, 'Content type identifier')
             ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
@@ -32,7 +32,7 @@ EOD;
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $inputContentTypeIdentifier = $input->getArgument('contentTypeIdentifier');
+        $inputContentTypeIdentifier = $input->getArgument('content-type-identifier');
         $inputUserId = $input->getOption('user-id');
 
         if ($inputContentTypeIdentifier)

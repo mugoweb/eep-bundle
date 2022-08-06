@@ -24,8 +24,8 @@ EOD;
             ->setName('eep:contentfield:info')
             ->setAliases(array('eep:cf:info'))
             ->setDescription('Returns content field information')
-            ->addArgument('contentTypeIdentifier', InputArgument::REQUIRED, 'Content type identifier')
-            ->addArgument('contentFieldIdentifier', InputArgument::REQUIRED, 'Content field identifier')
+            ->addArgument('content-type-identifier', InputArgument::REQUIRED, 'Content type identifier')
+            ->addArgument('content-field-identifier', InputArgument::REQUIRED, 'Content field identifier')
             ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
@@ -33,8 +33,8 @@ EOD;
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $inputContentTypeIdentifier = $input->getArgument('contentTypeIdentifier');
-        $inputContentFieldIdentifier = $input->getArgument('contentFieldIdentifier');
+        $inputContentTypeIdentifier = $input->getArgument('content-type-identifier');
+        $inputContentFieldIdentifier = $input->getArgument('content-field-identifier');
         $inputUserId = $input->getOption('user-id');
 
         if ($inputContentTypeIdentifier && $inputContentFieldIdentifier)

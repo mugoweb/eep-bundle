@@ -23,8 +23,8 @@ EOD;
             ->setName('eep:location:move')
             ->setAliases(array('eep:lo:move'))
             ->setDescription('Move source location to be child of target location')
-            ->addArgument('sourceLocationId', InputArgument::REQUIRED, 'Source location id')
-            ->addArgument('targetLocationId', InputArgument::REQUIRED, 'Target location id')
+            ->addArgument('source-location-id', InputArgument::REQUIRED, 'Source location id')
+            ->addArgument('target-location-id', InputArgument::REQUIRED, 'Target location id')
             ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
@@ -32,8 +32,8 @@ EOD;
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $inputSourceLocationId = $input->getArgument('sourceLocationId');
-        $inputTargetLocationId = $input->getArgument('targetLocationId');
+        $inputSourceLocationId = $input->getArgument('source-location-id');
+        $inputTargetLocationId = $input->getArgument('target-location-id');
         $inputUserId = $input->getOption('user-id');
 
         if ($inputSourceLocationId && $inputTargetLocationId)
@@ -47,13 +47,13 @@ EOD;
             $targetLocation = $locationService->loadLocation($inputTargetLocationId);
             if (stripos($targetLocation->pathString, $sourceLocation->pathString) !== false)
             {
-                throw new InvalidArgumentException('targetLocationId', 'Target location is a sub location of the source subtree');
+                throw new InvalidArgumentException('target-location-id', 'Target location is a sub location of the source subtree');
             }
 
             $targetContentType = $contentTypeService->loadContentType($targetLocation->getContentInfo()->contentTypeId);
             if (!$targetContentType->isContainer)
             {
-                throw new InvalidArgumentException('targetLocationId', 'Cannot move location to a parent that is not a container');
+                throw new InvalidArgumentException('target-location-id', 'Cannot move location to a parent that is not a container');
             }
 
             $io = new SymfonyStyle($input, $output);

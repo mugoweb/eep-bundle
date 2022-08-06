@@ -22,7 +22,7 @@ EOD;
             ->setName('eep:content:location')
             ->setAliases(array('eep:co:lo', 'eep:co:location'))
             ->setDescription('Returns main location id by content id')
-            ->addArgument('contentId', InputArgument::REQUIRED, 'Content id')
+            ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
             ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->addOption('no-newline', 'x', null, 'Output without newline')
             ->setHelp($help)
@@ -31,7 +31,7 @@ EOD;
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $inputContentId = $input->getArgument('contentId');
+        $inputContentId = $input->getArgument('content-id');
         $inputUserId = $input->getOption('user-id');
 
         if ($inputContentId)

@@ -24,7 +24,7 @@ EOD;
             ->setName('eep:content:reverserelated')
             ->setAliases(array('eep:co:reverserelated'))
             ->setDescription('Returns reverse related content information')
-            ->addArgument('contentId', InputArgument::REQUIRED, 'Content id')
+            ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
             ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->addOption('offset', null, InputOption::VALUE_OPTIONAL, 'Offset')
             ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit')
@@ -34,7 +34,7 @@ EOD;
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $inputContentId = $input->getArgument('contentId');
+        $inputContentId = $input->getArgument('content-id');
         $inputUserId = $input->getOption('user-id');
 
         if ($inputContentId)

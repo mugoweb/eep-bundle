@@ -24,7 +24,7 @@ EOD;
             ->setName('eep:content:info')
             ->setAliases(array('eep:co:info'))
             ->setDescription('Returns content information')
-            ->addArgument('contentId', InputArgument::REQUIRED, 'Content id')
+            ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
             ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
@@ -32,7 +32,7 @@ EOD;
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $inputContentId = $input->getArgument('contentId');
+        $inputContentId = $input->getArgument('content-id');
         $inputUserId = $input->getOption('user-id');
 
         if ($inputContentId)

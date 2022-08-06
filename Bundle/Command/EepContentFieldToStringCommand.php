@@ -22,8 +22,8 @@ EOD;
             ->setName('eep:contentfield:tostring')
             ->setAliases(array('eep:cf:tostring'))
             ->setDescription('Returns string representation of content field information')
-            ->addArgument('contentId', InputArgument::REQUIRED, 'Content id')
-            ->addArgument('contentFieldIdentifier', InputArgument::REQUIRED, 'Content field identifier')
+            ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
+            ->addArgument('content-field-identifier', InputArgument::REQUIRED, 'Content field identifier')
             ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->addOption('separator', 's', InputOption::VALUE_OPTIONAL, 'Separator character', '|')
             ->addOption('no-newline', 'x', null, 'Output without newline')
@@ -33,8 +33,8 @@ EOD;
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $inputContentId = $input->getArgument('contentId');
-        $inputContentFieldIdentifier = $input->getArgument('contentFieldIdentifier');
+        $inputContentId = $input->getArgument('content-id');
+        $inputContentFieldIdentifier = $input->getArgument('content-field-identifier');
         $inputUserId = $input->getOption('user-id');
 
         if ($inputContentId && $inputContentFieldIdentifier)

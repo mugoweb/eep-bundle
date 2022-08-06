@@ -31,7 +31,7 @@ EOD;
             ->setName('eep:location:info')
             ->setAliases(array('eep:lo:info'))
             ->setDescription('Returns location information')
-            ->addArgument('locationId', InputArgument::REQUIRED, 'Location id')
+            ->addArgument('location-id', InputArgument::REQUIRED, 'Location id')
             ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->addOption('with-content-info', 'wci', InputOption::VALUE_NONE, 'Display location\'s content info')
             ->setHelp($help)
@@ -40,7 +40,7 @@ EOD;
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $inputLocationId = $input->getArgument('locationId');
+        $inputLocationId = $input->getArgument('location-id');
         $inputUserId = $input->getOption('user-id');
         $inputWithContentInfo = $input->getOption('with-content-info');
 

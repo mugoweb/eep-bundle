@@ -22,7 +22,7 @@ EOD;
             ->setName('eep:content:republish')
             ->setAliases(array('eep:co:republish'))
             ->setDescription('Re-publishes content by id')
-            ->addArgument('contentId', InputArgument::REQUIRED, 'Content id')
+            ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
             ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
@@ -30,7 +30,7 @@ EOD;
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $inputContentId = $input->getArgument('contentId');
+        $inputContentId = $input->getArgument('content-id');
         $inputUserId = $input->getOption('user-id');
 
         if ($inputContentId)

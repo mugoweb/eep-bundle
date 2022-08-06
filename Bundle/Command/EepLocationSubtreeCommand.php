@@ -27,7 +27,7 @@ EOD;
             ->setName('eep:location:subtree')
             ->setAliases(array('eep:lo:subtree'))
             ->setDescription('Returns subtree information')
-            ->addArgument('locationId', InputArgument::REQUIRED, 'Location id')
+            ->addArgument('location-id', InputArgument::REQUIRED, 'Location id')
             ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->addOption('offset', null, InputOption::VALUE_OPTIONAL, 'Offset')
             ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit')
@@ -37,7 +37,7 @@ EOD;
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $inputLocationId = $input->getArgument('locationId');
+        $inputLocationId = $input->getArgument('location-id');
         $inputUserId = $input->getOption('user-id');
 
         if ($inputLocationId)
