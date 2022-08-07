@@ -45,7 +45,7 @@ EOD;
         $inputWithContentInfo = $input->getOption('with-content-info');
 
         $repository = $this->getContainer()->get('ezpublish.api.repository');
-        $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
+        $repository->getPermissionResolver()->setCurrentUserReference($repository->getUserService()->loadUser($inputUserId));
         $locationService = $repository->getLocationService();
         $urlAliasService = $repository->getURLAliasService();
         if ($inputWithContentInfo)

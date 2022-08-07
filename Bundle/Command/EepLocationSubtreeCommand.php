@@ -41,7 +41,7 @@ EOD;
         $inputUserId = $input->getOption('user-id');
 
         $repository = $this->getContainer()->get('ezpublish.api.repository');
-        $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
+        $repository->getPermissionResolver()->setCurrentUserReference($repository->getUserService()->loadUser($inputUserId));
         $searchService = $repository->getSearchService();
         $locationService = $repository->getLocationService();
         $contentTypeService = $repository->getContentTypeService();
