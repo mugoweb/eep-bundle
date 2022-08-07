@@ -21,7 +21,7 @@ EOD;
         $this
             ->setName('eep:contentfield:tostring')
             ->setAliases(array('eep:cf:tostring'))
-            ->setDescription('Returns string representation of content field information')
+            ->setDescription('(experimental!) Returns string representation of content field information')
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
             ->addArgument('content-field-identifier', InputArgument::REQUIRED, 'Content field identifier')
             ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
