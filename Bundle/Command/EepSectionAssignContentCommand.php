@@ -39,27 +39,24 @@ EOD;
         $inputContentId = $input->getArgument( 'content-id' );
         $inputUserId = $input->getOption('user-id');
 
-        if ($inputSectionIdentifier && $inputContentId)
+        $repository = $this->getContainer()->get('ezpublish.api.repository');
+        $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
+        $contentService = $repository->getContentService();
+        $sectionService = $repository->getSectionService();
+
+        $io = new SymfonyStyle($input, $output);
+        try
         {
-            $repository = $this->getContainer()->get('ezpublish.api.repository');
-            $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
-            $contentService = $repository->getContentService();
-            $sectionService = $repository->getSectionService();
+            $section = $sectionService->loadSectionByIdentifier($inputSectionIdentifier);
+            $contentInfo = $contentService->loadContentInfo($inputContentId);
 
-            $io = new SymfonyStyle($input, $output);
-            try
-            {
-                $section = $sectionService->loadSectionByIdentifier($inputSectionIdentifier);
-                $contentInfo = $contentService->loadContentInfo($inputContentId);
-
-                $sectionService->assignSection($contentInfo, $section);
-            }
-            catch(\eZ\Publish\API\Repository\Exceptions\UnauthorizedException $e)
-            {
-                $io->error($e->getMessage());
-            }
-
-            $io->success('Assignment successful');
+            $sectionService->assignSection($contentInfo, $section);
         }
+        catch(\eZ\Publish\API\Repository\Exceptions\UnauthorizedException $e)
+        {
+            $io->error($e->getMessage());
+        }
+
+        $io->success('Assignment successful');
     }
 }

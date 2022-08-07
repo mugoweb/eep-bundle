@@ -37,28 +37,25 @@ EOD;
         $inputContentFieldIdentifier = $input->getArgument('content-field-identifier');
         $inputUserId = $input->getOption('user-id');
 
-        if ($inputContentId && $inputContentFieldIdentifier)
+        $repository = $this->getContainer()->get('ezpublish.api.repository');
+        $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
+        $contentService = $repository->getContentService();
+        $fieldTypeService = $repository->getFieldTypeService();
+
+        $content = $contentService->loadContent($inputContentId);
+        $field = $content->getField($inputContentFieldIdentifier);
+        $fieldType = $fieldTypeService->getFieldType($field->fieldTypeIdentifier);
+        $fieldValueHash = $fieldType->toHash($field->value);
+        $fieldValueString = implode($input->getOption('separator'), (array) $fieldValueHash);
+
+        $io = new SymfonyStyle($input, $output);
+        if ($input->getOption('no-newline'))
         {
-            $repository = $this->getContainer()->get('ezpublish.api.repository');
-            $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
-            $contentService = $repository->getContentService();
-            $fieldTypeService = $repository->getFieldTypeService();
-
-            $content = $contentService->loadContent($inputContentId);
-            $field = $content->getField($inputContentFieldIdentifier);
-            $fieldType = $fieldTypeService->getFieldType($field->fieldTypeIdentifier);
-            $fieldValueHash = $fieldType->toHash($field->value);
-            $fieldValueString = implode($input->getOption('separator'), (array) $fieldValueHash);
-
-            $io = new SymfonyStyle($input, $output);
-            if ($input->getOption('no-newline'))
-            {
-                $io->write($fieldValueString);
-            }
-            else
-            {
-                $io->writeln($fieldValueString);
-            }
+            $io->write($fieldValueString);
+        }
+        else
+        {
+            $io->writeln($fieldValueString);
         }
     }
 }

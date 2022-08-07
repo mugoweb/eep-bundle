@@ -37,54 +37,51 @@ EOD;
         $inputContentFieldIdentifier = $input->getArgument('content-field-identifier');
         $inputUserId = $input->getOption('user-id');
 
-        if ($inputContentTypeIdentifier && $inputContentFieldIdentifier)
-        {
-            $repository = $this->getContainer()->get('ezpublish.api.repository');
-            $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
-            $contentTypeService = $repository->getContentTypeService();
+        $repository = $this->getContainer()->get('ezpublish.api.repository');
+        $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
+        $contentTypeService = $repository->getContentTypeService();
 
-            $contentType = $contentTypeService->loadContentTypeByIdentifier($inputContentTypeIdentifier);
-            $field = $contentType->fieldDefinitionsByIdentifier[$inputContentFieldIdentifier];
+        $contentType = $contentTypeService->loadContentTypeByIdentifier($inputContentTypeIdentifier);
+        $field = $contentType->fieldDefinitionsByIdentifier[$inputContentFieldIdentifier];
 
-            $headers = array
+        $headers = array
+        (
+            array
             (
-                array
-                (
-                    'key',
-                    'value',
-                )
-            );
-            $infoHeader = array
+                'key',
+                'value',
+            )
+        );
+        $infoHeader = array
+        (
+            new TableCell
             (
-                new TableCell
-                (
-                    "{$this->getName()} [$inputContentTypeIdentifier,$inputContentFieldIdentifier]",
-                    array('colspan' => count($headers[0]))
-                )
-            );
-            array_unshift($headers, $infoHeader);
+                "{$this->getName()} [$inputContentTypeIdentifier,$inputContentFieldIdentifier]",
+                array('colspan' => count($headers[0]))
+            )
+        );
+        array_unshift($headers, $infoHeader);
 
-            $rows = array
-            (
-                array('id', $field->id),
-                array('identifier', $field->identifier),
-                array('fieldGroup', $field->fieldGroup),
-                array('position', $field->position),
-                array('fieldTypeIdentifier', $field->fieldTypeIdentifier),
-                array('isTranslatable', (integer) $field->isTranslatable),
-                array('isRequired', (integer) $field->isRequired),
-                array('isInfoCollector', (integer) $field->isInfoCollector),
-                array('isSearchable', (integer) $field->isSearchable),
-                array('mainLanguageCode', $field->mainLanguageCode),
-                array('name', $field->names[$field->mainLanguageCode]),
-            );
+        $rows = array
+        (
+            array('id', $field->id),
+            array('identifier', $field->identifier),
+            array('fieldGroup', $field->fieldGroup),
+            array('position', $field->position),
+            array('fieldTypeIdentifier', $field->fieldTypeIdentifier),
+            array('isTranslatable', (integer) $field->isTranslatable),
+            array('isRequired', (integer) $field->isRequired),
+            array('isInfoCollector', (integer) $field->isInfoCollector),
+            array('isSearchable', (integer) $field->isSearchable),
+            array('mainLanguageCode', $field->mainLanguageCode),
+            array('name', $field->names[$field->mainLanguageCode]),
+        );
 
-            $io = new SymfonyStyle($input, $output);
-            $table = new Table($output);
-            $table->setHeaders($headers);
-            $table->setRows($rows);
-            $table->render();
-            $io->newLine();
-        }
+        $io = new SymfonyStyle($input, $output);
+        $table = new Table($output);
+        $table->setHeaders($headers);
+        $table->setRows($rows);
+        $table->render();
+        $io->newLine();
     }
 }

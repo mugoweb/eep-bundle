@@ -33,21 +33,18 @@ EOD;
         $inputContentId = $input->getArgument('content-id');
         $inputUserId = $input->getOption('user-id');
 
-        if ($inputContentId)
-        {
-            $repository = $this->getContainer()->get('ezpublish.api.repository');
-            $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
+        $repository = $this->getContainer()->get('ezpublish.api.repository');
+        $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
 
-            $contentService = $repository->getContentService();
-            $contentInfo = $contentService->loadContentInfo($inputContentId);
-            $contentDraft = $contentService->createContentDraft($contentInfo);
+        $contentService = $repository->getContentService();
+        $contentInfo = $contentService->loadContentInfo($inputContentId);
+        $contentDraft = $contentService->createContentDraft($contentInfo);
 
-            $published = $contentService->publishVersion($contentDraft->versionInfo);
+        $published = $contentService->publishVersion($contentDraft->versionInfo);
 
-            $report = ($published)? "Republished {$inputContentId}" : "Failed to republish {$inputContentId}";
+        $report = ($published)? "Republished {$inputContentId}" : "Failed to republish {$inputContentId}";
 
-            $io = new SymfonyStyle($input, $output);
-            $io->writeln($report);
-        }
+        $io = new SymfonyStyle($input, $output);
+        $io->writeln($report);
     }
 }

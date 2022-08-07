@@ -35,56 +35,53 @@ EOD;
         $inputContentId = $input->getArgument('content-id');
         $inputUserId = $input->getOption('user-id');
 
-        if ($inputContentId)
-        {
-            $repository = $this->getContainer()->get('ezpublish.api.repository');
-            $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
-            $contentService = $repository->getContentService();
-            $contentTypeService = $repository->getContentTypeService();
+        $repository = $this->getContainer()->get('ezpublish.api.repository');
+        $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
+        $contentService = $repository->getContentService();
+        $contentTypeService = $repository->getContentTypeService();
 
-            $content = $contentService->loadContent($inputContentId);
+        $content = $contentService->loadContent($inputContentId);
 
-            $headers = array
+        $headers = array
+        (
+            array
             (
-                array
-                (
-                    'key',
-                    'value',
-                ),
-            );
-            $infoHeader = array
-            (
-                new TableCell("{$this->getName()} [$inputContentId]", array('colspan' => count($headers[0])))
-            );
-            array_unshift($headers, $infoHeader);
+                'key',
+                'value',
+            ),
+        );
+        $infoHeader = array
+        (
+            new TableCell("{$this->getName()} [$inputContentId]", array('colspan' => count($headers[0])))
+        );
+        array_unshift($headers, $infoHeader);
 
-            $rows = array
-            (
-                array('id', $content->contentInfo->id),
-                array('contentTypeId', $content->contentInfo->contentTypeId),
-                array('contentTypeIdentifier', $contentTypeService->loadContentType($content->contentInfo->contentTypeId)->identifier),
-                array('name', $content->contentInfo->name),
-                array('sectionId', $content->contentInfo->sectionId),
-                array('currentVersionNo', $content->contentInfo->currentVersionNo),
-                array('published', $content->contentInfo->published),
-                array('ownerId', $content->contentInfo->ownerId),
-                array('modificationDate', $content->contentInfo->modificationDate->format('c')),
-                array('modificationDateTimestamp', $content->contentInfo->modificationDate->format('U')),
-                array('publishedDate', $content->contentInfo->publishedDate->format('c')),
-                array('publishedDateTimestamp', $content->contentInfo->publishedDate->format('U')),
-                array('alwaysAvailable', $content->contentInfo->alwaysAvailable),
-                array('remoteId', $content->contentInfo->remoteId),
-                array('mainLanguageCode', $content->contentInfo->mainLanguageCode),
-                array('mainLocationId', $content->contentInfo->mainLocationId),
-                array('status', $content->contentInfo->status),
-            );
+        $rows = array
+        (
+            array('id', $content->contentInfo->id),
+            array('contentTypeId', $content->contentInfo->contentTypeId),
+            array('contentTypeIdentifier', $contentTypeService->loadContentType($content->contentInfo->contentTypeId)->identifier),
+            array('name', $content->contentInfo->name),
+            array('sectionId', $content->contentInfo->sectionId),
+            array('currentVersionNo', $content->contentInfo->currentVersionNo),
+            array('published', $content->contentInfo->published),
+            array('ownerId', $content->contentInfo->ownerId),
+            array('modificationDate', $content->contentInfo->modificationDate->format('c')),
+            array('modificationDateTimestamp', $content->contentInfo->modificationDate->format('U')),
+            array('publishedDate', $content->contentInfo->publishedDate->format('c')),
+            array('publishedDateTimestamp', $content->contentInfo->publishedDate->format('U')),
+            array('alwaysAvailable', $content->contentInfo->alwaysAvailable),
+            array('remoteId', $content->contentInfo->remoteId),
+            array('mainLanguageCode', $content->contentInfo->mainLanguageCode),
+            array('mainLocationId', $content->contentInfo->mainLocationId),
+            array('status', $content->contentInfo->status),
+        );
 
-            $io = new SymfonyStyle($input, $output);
-            $table = new Table($output);
-            $table->setHeaders($headers);
-            $table->setRows($rows);
-            $table->render();
-            $io->newLine();
-        }
+        $io = new SymfonyStyle($input, $output);
+        $table = new Table($output);
+        $table->setHeaders($headers);
+        $table->setRows($rows);
+        $table->render();
+        $io->newLine();
     }
 }

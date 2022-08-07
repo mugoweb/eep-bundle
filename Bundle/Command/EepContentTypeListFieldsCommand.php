@@ -35,67 +35,64 @@ EOD;
         $inputContentTypeIdentifier = $input->getArgument('content-type-identifier');
         $inputUserId = $input->getOption('user-id');
 
-        if ($inputContentTypeIdentifier)
+        $repository = $this->getContainer()->get('ezpublish.api.repository');
+        $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
+        $contentTypeService = $repository->getContentTypeService();
+
+        $contentType = $contentTypeService->loadContentTypeByIdentifier($inputContentTypeIdentifier);
+        $fieldDefinitions = $contentType->fieldDefinitionsByIdentifier;
+
+        $headers = array
+        (
+           array
+           (
+               'identifier',
+               'mainLanguageCode',
+               'id',
+               'fieldTypeIdentifier',
+               'isSearchable',
+               'isRequired',
+               'isTranslatable',
+               'isInfoCollector',
+               'position',
+               'fieldGroup',
+               'name',
+           )
+        );
+        $infoHeader = array
+        (
+            new TableCell
+            (
+                "{$this->getName()} [$inputContentTypeIdentifier]",
+                array('colspan' => count($headers[0]))
+            )
+        );
+        array_unshift($headers, $infoHeader);
+
+        $rows = array();
+        foreach ($fieldDefinitions as $fieldIdentifier => $fieldDefinition)
         {
-            $repository = $this->getContainer()->get('ezpublish.api.repository');
-            $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
-            $contentTypeService = $repository->getContentTypeService();
-
-            $contentType = $contentTypeService->loadContentTypeByIdentifier($inputContentTypeIdentifier);
-            $fieldDefinitions = $contentType->fieldDefinitionsByIdentifier;
-
-            $headers = array
+            $rows[] = array
             (
-               array
-               (
-                   'identifier',
-                   'mainLanguageCode',
-                   'id',
-                   'fieldTypeIdentifier',
-                   'isSearchable',
-                   'isRequired',
-                   'isTranslatable',
-                   'isInfoCollector',
-                   'position',
-                   'fieldGroup',
-                   'name',
-               )
+                $fieldIdentifier,
+                $fieldDefinition->mainLanguageCode,
+                $fieldDefinition->id,
+                $fieldDefinition->fieldTypeIdentifier,
+                (integer) $fieldDefinition->isSearchable,
+                (integer) $fieldDefinition->isRequired,
+                (integer) $fieldDefinition->isTranslatable,
+                (integer) $fieldDefinition->isInfoCollector,
+                $fieldDefinition->position,
+                $fieldDefinition->fieldGroup,
+                $fieldDefinition->names[$fieldDefinition->mainLanguageCode],
             );
-            $infoHeader = array
-            (
-                new TableCell
-                (
-                    "{$this->getName()} [$inputContentTypeIdentifier]",
-                    array('colspan' => count($headers[0]))
-                )
-            );
-            array_unshift($headers, $infoHeader);
-
-            $rows = array();
-            foreach ($fieldDefinitions as $fieldIdentifier => $fieldDefinition)
-            {
-                $rows[] = array
-                (
-                    $fieldIdentifier,
-                    $fieldDefinition->mainLanguageCode,
-                    $fieldDefinition->id,
-                    $fieldDefinition->fieldTypeIdentifier,
-                    (integer) $fieldDefinition->isSearchable,
-                    (integer) $fieldDefinition->isRequired,
-                    (integer) $fieldDefinition->isTranslatable,
-                    (integer) $fieldDefinition->isInfoCollector,
-                    $fieldDefinition->position,
-                    $fieldDefinition->fieldGroup,
-                    $fieldDefinition->names[$fieldDefinition->mainLanguageCode],
-                );
-            }
-
-            $io = new SymfonyStyle($input, $output);
-            $table = new Table($output);
-            $table->setHeaders($headers);
-            $table->setRows($rows);
-            $table->render();
-            $io->newLine();
         }
+
+        $io = new SymfonyStyle($input, $output);
+        $table = new Table($output);
+        $table->setHeaders($headers);
+        $table->setRows($rows);
+        $table->render();
+        $io->newLine();
     }
 }

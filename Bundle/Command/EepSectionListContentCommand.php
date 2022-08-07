@@ -39,82 +39,79 @@ EOD;
         $inputSectionIdentifier = $input->getArgument('section-identifier');
         $inputUserId = $input->getOption('user-id');
 
-        if ($inputSectionIdentifier)
+        $repository = $this->getContainer()->get('ezpublish.api.repository');
+        $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
+        $searchService = $repository->getSearchService();
+        $contentTypeService = $repository->getContentTypeService();
+
+        $section = $repository->getSectionService()->loadSectionByIdentifier($inputSectionIdentifier);
+
+        $query = new LocationQuery();
+        $query->filter = new SectionId($section->id);
+        $query->offset = ($input->getOption('offset'))? (integer) $input->getOption('offset') : $query->offset;
+        $query->limit = ($input->getOption('limit'))? (integer) $input->getOption('limit') : $query->limit;
+        $query->performCount = true;
+
+        $result = $searchService->findContentInfo($query);
+        $resultLimit = ($input->getOption('limit'))? ($query->offset + $query->limit) : $result->totalCount;
+        $query->performCount = false;
+
+        $headers = array
+        (
+            array
+            (
+                'contentId',
+                'mainLocationId',
+                'sectionId',
+                'ownerId',
+                'currentVersionNo',
+                'remoteId',
+                'contentTypeIdentifier',
+                'name',
+            ),
+        );
+        $infoHeader = array
+        (
+            new TableCell
+            (
+                "{$this->getName()} [$inputSectionIdentifier]",
+                array('colspan' => count($headers[0])-1)
+            ),
+            new TableCell
+            (
+                "Results: " . ($query->offset + 1) . " - {$resultLimit} / {$result->totalCount}",
+                array('colspan' => 1)
+            )
+        );
+        array_unshift($headers, $infoHeader);
+
+        $rows = array();
+        while($query->offset < $resultLimit)
         {
-            $repository = $this->getContainer()->get('ezpublish.api.repository');
-            $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
-            $searchService = $repository->getSearchService();
-            $contentTypeService = $repository->getContentTypeService();
-
-            $section = $repository->getSectionService()->loadSectionByIdentifier($inputSectionIdentifier);
-
-            $query = new LocationQuery();
-            $query->filter = new SectionId($section->id);
-            $query->offset = ($input->getOption('offset'))? (integer) $input->getOption('offset') : $query->offset;
-            $query->limit = ($input->getOption('limit'))? (integer) $input->getOption('limit') : $query->limit;
-            $query->performCount = true;
-
-            $result = $searchService->findContentInfo($query);
-            $resultLimit = ($input->getOption('limit'))? ($query->offset + $query->limit) : $result->totalCount;
-            $query->performCount = false;
-
-            $headers = array
-            (
-                array
-                (
-                    'contentId',
-                    'mainLocationId',
-                    'sectionId',
-                    'ownerId',
-                    'currentVersionNo',
-                    'remoteId',
-                    'contentTypeIdentifier',
-                    'name',
-                ),
-            );
-            $infoHeader = array
-            (
-                new TableCell
-                (
-                    "{$this->getName()} [$inputSectionIdentifier]",
-                    array('colspan' => count($headers[0])-1)
-                ),
-                new TableCell
-                (
-                    "Results: " . ($query->offset + 1) . " - {$resultLimit} / {$result->totalCount}",
-                    array('colspan' => 1)
-                )
-            );
-            array_unshift($headers, $infoHeader);
-
-            $rows = array();
-            while($query->offset < $resultLimit)
+            foreach ($result->searchHits as $searchHit)
             {
-                foreach ($result->searchHits as $searchHit)
-                {
-                    $rows[] = array
-                    (
-                        $searchHit->valueObject->id,
-                        $searchHit->valueObject->mainLocationId,
-                        $searchHit->valueObject->sectionId,
-                        $searchHit->valueObject->ownerId,
-                        $searchHit->valueObject->currentVersionNo,
-                        $searchHit->valueObject->remoteId,
-                        $contentTypeService->loadContentType($searchHit->valueObject->contentTypeId)->identifier,
-                        $searchHit->valueObject->name,
-                    );
-                }
-
-                $query->offset += $query->limit;
-                $result = $searchService->findContentInfo($query);
+                $rows[] = array
+                (
+                    $searchHit->valueObject->id,
+                    $searchHit->valueObject->mainLocationId,
+                    $searchHit->valueObject->sectionId,
+                    $searchHit->valueObject->ownerId,
+                    $searchHit->valueObject->currentVersionNo,
+                    $searchHit->valueObject->remoteId,
+                    $contentTypeService->loadContentType($searchHit->valueObject->contentTypeId)->identifier,
+                    $searchHit->valueObject->name,
+                );
             }
 
-            $io = new SymfonyStyle($input, $output);
-            $table = new Table($output);
-            $table->setHeaders($headers);
-            $table->setRows($rows);
-            $table->render();
-            $io->newLine();
+            $query->offset += $query->limit;
+            $result = $searchService->findContentInfo($query);
         }
+
+        $io = new SymfonyStyle($input, $output);
+        $table = new Table($output);
+        $table->setHeaders($headers);
+        $table->setRows($rows);
+        $table->render();
+        $io->newLine();
     }
 }

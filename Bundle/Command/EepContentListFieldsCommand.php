@@ -35,54 +35,51 @@ EOD;
         $inputContentId = $input->getArgument('content-id');
         $inputUserId = $input->getOption('user-id');
 
-        if ($inputContentId)
+        $repository = $this->getContainer()->get('ezpublish.api.repository');
+        $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
+
+        $content = $repository->getContentService()->loadContent($inputContentId);
+        $fields = $content->getFields();
+
+        $headers = array
+        (
+           array
+           (
+               'id',
+               'fieldDefIdentifier',
+               'value',
+               'languageCode',
+               'fieldTypeIdentifier',
+           )
+        );
+        $infoHeader = array
+        (
+            new TableCell
+            (
+                "{$this->getName()} [$inputContentId]",
+                array('colspan' => count($headers[0]))
+            )
+        );
+        array_unshift($headers, $infoHeader);
+
+        $rows = array();
+        foreach ($fields as $field)
         {
-            $repository = $this->getContainer()->get('ezpublish.api.repository');
-            $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
-
-            $content = $repository->getContentService()->loadContent($inputContentId);
-            $fields = $content->getFields();
-
-            $headers = array
+            $rows[] = array
             (
-               array
-               (
-                   'id',
-                   'fieldDefIdentifier',
-                   'value',
-                   'languageCode',
-                   'fieldTypeIdentifier',
-               )
+                $field->id,
+                $field->fieldDefIdentifier,
+                $field->value,
+                $field->languageCode,
+                $field->fieldTypeIdentifier,
             );
-            $infoHeader = array
-            (
-                new TableCell
-                (
-                    "{$this->getName()} [$inputContentId]",
-                    array('colspan' => count($headers[0]))
-                )
-            );
-            array_unshift($headers, $infoHeader);
-
-            $rows = array();
-            foreach ($fields as $field)
-            {
-                $rows[] = array
-                (
-                    $field->id,
-                    $field->fieldDefIdentifier,
-                    $field->value,
-                    $field->languageCode,
-                    $field->fieldTypeIdentifier,
-                );
-            }
-
-            $io = new SymfonyStyle($input, $output);
-            $table = new Table($output);
-            $table->setHeaders($headers);
-            $table->setRows($rows);
-            $table->render();
-            $io->newLine();
         }
+
+        $io = new SymfonyStyle($input, $output);
+        $table = new Table($output);
+        $table->setHeaders($headers);
+        $table->setRows($rows);
+        $table->render();
+        $io->newLine();
     }
 }

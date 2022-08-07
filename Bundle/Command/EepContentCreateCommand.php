@@ -39,70 +39,67 @@ EOD;
         $inputMainLanguageCode = $input->getArgument('main-language-code');
         $inputUserId = $input->getOption('user-id');
 
-        if ($inputContentTypeIdentifier && $inputParentLocationId && $inputFieldData && $inputMainLanguageCode)
+        $repository = $this->getContainer()->get('ezpublish.api.repository');
+        $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
+        $contentTypeService = $repository->getContentTypeService();
+        $locationService = $repository->getLocationService();
+        $contentService = $repository->getContentService();
+
+        $location = $locationService->loadLocation($inputParentLocationId);
+
+        $io = new SymfonyStyle($input, $output);
+        $confirm = $input->getOption('no-interaction');
+        if (!$confirm)
         {
-            $repository = $this->getContainer()->get('ezpublish.api.repository');
-            $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
-            $contentTypeService = $repository->getContentTypeService();
-            $locationService = $repository->getLocationService();
-            $contentService = $repository->getContentService();
+            $confirm = $io->confirm(
+                sprintf(
+                    'Are you sure you want to create content at "%s"?',
+                    $location->contentInfo->name
+                ),
+                false
+            );
+        }
 
-            $location = $locationService->loadLocation($inputParentLocationId);
-
-            $io = new SymfonyStyle($input, $output);
-            $confirm = $input->getOption('no-interaction');
-            if (!$confirm)
+        if ($confirm)
+        {
+            try
             {
-                $confirm = $io->confirm(
-                    sprintf(
-                        'Are you sure you want to create content at "%s"?',
-                        $location->contentInfo->name
-                    ),
-                    false
-                );
+                $contentType = $contentTypeService->loadContentTypeByIdentifier($inputContentTypeIdentifier);
+                $contentCreateStruct = $contentService->newContentCreateStruct($contentType, $inputMainLanguageCode);
+
+                // TODO: only basic field handling
+                // { "name": "Foo", "description": "Bar" }
+                $fieldData = json_decode($inputFieldData, true);
+                foreach($fieldData as $fieldIdentifier => $fieldValue)
+                {
+                    $contentCreateStruct->setField($fieldIdentifier, $fieldValue);
+                }
+
+                // instantiate a location create struct from the parent location
+                $locationCreateStruct = $locationService->newLocationCreateStruct($inputParentLocationId);
+
+                // create a draft using the content and location create struct and publish it
+                $draft = $contentService->createContent($contentCreateStruct, array($locationCreateStruct));
+                $content = $contentService->publishVersion($draft->versionInfo);
+            }
+            catch (\eZ\Publish\API\Repository\Exceptions\ContentFieldValidationException $e)
+            {
+                $io->error($e->getMessage());
+            }
+            catch (\eZ\Publish\API\Repository\Exceptions\ContentValidationException $e)
+            {
+                $io->error($e->getMessage());
+            }
+            catch(\eZ\Publish\API\Repository\Exceptions\UnauthorizedException $e)
+            {
+                $io->error($e->getMessage());
             }
 
-            if ($confirm)
-            {
-                try
-                {
-                    $contentType = $contentTypeService->loadContentTypeByIdentifier($inputContentTypeIdentifier);
-                    $contentCreateStruct = $contentService->newContentCreateStruct($contentType, $inputMainLanguageCode);
-
-                    // TODO: only basic field handling
-                    // { "name": "Foo", "description": "Bar" }
-                    $fieldData = json_decode($inputFieldData, true);
-                    foreach($fieldData as $fieldIdentifier => $fieldValue)
-                    {
-                        $contentCreateStruct->setField($fieldIdentifier, $fieldValue);
-                    }
-
-                    // instantiate a location create struct from the parent location
-                    $locationCreateStruct = $locationService->newLocationCreateStruct($inputParentLocationId);
-
-                    // create a draft using the content and location create struct and publish it
-                    $draft = $contentService->createContent($contentCreateStruct, array($locationCreateStruct));
-                    $content = $contentService->publishVersion($draft->versionInfo);
-                }
-                catch (\eZ\Publish\API\Repository\Exceptions\ContentFieldValidationException $e)
-                {
-                    $io->error($e->getMessage());
-                }
-                catch (\eZ\Publish\API\Repository\Exceptions\ContentValidationException $e)
-                {
-                    $io->error($e->getMessage());
-                }
-                catch(\eZ\Publish\API\Repository\Exceptions\UnauthorizedException $e)
-                {
-                    $io->error($e->getMessage());
-                }
-
-                $io->success('Create successful');
-            }
-            else
-            {
-                $io->writeln('Create cancelled by user action');
-            }
+            $io->success('Create successful');
+        }
+        else
+        {
+            $io->writeln('Create cancelled by user action');
         }
     }
 }

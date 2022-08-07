@@ -37,67 +37,63 @@ EOD;
         $inputContentId = $input->getArgument('content-id');
         $inputUserId = $input->getOption('user-id');
 
-        if ($inputContentId)
+        $repository = $this->getContainer()->get('ezpublish.api.repository');
+        $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
+        $contentTypeService = $repository->getContentTypeService();
+        $contentService = $repository->getContentService();
+
+        $content = $contentService->loadContent($inputContentId);
+        $reverseRelated = $contentService->loadReverseRelations($content->contentInfo);
+        $reverseRelatedCount = count($reverseRelated);
+
+        $headers = array
+        (
+            array
+            (
+                'id',
+                'mainLocationId',
+                'sectionId',
+                'contentTypeIdentifier',
+                'sourceFieldIdentifier',
+                'relationType',
+                'name',
+            ),
+        );
+        $infoHeader = array
+        (
+            new TableCell
+            (
+                "{$this->getName()} [$inputContentId]",
+                array('colspan' => count($headers[0])-1)
+            ),
+            new TableCell
+            (
+                "Results: " . (($reverseRelatedCount)? 1 : 0) . " - $reverseRelatedCount / $reverseRelatedCount",
+                array('colspan' => 1)
+            )
+        );
+        array_unshift($headers, $infoHeader);
+
+        $rows = array();
+        foreach ($reverseRelated as $relation)
         {
-            $repository = $this->getContainer()->get('ezpublish.api.repository');
-            $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
-            $contentTypeService = $repository->getContentTypeService();
-            $contentService = $repository->getContentService();
-
-            $content = $contentService->loadContent($inputContentId);
-            $reverseRelated = $contentService->loadReverseRelations($content->contentInfo);
-            $reverseRelatedCount = count($reverseRelated);
-
-            $headers = array
+            $rows[] = array
             (
-                array
-                (
-                    'id',
-                    'mainLocationId',
-                    'sectionId',
-                    'contentTypeIdentifier',
-                    'sourceFieldIdentifier',
-                    'relationType',
-                    'name',
-                ),
+                $relation->sourceContentInfo->id,
+                $relation->sourceContentInfo->mainLocationId,
+                $relation->sourceContentInfo->sectionId,
+                $contentTypeService->loadContentType($relation->sourceContentInfo->contentTypeId)->identifier,
+                $relation->sourceFieldDefinitionIdentifier,
+                $relation->type,
+                $relation->sourceContentInfo->name,
             );
-            $infoHeader = array
-            (
-                new TableCell
-                (
-                    "{$this->getName()} [$inputContentId]",
-                    array('colspan' => count($headers[0])-1)
-                ),
-                new TableCell
-                (
-                    "Results: " . (($reverseRelatedCount)? 1 : 0) . " - $reverseRelatedCount / $reverseRelatedCount",
-                    array('colspan' => 1)
-                )
-            );
-            array_unshift($headers, $infoHeader);
-
-            $rows = array();
-            foreach ($reverseRelated as $relation)
-            {
-                $rows[] = array
-                (
-                    $relation->sourceContentInfo->id,
-                    $relation->sourceContentInfo->mainLocationId,
-                    $relation->sourceContentInfo->sectionId,
-                    $contentTypeService->loadContentType($relation->sourceContentInfo->contentTypeId)->identifier,
-                    $relation->sourceFieldDefinitionIdentifier,
-                    $relation->type,
-                    $relation->sourceContentInfo->name,
-                );
-            }
-
-            $io = new SymfonyStyle($input, $output);
-            $table = new Table($output);
-            $table->setHeaders($headers);
-            $table->setRows($rows);
-            $table->render();
-            $io->newLine();
         }
-    }
 
+        $io = new SymfonyStyle($input, $output);
+        $table = new Table($output);
+        $table->setHeaders($headers);
+        $table->setRows($rows);
+        $table->render();
+        $io->newLine();
+    }
 }

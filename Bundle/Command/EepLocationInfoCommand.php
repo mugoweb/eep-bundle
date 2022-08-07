@@ -44,148 +44,145 @@ EOD;
         $inputUserId = $input->getOption('user-id');
         $inputWithContentInfo = $input->getOption('with-content-info');
 
-        if ($inputLocationId)
+        $repository = $this->getContainer()->get('ezpublish.api.repository');
+        $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
+        $locationService = $repository->getLocationService();
+        $urlAliasService = $repository->getURLAliasService();
+        if ($inputWithContentInfo)
         {
-            $repository = $this->getContainer()->get('ezpublish.api.repository');
-            $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
-            $locationService = $repository->getLocationService();
-            $urlAliasService = $repository->getURLAliasService();
-            if ($inputWithContentInfo)
-            {
-                $contentService = $repository->getContentService();
-                $contentTypeService = $repository->getContentTypeService();
-            }
+            $contentService = $repository->getContentService();
+            $contentTypeService = $repository->getContentTypeService();
+        }
 
-            $location = $locationService->loadLocation($inputLocationId);
+        $location = $locationService->loadLocation($inputLocationId);
 
-            if ($inputWithContentInfo)
-            {
-                $content = $contentService->loadContent($location->getContentInfo()->id);
-            }
+        if ($inputWithContentInfo)
+        {
+            $content = $contentService->loadContent($location->getContentInfo()->id);
+        }
 
-            $headers = array
+        $headers = array
+        (
+            array
             (
+                'key',
+                'value',
+            ),
+        );
+        $infoHeader = array
+        (
+            new TableCell
+            (
+                "{$this->getName()} [{$location->id}]",
+                array('colspan' => count($headers[0]))
+            )
+        );
+        array_unshift($headers, $infoHeader);
+
+        $rows = array
+        (
+            /*
+                eZ\Publish\Core\Repository\Values\Content\Location Object
+                (
+                    [contentInfo:protected] => eZ\Publish\API\Repository\Values\Content\ContentInfo Object
+                    [path:protected] =>
+                    [id:protected] => 43
+                    [status] => 1
+                    [priority:protected] => 0
+                    [hidden:protected] =>
+                    [invisible:protected] =>
+                    [remoteId:protected] => 75c715a51699d2d309a924eca6a95145
+                    [parentLocationId:protected] => 1
+                    [pathString:protected] => /1/43/
+                    [depth:protected] => 1
+                    [sortField:protected] => 8
+                    [sortOrder:protected] => 1
+                    [content:protected] => eZ\Publish\Core\Repository\Values\Content\ContentProxy Object
+                )
+            */
+            // location details
+            array('id', $location->id),
+            array('status', $location->status),
+            array('priority', $location->priority),
+            array('hidden', (integer) $location->hidden),
+            array('invisible', (integer) $location->invisible),
+            array('remoteId', $location->remoteId),
+            array('parentLocationId', $location->parentLocationId),
+            array('pathString', $location->pathString),
+            array('depth', $location->depth),
+            array('sortField', $location->sortField),
+            array('sortOrder', $location->sortOrder),
+            new TableSeparator(),
+            array('childCount', $locationService->getLocationChildCount($location)),
+        );
+        if ($inputWithContentInfo)
+        {
+            $rows = array_merge
+            (
+                $rows,
                 array
                 (
-                    'key',
-                    'value',
-                ),
-            );
-            $infoHeader = array
-            (
-                new TableCell
-                (
-                    "{$this->getName()} [{$location->id}]",
-                    array('colspan' => count($headers[0]))
+                    new TableSeparator(),
+
+                    /*
+                        eZ\Publish\API\Repository\Values\Content\ContentInfo Object
+                        (
+                            [id:protected] => 626
+                            [contentTypeId:protected] => 38
+                            [name:protected] => Media
+                            [sectionId:protected] => 3
+                            [currentVersionNo:protected] => 1
+                            [published:protected] => 1
+                            [ownerId:protected] => 59
+                            [modificationDate:protected] => DateTime Object
+                                (
+                                    [date] => 2018-11-08 02:16:23.000000
+                                    [timezone_type] => 3
+                                    [timezone] => America/Edmonton
+                                )
+
+                            [publishedDate:protected] => DateTime Object
+                                (
+                                    [date] => 2018-11-08 02:16:23.000000
+                                    [timezone_type] => 3
+                                    [timezone] => America/Edmonton
+                                )
+
+                            [alwaysAvailable:protected] => 0
+                            [remoteId:protected] => 8faf6ac73303080f7c264d6e3af5ca66
+                            [mainLanguageCode:protected] => eng-CA
+                            [mainLocationId:protected] => 43
+                            [status:protected] => 1
+                        )
+                    */
+                    // location contentInfo details
+                    array('contentId', $location->getContentInfo()->id),
+                    array('contentTypeId', $location->getContentInfo()->contentTypeId),
+                    array('contentTypeIdentifier', $contentTypeService->loadContentType($location->getContentInfo()->contentTypeId)->identifier),
+                    array('contentName', $location->getContentInfo()->name),
+                    array('contentSectionId', $location->getContentInfo()->sectionId),
+                    array('contentCurrentVersionNo', $location->getContentInfo()->currentVersionNo),
+                    array('contentPublished', $location->getContentInfo()->published),
+                    array('contentOwnerId', $location->getContentInfo()->ownerId),
+                    array('contentModificationDate', $location->getContentInfo()->modificationDate->format('c')),
+                    array('contentModificationDateTimestamp', $location->getContentInfo()->modificationDate->format('U')),
+                    array('contentPublishedDate', $location->getContentInfo()->publishedDate->format('c')),
+                    array('contentPublishedDateTimestamp', $location->getContentInfo()->publishedDate->format('U')),
+                    array('contentAlwaysAvailable', $location->getContentInfo()->alwaysAvailable),
+                    array('contentRemoteId', $location->getContentInfo()->remoteId),
+                    array('contentMainLanguageCode', $location->getContentInfo()->mainLanguageCode),
+                    array('contentMainLocationId', $location->getContentInfo()->mainLocationId),
+                    array('contentStatus', $location->getContentInfo()->status),
+                    // reverse related count?
                 )
             );
-            array_unshift($headers, $infoHeader);
-
-            $rows = array
-            (
-                /*
-                    eZ\Publish\Core\Repository\Values\Content\Location Object
-                    (
-                        [contentInfo:protected] => eZ\Publish\API\Repository\Values\Content\ContentInfo Object
-                        [path:protected] =>
-                        [id:protected] => 43
-                        [status] => 1
-                        [priority:protected] => 0
-                        [hidden:protected] =>
-                        [invisible:protected] =>
-                        [remoteId:protected] => 75c715a51699d2d309a924eca6a95145
-                        [parentLocationId:protected] => 1
-                        [pathString:protected] => /1/43/
-                        [depth:protected] => 1
-                        [sortField:protected] => 8
-                        [sortOrder:protected] => 1
-                        [content:protected] => eZ\Publish\Core\Repository\Values\Content\ContentProxy Object
-                    )
-                */
-                // location details
-                array('id', $location->id),
-                array('status', $location->status),
-                array('priority', $location->priority),
-                array('hidden', (integer) $location->hidden),
-                array('invisible', (integer) $location->invisible),
-                array('remoteId', $location->remoteId),
-                array('parentLocationId', $location->parentLocationId),
-                array('pathString', $location->pathString),
-                array('depth', $location->depth),
-                array('sortField', $location->sortField),
-                array('sortOrder', $location->sortOrder),
-                new TableSeparator(),
-                array('childCount', $locationService->getLocationChildCount($location)),
-            );
-            if ($inputWithContentInfo)
-            {
-                $rows = array_merge
-                (
-                    $rows,
-                    array
-                    (
-                        new TableSeparator(),
-
-                        /*
-                            eZ\Publish\API\Repository\Values\Content\ContentInfo Object
-                            (
-                                [id:protected] => 626
-                                [contentTypeId:protected] => 38
-                                [name:protected] => Media
-                                [sectionId:protected] => 3
-                                [currentVersionNo:protected] => 1
-                                [published:protected] => 1
-                                [ownerId:protected] => 59
-                                [modificationDate:protected] => DateTime Object
-                                    (
-                                        [date] => 2018-11-08 02:16:23.000000
-                                        [timezone_type] => 3
-                                        [timezone] => America/Edmonton
-                                    )
-
-                                [publishedDate:protected] => DateTime Object
-                                    (
-                                        [date] => 2018-11-08 02:16:23.000000
-                                        [timezone_type] => 3
-                                        [timezone] => America/Edmonton
-                                    )
-
-                                [alwaysAvailable:protected] => 0
-                                [remoteId:protected] => 8faf6ac73303080f7c264d6e3af5ca66
-                                [mainLanguageCode:protected] => eng-CA
-                                [mainLocationId:protected] => 43
-                                [status:protected] => 1
-                            )
-                        */
-                        // location contentInfo details
-                        array('contentId', $location->getContentInfo()->id),
-                        array('contentTypeId', $location->getContentInfo()->contentTypeId),
-                        array('contentTypeIdentifier', $contentTypeService->loadContentType($location->getContentInfo()->contentTypeId)->identifier),
-                        array('contentName', $location->getContentInfo()->name),
-                        array('contentSectionId', $location->getContentInfo()->sectionId),
-                        array('contentCurrentVersionNo', $location->getContentInfo()->currentVersionNo),
-                        array('contentPublished', $location->getContentInfo()->published),
-                        array('contentOwnerId', $location->getContentInfo()->ownerId),
-                        array('contentModificationDate', $location->getContentInfo()->modificationDate->format('c')),
-                        array('contentModificationDateTimestamp', $location->getContentInfo()->modificationDate->format('U')),
-                        array('contentPublishedDate', $location->getContentInfo()->publishedDate->format('c')),
-                        array('contentPublishedDateTimestamp', $location->getContentInfo()->publishedDate->format('U')),
-                        array('contentAlwaysAvailable', $location->getContentInfo()->alwaysAvailable),
-                        array('contentRemoteId', $location->getContentInfo()->remoteId),
-                        array('contentMainLanguageCode', $location->getContentInfo()->mainLanguageCode),
-                        array('contentMainLocationId', $location->getContentInfo()->mainLocationId),
-                        array('contentStatus', $location->getContentInfo()->status),
-                        // reverse related count?
-                    )
-                );
-            }
-
-            $io = new SymfonyStyle($input, $output);
-            $table = new Table($output);
-            $table->setHeaders($headers);
-            $table->setRows($rows);
-            $table->render();
-            $io->newLine();
         }
+
+        $io = new SymfonyStyle($input, $output);
+        $table = new Table($output);
+        $table->setHeaders($headers);
+        $table->setRows($rows);
+        $table->render();
+        $io->newLine();
     }
 }

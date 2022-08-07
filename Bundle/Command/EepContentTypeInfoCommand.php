@@ -35,55 +35,52 @@ EOD;
         $inputContentTypeIdentifier = $input->getArgument('content-type-identifier');
         $inputUserId = $input->getOption('user-id');
 
-        if ($inputContentTypeIdentifier)
-        {
-            $repository = $this->getContainer()->get('ezpublish.api.repository');
-            $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
-            $contentTypeService = $repository->getContentTypeService();
+        $repository = $this->getContainer()->get('ezpublish.api.repository');
+        $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
+        $contentTypeService = $repository->getContentTypeService();
 
-            $contentType = $contentTypeService->loadContentTypeByIdentifier($inputContentTypeIdentifier);
+        $contentType = $contentTypeService->loadContentTypeByIdentifier($inputContentTypeIdentifier);
 
-            $headers = array
+        $headers = array
+        (
+            array
             (
-                array
-                (
-                    'key',
-                    'value',
-                ),
-            );
-            $infoHeader = array
+                'key',
+                'value',
+            ),
+        );
+        $infoHeader = array
+        (
+            new TableCell
             (
-                new TableCell
-                (
-                    "{$this->getName()} [$inputContentTypeIdentifier]",
-                    array('colspan' => count($headers[0]))
-                )
-            );
-            array_unshift($headers, $infoHeader);
+                "{$this->getName()} [$inputContentTypeIdentifier]",
+                array('colspan' => count($headers[0]))
+            )
+        );
+        array_unshift($headers, $infoHeader);
 
-            $rows = array
-            (
-                array( 'id', $contentType->id ),
-                array( 'status', $contentType->status ),
-                array( 'identifier', $contentType->identifier ),
-                array( 'creationDate', $contentType->creationDate->format('c') ),
-                array( 'creationDateTimestamp', $contentType->creationDate->format('U') ),
-                array( 'modificationDate', $contentType->modificationDate->format('c') ),
-                array( 'modificationDateTimestamp', $contentType->modificationDate->format('U') ),
-                array( 'urlAliasSchema', $contentType->urlAliasSchema ),
-                array( 'nameSchema', $contentType->nameSchema ),
-                array( 'isContainer', (integer) $contentType->isContainer ),
-                array( 'creatorId', $contentType->creatorId ),
-                array( 'modifierId', $contentType->modifierId ),
-                array( 'remoteId', $contentType->remoteId ),
-            );
+        $rows = array
+        (
+            array( 'id', $contentType->id ),
+            array( 'status', $contentType->status ),
+            array( 'identifier', $contentType->identifier ),
+            array( 'creationDate', $contentType->creationDate->format('c') ),
+            array( 'creationDateTimestamp', $contentType->creationDate->format('U') ),
+            array( 'modificationDate', $contentType->modificationDate->format('c') ),
+            array( 'modificationDateTimestamp', $contentType->modificationDate->format('U') ),
+            array( 'urlAliasSchema', $contentType->urlAliasSchema ),
+            array( 'nameSchema', $contentType->nameSchema ),
+            array( 'isContainer', (integer) $contentType->isContainer ),
+            array( 'creatorId', $contentType->creatorId ),
+            array( 'modifierId', $contentType->modifierId ),
+            array( 'remoteId', $contentType->remoteId ),
+        );
 
-            $io = new SymfonyStyle($input, $output);
-            $table = new Table($output);
-            $table->setHeaders($headers);
-            $table->setRows($rows);
-            $table->render();
-            $io->newLine();
-        }
+        $io = new SymfonyStyle($input, $output);
+        $table = new Table($output);
+        $table->setHeaders($headers);
+        $table->setRows($rows);
+        $table->render();
+        $io->newLine();
     }
 }

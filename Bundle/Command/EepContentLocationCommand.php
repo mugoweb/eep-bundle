@@ -34,22 +34,19 @@ EOD;
         $inputContentId = $input->getArgument('content-id');
         $inputUserId = $input->getOption('user-id');
 
-        if ($inputContentId)
+        $repository = $this->getContainer()->get('ezpublish.api.repository');
+        $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
+
+        $content = $repository->getContentService()->loadContent($inputContentId);
+
+        $io = new SymfonyStyle($input, $output);
+        if ($input->getOption('no-newline'))
         {
-            $repository = $this->getContainer()->get('ezpublish.api.repository');
-            $repository->setCurrentUser($repository->getUserService()->loadUser($inputUserId));
-
-            $content = $repository->getContentService()->loadContent($inputContentId);
-
-            $io = new SymfonyStyle($input, $output);
-            if ($input->getOption('no-newline'))
-            {
-                $io->write($content->contentInfo->mainLocationId);
-            }
-            else
-            {
-                $io->writeln($content->contentInfo->mainLocationId);
-            }
+            $io->write($content->contentInfo->mainLocationId);
+        }
+        else
+        {
+            $io->writeln($content->contentInfo->mainLocationId);
         }
     }
 }
