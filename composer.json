@@ -16,7 +16,7 @@
         "psr-4": {
             "MugoWeb\\Eep\\Bundle\\": "src/"
         }
-    }
+    },
 	"minimum-stability": "dev",
     "prefer-stable": true
 }
