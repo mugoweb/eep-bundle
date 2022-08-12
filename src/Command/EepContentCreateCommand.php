@@ -2,15 +2,38 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use eZ\Publish\API\Repository\LocationService;
+use eZ\Publish\API\Repository\ContentService;
+use eZ\Publish\API\Repository\ContentTypeService;
+use eZ\Publish\API\Repository\PermissionResolver;
+use eZ\Publish\API\Repository\UserService;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class EepContentCreateCommand extends ContainerAwareCommand
+class EepContentCreateCommand extends Command
 {
+    public function __construct
+    (
+        LocationService $locationService,
+        ContentService $contentService,
+        ContentTypeService $contentTypeService,
+        PermissionResolver $permissionResolver,
+        UserService $userService
+    )
+    {
+        $this->locationService = $locationService;
+        $this->contentService = $contentService;
+        $this->contentTypeService = $contentTypeService;
+        $this->permissionResolver = $permissionResolver;
+        $this->userService = $userService;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $help = <<<EOD
@@ -39,13 +62,9 @@ EOD;
         $inputMainLanguageCode = $input->getArgument('main-language-code');
         $inputUserId = $input->getOption('user-id');
 
-        $repository = $this->getContainer()->get('ezpublish.api.repository');
-        $repository->getPermissionResolver()->setCurrentUserReference($repository->getUserService()->loadUser($inputUserId));
-        $contentTypeService = $repository->getContentTypeService();
-        $locationService = $repository->getLocationService();
-        $contentService = $repository->getContentService();
+        $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
-        $location = $locationService->loadLocation($inputParentLocationId);
+        $location = $this->locationService->loadLocation($inputParentLocationId);
 
         $io = new SymfonyStyle($input, $output);
         $confirm = $input->getOption('no-interaction');
@@ -64,8 +83,8 @@ EOD;
         {
             try
             {
-                $contentType = $contentTypeService->loadContentTypeByIdentifier($inputContentTypeIdentifier);
-                $contentCreateStruct = $contentService->newContentCreateStruct($contentType, $inputMainLanguageCode);
+                $contentType = $this->contentTypeService->loadContentTypeByIdentifier($inputContentTypeIdentifier);
+                $contentCreateStruct = $this->contentService->newContentCreateStruct($contentType, $inputMainLanguageCode);
 
                 // TODO: only basic field handling
                 // { "name": "Foo", "description": "Bar" }
@@ -76,11 +95,11 @@ EOD;
                 }
 
                 // instantiate a location create struct from the parent location
-                $locationCreateStruct = $locationService->newLocationCreateStruct($inputParentLocationId);
+                $locationCreateStruct = $this->locationService->newLocationCreateStruct($inputParentLocationId);
 
                 // create a draft using the content and location create struct and publish it
-                $draft = $contentService->createContent($contentCreateStruct, array($locationCreateStruct));
-                $content = $contentService->publishVersion($draft->versionInfo);
+                $draft = $this->contentService->createContent($contentCreateStruct, array($locationCreateStruct));
+                $content = $this->contentService->publishVersion($draft->versionInfo);
             }
             catch (\eZ\Publish\API\Repository\Exceptions\ContentFieldValidationException $e)
             {

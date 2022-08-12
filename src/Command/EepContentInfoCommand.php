@@ -3,7 +3,11 @@
 namespace MugoWeb\Eep\Bundle\Command;
 
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use eZ\Publish\API\Repository\ContentService;
+use eZ\Publish\API\Repository\ContentTypeService;
+use eZ\Publish\API\Repository\PermissionResolver;
+use eZ\Publish\API\Repository\UserService;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,8 +15,24 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class EepContentInfoCommand extends ContainerAwareCommand
+class EepContentInfoCommand extends Command
 {
+    public function __construct
+    (
+        ContentService $contentService,
+        ContentTypeService $contentTypeService,
+        PermissionResolver $permissionResolver,
+        UserService $userService
+    )
+    {
+        $this->contentService = $contentService;
+        $this->contentTypeService = $contentTypeService;
+        $this->permissionResolver = $permissionResolver;
+        $this->userService = $userService;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $help = <<<EOD
@@ -33,14 +53,11 @@ EOD;
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $inputContentId = $input->getArgument('content-id');
-        $inputUserId = $input->getOption('user-id');
+	$inputUserId = $input->getOption('user-id');
 
-        $repository = $this->getContainer()->get('ezpublish.api.repository');
-        $repository->getPermissionResolver()->setCurrentUserReference($repository->getUserService()->loadUser($inputUserId));
-        $contentService = $repository->getContentService();
-        $contentTypeService = $repository->getContentTypeService();
+        $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
-        $content = $contentService->loadContent($inputContentId);
+        $content = $this->contentService->loadContent($inputContentId);
 
         $headers = array
         (
@@ -60,7 +77,7 @@ EOD;
         (
             array('id', $content->contentInfo->id),
             array('contentTypeId', $content->contentInfo->contentTypeId),
-            array('contentTypeIdentifier', $contentTypeService->loadContentType($content->contentInfo->contentTypeId)->identifier),
+            array('contentTypeIdentifier', $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId)->identifier),
             array('name', $content->contentInfo->name),
             array('sectionId', $content->contentInfo->sectionId),
             array('currentVersionNo', $content->contentInfo->currentVersionNo),

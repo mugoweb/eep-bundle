@@ -2,15 +2,32 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use eZ\Publish\API\Repository\ContentService;
+use eZ\Publish\API\Repository\PermissionResolver;
+use eZ\Publish\API\Repository\UserService;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class EepContentUpdateCommand extends ContainerAwareCommand
+class EepContentUpdateCommand extends Command
 {
+    public function __construct
+    (
+        ContentService $contentService,
+        PermissionResolver $permissionResolver,
+        UserService $userService
+    )
+    {
+        $this->contentService = $contentService;
+        $this->permissionResolver = $permissionResolver;
+        $this->userService = $userService;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $help = <<<EOD
@@ -37,11 +54,9 @@ EOD;
         $inputInitialLanguageCode = $input->getArgument('initial-language-code');
         $inputUserId = $input->getOption('user-id');
 
-        $repository = $this->getContainer()->get('ezpublish.api.repository');
-        $repository->getPermissionResolver()->setCurrentUserReference($repository->getUserService()->loadUser($inputUserId));
-        $contentService = $repository->getContentService();
+        $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
-        $contentInfo = $contentService->loadContentInfo($inputContentId);
+        $contentInfo = $this->contentService->loadContentInfo($inputContentId);
 
         $io = new SymfonyStyle($input, $output);
         $confirm = $input->getOption('no-interaction');
@@ -61,10 +76,10 @@ EOD;
             try
             {
                 // create a content draft from the current published version
-                $contentDraft = $contentService->createContentDraft($contentInfo);
+                $contentDraft = $this->contentService->createContentDraft($contentInfo);
 
                 // instantiate a content update struct and set the new fields
-                $contentUpdateStruct = $contentService->newContentUpdateStruct();
+                $contentUpdateStruct = $this->contentService->newContentUpdateStruct();
                 $contentUpdateStruct->initialLanguageCode = $inputInitialLanguageCode;
 
                 // TODO: only basic field handling
@@ -76,8 +91,8 @@ EOD;
                 }
 
                 // update and publish draft
-                $contentDraft = $contentService->updateContent($contentDraft->versionInfo, $contentUpdateStruct);
-                $content = $contentService->publishVersion($contentDraft->versionInfo);
+                $contentDraft = $this->contentService->updateContent($contentDraft->versionInfo, $contentUpdateStruct);
+                $content = $this->contentService->publishVersion($contentDraft->versionInfo);
             }
             catch (\eZ\Publish\API\Repository\Exceptions\ContentFieldValidationException $e)
             {

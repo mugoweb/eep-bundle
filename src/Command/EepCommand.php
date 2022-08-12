@@ -2,11 +2,11 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class EepCommand extends ContainerAwareCommand
+class EepCommand extends Command
 {
     protected function configure()
     {

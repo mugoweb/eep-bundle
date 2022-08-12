@@ -2,8 +2,11 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
+use eZ\Publish\API\Repository\ContentTypeService;
+use eZ\Publish\API\Repository\PermissionResolver;
+use eZ\Publish\API\Repository\UserService;
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,8 +14,22 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class EepContentTypeListFieldsCommand extends ContainerAwareCommand
+class EepContentTypeListFieldsCommand extends Command
 {
+    public function __construct
+    (
+        ContentTypeService $contentTypeService,
+        PermissionResolver $permissionResolver,
+        UserService $userService
+    )
+    {
+        $this->contentTypeService = $contentTypeService;
+        $this->permissionResolver = $permissionResolver;
+        $this->userService = $userService;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $help = <<<EOD
@@ -35,11 +52,9 @@ EOD;
         $inputContentTypeIdentifier = $input->getArgument('content-type-identifier');
         $inputUserId = $input->getOption('user-id');
 
-        $repository = $this->getContainer()->get('ezpublish.api.repository');
-        $repository->getPermissionResolver()->setCurrentUserReference($repository->getUserService()->loadUser($inputUserId));
-        $contentTypeService = $repository->getContentTypeService();
+        $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
-        $contentType = $contentTypeService->loadContentTypeByIdentifier($inputContentTypeIdentifier);
+        $contentType = $this->contentTypeService->loadContentTypeByIdentifier($inputContentTypeIdentifier);
         $fieldDefinitions = $contentType->fieldDefinitionsByIdentifier;
 
         $headers = array

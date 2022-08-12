@@ -5,7 +5,10 @@ namespace MugoWeb\Eep\Bundle\Command;
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\ContentTypeIdentifier;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use eZ\Publish\API\Repository\SearchService;
+use eZ\Publish\API\Repository\PermissionResolver;
+use eZ\Publish\API\Repository\UserService;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,8 +16,22 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class EepContentTypeListContentCommand extends ContainerAwareCommand
+class EepContentTypeListContentCommand extends Command
 {
+    public function __construct
+    (
+        SearchService $searchService,
+        PermissionResolver $permissionResolver,
+        UserService $userService
+    )
+    {
+        $this->searchService = $searchService;
+        $this->permissionResolver = $permissionResolver;
+        $this->userService = $userService;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $help = <<<EOD
@@ -39,9 +56,7 @@ EOD;
         $inputContentTypeIdentifier = $input->getArgument('content-type-identifier');
         $inputUserId = $input->getOption('user-id');
 
-        $repository = $this->getContainer()->get('ezpublish.api.repository');
-        $repository->getPermissionResolver()->setCurrentUserReference($repository->getUserService()->loadUser($inputUserId));
-        $searchService = $repository->getSearchService();
+	$this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
         $query = new LocationQuery();
         $query->filter = new ContentTypeIdentifier($inputContentTypeIdentifier);
@@ -49,7 +64,7 @@ EOD;
         $query->limit = ($input->getOption('limit'))? (integer) $input->getOption('limit') : $query->limit;
         $query->performCount = true;
 
-        $result = $searchService->findContentInfo($query);
+        $result = $this->searchService->findContentInfo($query);
         $resultLimit = ($input->getOption('limit'))? ($query->offset + $query->limit) : $result->totalCount;
         $query->performCount = false;
 
@@ -97,7 +112,7 @@ EOD;
             }
 
             $query->offset += $query->limit;
-            $result = $searchService->findContentInfo($query);
+            $result = $this->searchService->findContentInfo($query);
         }
 
         $io = new SymfonyStyle($input, $output);

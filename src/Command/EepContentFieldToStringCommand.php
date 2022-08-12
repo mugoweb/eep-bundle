@@ -2,15 +2,35 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use eZ\Publish\API\Repository\ContentService;
+use eZ\Publish\API\Repository\FieldTypeService;
+use eZ\Publish\API\Repository\PermissionResolver;
+use eZ\Publish\API\Repository\UserService;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class EepContentFieldToStringCommand extends ContainerAwareCommand
+class EepContentFieldToStringCommand extends Command
 {
+    public function __construct
+    (
+        ContentService $contentService,
+        FieldTypeService $fieldTypeService,
+        PermissionResolver $permissionResolver,
+        UserService $userService
+    )
+    {
+        $this->contentService = $contentService;
+        $this->fieldTypeService = $fieldTypeService;
+        $this->permissionResolver = $permissionResolver;
+        $this->userService = $userService;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $help = <<<EOD
@@ -37,14 +57,11 @@ EOD;
         $inputContentFieldIdentifier = $input->getArgument('content-field-identifier');
         $inputUserId = $input->getOption('user-id');
 
-        $repository = $this->getContainer()->get('ezpublish.api.repository');
-        $repository->getPermissionResolver()->setCurrentUserReference($repository->getUserService()->loadUser($inputUserId));
-        $contentService = $repository->getContentService();
-        $fieldTypeService = $repository->getFieldTypeService();
+	$this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
-        $content = $contentService->loadContent($inputContentId);
+        $content = $this->contentService->loadContent($inputContentId);
         $field = $content->getField($inputContentFieldIdentifier);
-        $fieldType = $fieldTypeService->getFieldType($field->fieldTypeIdentifier);
+        $fieldType = $this->fieldTypeService->getFieldType($field->fieldTypeIdentifier);
         $fieldValueHash = $fieldType->toHash($field->value);
         $fieldValueString = implode($input->getOption('separator'), (array) $fieldValueHash);
 

@@ -3,7 +3,11 @@
 namespace MugoWeb\Eep\Bundle\Command;
 
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use eZ\Publish\API\Repository\ContentService;
+use eZ\Publish\API\Repository\ContentTypeService;
+use eZ\Publish\API\Repository\PermissionResolver;
+use eZ\Publish\API\Repository\UserService;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,8 +15,24 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class EepContentRelatedCommand extends ContainerAwareCommand
+class EepContentRelatedCommand extends Command
 {
+    public function __construct
+    (
+        ContentService $contentService,
+        ContentTypeService $contentTypeService,
+        PermissionResolver $permissionResolver,
+        UserService $userService
+    )
+    {
+        $this->contentService = $contentService;
+        $this->contentTypeService = $contentTypeService;
+        $this->permissionResolver = $permissionResolver;
+        $this->userService = $userService;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $help = <<<EOD
@@ -37,13 +57,10 @@ EOD;
         $inputContentId = $input->getArgument('content-id');
         $inputUserId = $input->getOption('user-id');
 
-        $repository = $this->getContainer()->get('ezpublish.api.repository');
-        $repository->getPermissionResolver()->setCurrentUserReference($repository->getUserService()->loadUser($inputUserId));
-        $contentTypeService = $repository->getContentTypeService();
-        $contentService = $repository->getContentService();
+	$this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
-        $content = $contentService->loadContent($inputContentId);
-        $related = $contentService->loadRelations($content->versionInfo);
+        $content = $this->contentService->loadContent($inputContentId);
+        $related = $this->contentService->loadRelations($content->versionInfo);
         $relatedCount = count($related);
 
         $headers = array
@@ -82,7 +99,7 @@ EOD;
                 $relation->destinationContentInfo->id,
                 $relation->destinationContentInfo->mainLocationId,
                 $relation->destinationContentInfo->sectionId,
-                $contentTypeService->loadContentType($relation->destinationContentInfo->contentTypeId)->identifier,
+                $this->contentTypeService->loadContentType($relation->destinationContentInfo->contentTypeId)->identifier,
                 $relation->sourceFieldDefinitionIdentifier,
                 $relation->type,
                 $relation->destinationContentInfo->name,
