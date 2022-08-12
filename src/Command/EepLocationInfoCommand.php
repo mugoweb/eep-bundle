@@ -2,7 +2,7 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
-use Eep\Bundle\Component\Console\Helper\Table;
+use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableSeparator;

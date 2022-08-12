@@ -2,7 +2,7 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
-use Eep\Bundle\Component\Console\Helper\Table;
+use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\ContentTypeIdentifier;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
