@@ -3,15 +3,35 @@
 namespace MugoWeb\Eep\Bundle\Command;
 
 use eZ\Publish\Core\Base\Exceptions\InvalidArgumentException;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use eZ\Publish\API\Repository\LocationService;
+use eZ\Publish\API\Repository\ContentTypeService;
+use eZ\Publish\API\Repository\PermissionResolver;
+use eZ\Publish\API\Repository\UserService;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class EepLocationCopyCommand extends ContainerAwareCommand
+class EepLocationCopyCommand extends Command
 {
+    public function __construct
+    (
+        LocationService $locationService,
+        ContentTypeService $contentTypeService,
+        PermissionResolver $permissionResolver,
+        UserService $userService
+    )
+    {
+        $this->locationService = $locationService;
+        $this->contentTypeService = $contentTypeService;
+        $this->permissionResolver = $permissionResolver;
+        $this->userService = $userService;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $help = <<<EOD
@@ -36,19 +56,16 @@ EOD;
         $inputTargetLocationId = $input->getArgument('target-location-id');
         $inputUserId = $input->getOption('user-id');
 
-        $repository = $this->getContainer()->get('ezpublish.api.repository');
-        $repository->getPermissionResolver()->setCurrentUserReference($repository->getUserService()->loadUser($inputUserId));
-        $locationService = $repository->getLocationService();
-        $contentTypeService = $repository->getContentTypeService();
+	$this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
-        $sourceLocation = $locationService->loadLocation($inputSourceLocationId);
-        $targetLocation = $locationService->loadLocation($inputTargetLocationId);
+        $sourceLocation = $this->locationService->loadLocation($inputSourceLocationId);
+        $targetLocation = $this->locationService->loadLocation($inputTargetLocationId);
         if (stripos($targetLocation->pathString, $sourceLocation->pathString) !== false)
         {
             throw new InvalidArgumentException('target-location-id', 'Target location is a sub location of the source subtree');
         }
 
-        $targetContentType = $contentTypeService->loadContentType($targetLocation->getContentInfo()->contentTypeId);
+        $targetContentType = $this->contentTypeService->loadContentType($targetLocation->getContentInfo()->contentTypeId);
         if (!$targetContentType->isContainer)
         {
             throw new InvalidArgumentException('target-location-id', 'Cannot copy location to a parent that is not a container');
@@ -62,7 +79,7 @@ EOD;
                 sprintf(
                     'Are you sure you want to copy "%s" subtree ( %d children) into "%s"? This may take a while for subtrees with a large number of nested children',
                     $sourceLocation->contentInfo->name,
-                    $locationService->getLocationChildCount($sourceLocation),
+                    $this->locationService->getLocationChildCount($sourceLocation),
                     $targetLocation->contentInfo->name
                 ),
                 false
@@ -73,7 +90,7 @@ EOD;
         {
             try
             {
-                $locationService->copySubtree($sourceLocation, $targetLocation);
+                $this->locationService->copySubtree($sourceLocation, $targetLocation);
             }
             catch(\eZ\Publish\API\Repository\Exceptions\UnauthorizedException $e)
             {

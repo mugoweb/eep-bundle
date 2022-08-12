@@ -3,7 +3,12 @@
 namespace MugoWeb\Eep\Bundle\Command;
 
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use eZ\Publish\API\Repository\LocationService;
+use eZ\Publish\API\Repository\ContentService;
+use eZ\Publish\API\Repository\ContentTypeService;
+use eZ\Publish\API\Repository\PermissionResolver;
+use eZ\Publish\API\Repository\UserService;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,14 +17,26 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-
-use eZ\Publish\Core\MVC\Symfony\Routing\RouteReference;
-use eZ\Publish\Core\MVC\Symfony\SiteAccess;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
-
-class EepLocationInfoCommand extends ContainerAwareCommand
+class EepLocationInfoCommand extends Command
 {
+    public function __construct
+    (
+        LocationService $locationService,
+        ContentService $contentService,
+        ContentTypeService $contentTypeService,
+        PermissionResolver $permissionResolver,
+        UserService $userService
+    )
+    {
+        $this->locationService = $locationService;
+        $this->contentService = $contentService;
+        $this->contentTypeService = $contentTypeService;
+        $this->permissionResolver = $permissionResolver;
+        $this->userService = $userService;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $help = <<<EOD
@@ -44,21 +61,13 @@ EOD;
         $inputUserId = $input->getOption('user-id');
         $inputWithContentInfo = $input->getOption('with-content-info');
 
-        $repository = $this->getContainer()->get('ezpublish.api.repository');
-        $repository->getPermissionResolver()->setCurrentUserReference($repository->getUserService()->loadUser($inputUserId));
-        $locationService = $repository->getLocationService();
-        $urlAliasService = $repository->getURLAliasService();
-        if ($inputWithContentInfo)
-        {
-            $contentService = $repository->getContentService();
-            $contentTypeService = $repository->getContentTypeService();
-        }
+        $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
-        $location = $locationService->loadLocation($inputLocationId);
+        $location = $this->locationService->loadLocation($inputLocationId);
 
         if ($inputWithContentInfo)
         {
-            $content = $contentService->loadContent($location->getContentInfo()->id);
+            $content = $this->contentService->loadContent($location->getContentInfo()->id);
         }
 
         $headers = array
@@ -113,7 +122,7 @@ EOD;
             array('sortField', $location->sortField),
             array('sortOrder', $location->sortOrder),
             new TableSeparator(),
-            array('childCount', $locationService->getLocationChildCount($location)),
+            array('childCount', $this->locationService->getLocationChildCount($location)),
         );
         if ($inputWithContentInfo)
         {
@@ -158,7 +167,7 @@ EOD;
                     // location contentInfo details
                     array('contentId', $location->getContentInfo()->id),
                     array('contentTypeId', $location->getContentInfo()->contentTypeId),
-                    array('contentTypeIdentifier', $contentTypeService->loadContentType($location->getContentInfo()->contentTypeId)->identifier),
+                    array('contentTypeIdentifier', $this->contentTypeService->loadContentType($location->getContentInfo()->contentTypeId)->identifier),
                     array('contentName', $location->getContentInfo()->name),
                     array('contentSectionId', $location->getContentInfo()->sectionId),
                     array('contentCurrentVersionNo', $location->getContentInfo()->currentVersionNo),

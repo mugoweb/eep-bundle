@@ -6,7 +6,12 @@ use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion;
 use eZ\Publish\API\Repository\Values\Content\Query\SortClause;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use eZ\Publish\API\Repository\SearchService;
+use eZ\Publish\API\Repository\LocationService;
+use eZ\Publish\API\Repository\ContentTypeService;
+use eZ\Publish\API\Repository\PermissionResolver;
+use eZ\Publish\API\Repository\UserService;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,8 +19,26 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class EepLocationSubtreeCommand extends ContainerAwareCommand
+class EepLocationSubtreeCommand extends Command
 {
+    public function __construct
+    (
+        SearchService $searchService,
+        LocationService $locationService,
+        ContentTypeService $contentTypeService,
+        PermissionResolver $permissionResolver,
+        UserService $userService
+    )
+    {
+        $this->searchService = $searchService;
+        $this->locationService = $locationService;
+        $this->contentTypeService = $contentTypeService;
+        $this->permissionResolver = $permissionResolver;
+        $this->userService = $userService;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $help = <<<EOD
@@ -40,13 +63,9 @@ EOD;
         $inputLocationId = $input->getArgument('location-id');
         $inputUserId = $input->getOption('user-id');
 
-        $repository = $this->getContainer()->get('ezpublish.api.repository');
-        $repository->getPermissionResolver()->setCurrentUserReference($repository->getUserService()->loadUser($inputUserId));
-        $searchService = $repository->getSearchService();
-        $locationService = $repository->getLocationService();
-        $contentTypeService = $repository->getContentTypeService();
+        $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
-        $location = $locationService->loadLocation($inputLocationId);
+        $location = $this->locationService->loadLocation($inputLocationId);
 
         $query = new LocationQuery();
         $query->query = new Criterion\Subtree($location->pathString);
@@ -58,7 +77,7 @@ EOD;
         );
         $query->performCount = true;
 
-        $result = $searchService->findLocations($query);
+        $result = $this->searchService->findLocations($query);
         $resultLimit = ($input->getOption('limit'))? ($query->offset + $query->limit) : $result->totalCount;
         $query->performCount = false;
 
@@ -101,9 +120,9 @@ EOD;
                 (
                     $searchHit->valueObject->id,
                     $searchHit->valueObject->contentInfo->id,
-                    $contentTypeService->loadContentType($searchHit->valueObject->contentInfo->contentTypeId)->identifier,
+                    $this->contentTypeService->loadContentType($searchHit->valueObject->contentInfo->contentTypeId)->identifier,
                     $searchHit->valueObject->pathString,
-                    $locationService->getLocationChildCount($searchHit->valueObject),
+                    $this->locationService->getLocationChildCount($searchHit->valueObject),
                     $searchHit->valueObject->priority,
                     (integer) $searchHit->valueObject->hidden,
                     (integer) $searchHit->valueObject->invisible,
@@ -112,7 +131,7 @@ EOD;
             }
 
             $query->offset += $query->limit;
-            $result = $searchService->findLocations($query);
+            $result = $this->searchService->findLocations($query);
         }
 
         $io = new SymfonyStyle($input, $output);

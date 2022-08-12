@@ -2,15 +2,32 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use eZ\Publish\API\Repository\LocationService;
+use eZ\Publish\API\Repository\PermissionResolver;
+use eZ\Publish\API\Repository\UserService;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class EepLocationDeleteCommand extends ContainerAwareCommand
+class EepLocationDeleteCommand extends Command
 {
+    public function __construct
+    (
+        LocationService $locationService,
+        PermissionResolver $permissionResolver,
+        UserService $userService
+    )
+    {
+        $this->locationService = $locationService;
+        $this->permissionResolver = $permissionResolver;
+        $this->userService = $userService;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $help = <<<EOD
@@ -33,11 +50,9 @@ EOD;
         $inputLocationId = $input->getArgument('location-id');
         $inputUserId = $input->getOption('user-id');
 
-        $repository = $this->getContainer()->get('ezpublish.api.repository');
-        $repository->getPermissionResolver()->setCurrentUserReference($repository->getUserService()->loadUser($inputUserId));
-        $locationService = $repository->getLocationService();
+	$this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
-        $location = $locationService->loadLocation($inputLocationId);
+        $location = $this->locationService->loadLocation($inputLocationId);
 
         $io = new SymfonyStyle($input, $output);
         $confirm = $input->getOption('no-interaction');
@@ -47,8 +62,7 @@ EOD;
                 sprintf(
                     'Are you sure you want to delete "%s" subtree (%d children)? This may take a while for subtrees with a large number of nested children',
                     $location->contentInfo->name,
-                    $locationService->getLocationChildCount($location),
-                    $location->contentInfo->name
+                    $this->locationService->getLocationChildCount($location)
                 ),
                 false
             );
@@ -58,7 +72,7 @@ EOD;
         {
             try
             {
-                $locationService->deleteLocation($location);
+                $this->locationService->deleteLocation($location);
             }
             catch(\eZ\Publish\API\Repository\Exceptions\UnauthorizedException $e)
             {
