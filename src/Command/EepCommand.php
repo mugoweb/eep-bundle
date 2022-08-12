@@ -17,7 +17,7 @@ EOD;
 
         $this
             ->setName('eep')
-            ->setDescription('eep - Ease eZ/Ibexa Platform development')
+            ->setDescription('eep - Ease eZ Platform/Ibexa DXP development')
             ->setHelp($help)
         ;
     }

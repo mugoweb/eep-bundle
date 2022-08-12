@@ -1,7 +1,11 @@
 # Work in progress!
 Incomplete and likely to change significantly.
 
-Currently developed against eZ/Ibexa Platform 2.5 LTS
+Currently developed against eZ Platform 2.5 LTS
 
-## Eep - Ease eZ/Ibexa Platform
-A Symfony command bundle to support developers using eZ/Ibexa Platform.
+master: eZPlatform 2.5 LTS target
+2.5-lts: eZPlatform 2.5 LTS target
+3.3-lts: Ibexa DXP LTS target
+
+## Eep - Ease eZ Platform/Ibexa DXP
+A Symfony command bundle to support developers using eZ Platform/Ibexa DXP
