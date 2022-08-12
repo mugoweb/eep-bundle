@@ -1,6 +1,6 @@
 <?php
 
-namespace Eep\Bundle\Command;
+namespace MugoWeb\Eep\Bundle\Command;
 
 use eZ\Publish\Core\Base\Exceptions\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;

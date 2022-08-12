@@ -1,6 +1,6 @@
 <?php
 
-namespace Eep\Bundle\Command;
+namespace MugoWeb\Eep\Bundle\Command;
 
 use Eep\Bundle\Component\Console\Helper\Table;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;

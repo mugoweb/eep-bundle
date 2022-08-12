@@ -1,6 +1,6 @@
 <?php
 
-namespace Eep\Bundle\Command;
+namespace MugoWeb\Eep\Bundle\Command;
 
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\SectionId;
 use Eep\Bundle\Component\Console\Helper\Table;
