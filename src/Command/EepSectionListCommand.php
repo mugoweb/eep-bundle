@@ -3,15 +3,27 @@
 namespace MugoWeb\Eep\Bundle\Command;
 
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use eZ\Publish\API\Repository\SectionService;
+use eZ\Publish\API\Repository\PermissionResolver;
+use eZ\Publish\API\Repository\UserService;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class EepSectionListCommand extends ContainerAwareCommand
+class EepSectionListCommand extends Command
 {
+    public function __construct(SectionService $sectionService, PermissionResolver $permissionResolver, UserService $userService)
+    {
+        $this->sectionService = $sectionService;
+        $this->permissionResolver = $permissionResolver;
+	$this->userService = $userService;
+
+	parent::__construct();
+    }
+
     protected function configure()
     {
         $help = <<<EOD
@@ -32,10 +44,9 @@ EOD;
     {
         $inputUserId = $input->getOption('user-id');
 
-        $repository = $this->getContainer()->get('ezpublish.api.repository');
-        $repository->getPermissionResolver()->setCurrentUserReference($repository->getUserService()->loadUser($inputUserId));
+        $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
-        $sections = $repository->getSectionService()->loadSections();
+        $sections = $this->sectionService->loadSections();
         $sectionsCount = count($sections);
 
         $headers = array

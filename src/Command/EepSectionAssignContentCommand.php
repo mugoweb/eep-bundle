@@ -2,10 +2,14 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
-use eZ\Publish\API\Repository\Values\Content\Query\Criterion\SectionId;
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
+use eZ\Publish\API\Repository\Values\Content\Query\Criterion\SectionId;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use eZ\Publish\API\Repository\SectionService;
+use eZ\Publish\API\Repository\ContentService;
+use eZ\Publish\API\Repository\PermissionResolver;
+use eZ\Publish\API\Repository\UserService;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,8 +17,24 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class EepSectionAssignContentCommand extends ContainerAwareCommand
+class EepSectionAssignContentCommand extends Command
 {
+    public function __construct
+    (
+        SectionService $sectionService,
+        ContentService $contentService,
+	PermissionResolver $permissionResolver,
+	UserService $userService
+    )
+    {
+        $this->sectionService = $sectionService;
+        $this->contentService = $contentService;
+        $this->permissionResolver = $permissionResolver;
+        $this->userService = $userService;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $help = <<<EOD
@@ -39,18 +59,15 @@ EOD;
         $inputContentId = $input->getArgument( 'content-id' );
         $inputUserId = $input->getOption('user-id');
 
-        $repository = $this->getContainer()->get('ezpublish.api.repository');
-        $repository->getPermissionResolver()->setCurrentUserReference($repository->getUserService()->loadUser($inputUserId));
-        $contentService = $repository->getContentService();
-        $sectionService = $repository->getSectionService();
+        $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
         $io = new SymfonyStyle($input, $output);
         try
         {
-            $section = $sectionService->loadSectionByIdentifier($inputSectionIdentifier);
-            $contentInfo = $contentService->loadContentInfo($inputContentId);
+            $section = $this->sectionService->loadSectionByIdentifier($inputSectionIdentifier);
+            $contentInfo = $this->contentService->loadContentInfo($inputContentId);
 
-            $sectionService->assignSection($contentInfo, $section);
+            $this->sectionService->assignSection($contentInfo, $section);
         }
         catch(\eZ\Publish\API\Repository\Exceptions\UnauthorizedException $e)
         {

@@ -5,7 +5,12 @@ namespace MugoWeb\Eep\Bundle\Command;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\SectionId;
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use eZ\Publish\API\Repository\SearchService;
+use eZ\Publish\API\Repository\ContentTypeService;
+use eZ\Publish\API\Repository\SectionService;
+use eZ\Publish\API\Repository\PermissionResolver;
+use eZ\Publish\API\Repository\UserService;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,8 +18,26 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class EepSectionListContentCommand extends ContainerAwareCommand
+class EepSectionListContentCommand extends Command
 {
+    public function __construct
+    (
+	SearchService $searchService,
+	ContentTypeService $contentTypeService,
+	SectionService $sectionService,
+	PermissionResolver $permissionResolver,
+	UserService $userService
+    )
+    {
+        $this->searchService = $searchService;
+        $this->contentTypeService = $contentTypeService;
+        $this->sectionService = $sectionService;
+        $this->permissionResolver = $permissionResolver;
+        $this->userService = $userService;
+
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $help = <<<EOD
@@ -39,12 +62,9 @@ EOD;
         $inputSectionIdentifier = $input->getArgument('section-identifier');
         $inputUserId = $input->getOption('user-id');
 
-        $repository = $this->getContainer()->get('ezpublish.api.repository');
-        $repository->getPermissionResolver()->setCurrentUserReference($repository->getUserService()->loadUser($inputUserId));
-        $searchService = $repository->getSearchService();
-        $contentTypeService = $repository->getContentTypeService();
+	$this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
-        $section = $repository->getSectionService()->loadSectionByIdentifier($inputSectionIdentifier);
+        $section = $this->sectionService->loadSectionByIdentifier($inputSectionIdentifier);
 
         $query = new LocationQuery();
         $query->filter = new SectionId($section->id);
@@ -52,7 +72,7 @@ EOD;
         $query->limit = ($input->getOption('limit'))? (integer) $input->getOption('limit') : $query->limit;
         $query->performCount = true;
 
-        $result = $searchService->findContentInfo($query);
+        $result = $this->searchService->findContentInfo($query);
         $resultLimit = ($input->getOption('limit'))? ($query->offset + $query->limit) : $result->totalCount;
         $query->performCount = false;
 
@@ -98,13 +118,13 @@ EOD;
                     $searchHit->valueObject->ownerId,
                     $searchHit->valueObject->currentVersionNo,
                     $searchHit->valueObject->remoteId,
-                    $contentTypeService->loadContentType($searchHit->valueObject->contentTypeId)->identifier,
+                    $this->contentTypeService->loadContentType($searchHit->valueObject->contentTypeId)->identifier,
                     $searchHit->valueObject->name,
                 );
             }
 
             $query->offset += $query->limit;
-            $result = $searchService->findContentInfo($query);
+            $result = $this->searchService->findContentInfo($query);
         }
 
         $io = new SymfonyStyle($input, $output);
