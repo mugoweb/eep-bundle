@@ -22,11 +22,11 @@ class EepSectionListContentCommand extends Command
 {
     public function __construct
     (
-	SearchService $searchService,
-	ContentTypeService $contentTypeService,
-	SectionService $sectionService,
-	PermissionResolver $permissionResolver,
-	UserService $userService
+        SearchService $searchService,
+        ContentTypeService $contentTypeService,
+        SectionService $sectionService,
+        PermissionResolver $permissionResolver,
+        UserService $userService
     )
     {
         $this->searchService = $searchService;
@@ -62,7 +62,7 @@ EOD;
         $inputSectionIdentifier = $input->getArgument('section-identifier');
         $inputUserId = $input->getOption('user-id');
 
-	$this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
+	    $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
         $section = $this->sectionService->loadSectionByIdentifier($inputSectionIdentifier);
 
@@ -133,5 +133,7 @@ EOD;
         $table->setRows($rows);
         $table->render();
         $io->newLine();
+
+        return Command::SUCCESS;
     }
 }

@@ -85,5 +85,7 @@ EOD;
         {
             $io->writeln('Hide cancelled by user action');
         }
+
+        return Command::SUCCESS;
     }
 }

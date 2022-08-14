@@ -50,7 +50,7 @@ EOD;
         $inputContentId = $input->getArgument('content-id');
         $inputUserId = $input->getOption('user-id');
 
-	$this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
+	    $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
         $contentInfo = $this->contentService->loadContentInfo($inputContentId);
         $contentDraft = $this->contentService->createContentDraft($contentInfo);
@@ -61,5 +61,7 @@ EOD;
 
         $io = new SymfonyStyle($input, $output);
         $io->writeln($report);
+
+        return Command::SUCCESS;
     }
 }

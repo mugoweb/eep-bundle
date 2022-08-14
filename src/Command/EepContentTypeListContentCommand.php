@@ -56,7 +56,7 @@ EOD;
         $inputContentTypeIdentifier = $input->getArgument('content-type-identifier');
         $inputUserId = $input->getOption('user-id');
 
-	$this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
+	    $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
         $query = new LocationQuery();
         $query->filter = new ContentTypeIdentifier($inputContentTypeIdentifier);
@@ -121,5 +121,7 @@ EOD;
         $table->setRows($rows);
         $table->render();
         $io->newLine();
+
+        return Command::SUCCESS;
     }
 }

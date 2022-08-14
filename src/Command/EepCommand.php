@@ -26,6 +26,8 @@ EOD;
     {
         // TODO: maybe show some examples here with eep, awk, xargs
         // or get rid of the command
+
+        return Command::SUCCESS;
     }
 
 }

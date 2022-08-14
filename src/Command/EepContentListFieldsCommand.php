@@ -52,7 +52,7 @@ EOD;
         $inputContentId = $input->getArgument('content-id');
         $inputUserId = $input->getOption('user-id');
 
-	$this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
+	    $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
         $content = $this->contentService->loadContent($inputContentId);
         $fields = $content->getFields();
@@ -97,5 +97,7 @@ EOD;
         $table->setRows($rows);
         $table->render();
         $io->newLine();
+
+        return Command::SUCCESS;
     }
 }

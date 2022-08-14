@@ -120,5 +120,7 @@ EOD;
         {
             $io->writeln('Create cancelled by user action');
         }
+
+        return Command::SUCCESS;
     }
 }

@@ -85,5 +85,7 @@ EOD;
         {
             $io->writeln('Reveal cancelled by user action');
         }
+
+        return Command::SUCCESS;
     }
 }
