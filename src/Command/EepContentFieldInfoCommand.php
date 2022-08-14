@@ -57,7 +57,7 @@ EOD;
         $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
         $contentType = $this->contentTypeService->loadContentTypeByIdentifier($inputContentTypeIdentifier);
-        $field = $contentType->fieldDefinitionsByIdentifier[$inputContentFieldIdentifier];
+        $field = $contentType->getFieldDefinitions()->get($inputContentFieldIdentifier);
 
         $headers = array
         (
