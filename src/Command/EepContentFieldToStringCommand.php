@@ -57,7 +57,7 @@ EOD;
         $inputContentFieldIdentifier = $input->getArgument('content-field-identifier');
         $inputUserId = $input->getOption('user-id');
 
-	$this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
+	    $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
         $content = $this->contentService->loadContent($inputContentId);
         $field = $content->getField($inputContentFieldIdentifier);

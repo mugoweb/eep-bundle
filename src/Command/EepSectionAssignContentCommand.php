@@ -23,8 +23,8 @@ class EepSectionAssignContentCommand extends Command
     (
         SectionService $sectionService,
         ContentService $contentService,
-	PermissionResolver $permissionResolver,
-	UserService $userService
+	    PermissionResolver $permissionResolver,
+	    UserService $userService
     )
     {
         $this->sectionService = $sectionService;

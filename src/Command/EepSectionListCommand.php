@@ -19,9 +19,9 @@ class EepSectionListCommand extends Command
     {
         $this->sectionService = $sectionService;
         $this->permissionResolver = $permissionResolver;
-	$this->userService = $userService;
+	    $this->userService = $userService;
 
-	parent::__construct();
+	    parent::__construct();
     }
 
     protected function configure()
