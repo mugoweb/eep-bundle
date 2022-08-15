@@ -1,6 +1,6 @@
 {
     "name": "mugoweb/eep-bundle",
-    "description": "A command bundle for working with eZ/Ibexa Platform",
+    "description": "A command bundle for working with eZ Platform/Ibexa DXP",
     "type": "symfony-bundle",
     "license": "GPL-2.0-only",
     "authors": [
