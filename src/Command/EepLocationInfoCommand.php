@@ -49,7 +49,7 @@ EOD;
             ->setAliases(array('eep:lo:info'))
             ->setDescription('Returns location information')
             ->addArgument('location-id', InputArgument::REQUIRED, 'Location id')
-            ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->addOption('with-content-info', 'wci', InputOption::VALUE_NONE, 'Display location\'s content info')
             ->setHelp($help)
         ;

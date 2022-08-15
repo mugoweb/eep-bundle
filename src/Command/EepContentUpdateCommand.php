@@ -42,7 +42,7 @@ EOD;
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
             ->addArgument('field-data', InputArgument::REQUIRED, 'Content field data as JSON string')
             ->addArgument('initial-language-code', InputArgument::REQUIRED, 'Initial language code for new version')
-            ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
     }

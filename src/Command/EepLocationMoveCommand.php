@@ -45,7 +45,7 @@ EOD;
             ->setDescription('Move source location to be child of target location')
             ->addArgument('source-location-id', InputArgument::REQUIRED, 'Source location id')
             ->addArgument('target-location-id', InputArgument::REQUIRED, 'Target location id')
-            ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
     }

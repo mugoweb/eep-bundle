@@ -45,7 +45,7 @@ EOD;
             ->setAliases(array('eep:co:related'))
             ->setDescription('Returns related content information')
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
-            ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->addOption('offset', null, InputOption::VALUE_OPTIONAL, 'Offset')
             ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit')
             ->setHelp($help)

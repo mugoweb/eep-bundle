@@ -50,7 +50,7 @@ EOD;
             ->setAliases(array('eep:se:listcontent'))
             ->setDescription('Returns content list by section identifier')
             ->addArgument('section-identifier', InputArgument::REQUIRED, 'Section identifier')
-            ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->addOption('offset', null, InputOption::VALUE_OPTIONAL, 'Offset')
             ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit')
             ->setHelp($help)

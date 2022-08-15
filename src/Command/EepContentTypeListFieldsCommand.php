@@ -42,7 +42,7 @@ EOD;
             ->setAliases(array('eep:ct:listfields'))
             ->setDescription('Returns content type field list')
             ->addArgument('content-type-identifier', InputArgument::REQUIRED, 'Content type identifier')
-            ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
     }

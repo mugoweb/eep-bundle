@@ -44,7 +44,7 @@ EOD;
             ->setAliases(array('eep:ct:listcontent'))
             ->setDescription('Returns content information by content type identifier')
             ->addArgument('content-type-identifier', InputArgument::REQUIRED, 'Content type identifier')
-            ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->addOption('offset', null, InputOption::VALUE_OPTIONAL, 'Offset')
             ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit')
             ->setHelp($help)
