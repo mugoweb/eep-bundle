@@ -40,7 +40,7 @@ EOD;
             ->setAliases(array('eep:co:lo', 'eep:co:location'))
             ->setDescription('Returns main location id by content id')
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
-            ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->addOption('no-newline', 'x', null, 'Output without newline')
             ->setHelp($help)
         ;

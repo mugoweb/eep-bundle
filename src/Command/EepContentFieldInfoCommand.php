@@ -43,7 +43,7 @@ EOD;
             ->setDescription('Returns content field information')
             ->addArgument('content-type-identifier', InputArgument::REQUIRED, 'Content type identifier')
             ->addArgument('content-field-identifier', InputArgument::REQUIRED, 'Content field identifier')
-            ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
     }

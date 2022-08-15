@@ -35,7 +35,7 @@ EOD;
             ->setName('eep:section:list')
             ->setAliases(array('eep:se:list'))
             ->setDescription('Returns section list')
-            ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
     }

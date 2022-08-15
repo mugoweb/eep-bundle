@@ -42,7 +42,7 @@ EOD;
             ->setAliases(array('eep:ct:info'))
             ->setDescription('Returns content type information')
             ->addArgument('content-type-identifier', InputArgument::REQUIRED, 'Content type identifier')
-            ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
     }

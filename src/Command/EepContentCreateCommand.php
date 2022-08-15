@@ -49,7 +49,7 @@ EOD;
             ->addArgument('parent-location-id', InputArgument::REQUIRED, 'Parent location id')
             ->addArgument('field-data', InputArgument::REQUIRED, 'Content field data as JSON string')
             ->addArgument('main-language-code', InputArgument::REQUIRED, 'Main language code')
-            ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
     }

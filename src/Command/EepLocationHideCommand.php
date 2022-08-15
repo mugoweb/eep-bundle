@@ -40,7 +40,7 @@ EOD;
             ->setAliases(array('eep:lo:hide'))
             ->setDescription('Hide location subtree')
             ->addArgument('location-id', InputArgument::REQUIRED, 'Location id')
-            ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
     }

@@ -44,7 +44,7 @@ EOD;
             ->setDescription('(experimental!) Returns string representation of content field information')
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
             ->addArgument('content-field-identifier', InputArgument::REQUIRED, 'Content field identifier')
-            ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->addOption('separator', 's', InputOption::VALUE_OPTIONAL, 'Separator character', '|')
             ->addOption('no-newline', 'x', null, 'Output without newline')
             ->setHelp($help)

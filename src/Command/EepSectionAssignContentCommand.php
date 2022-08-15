@@ -48,7 +48,7 @@ EOD;
             ->setDescription('Assign content to section')
             ->addArgument('section-identifier', InputArgument::REQUIRED, 'Section identifier')
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
-            ->addOption('user-id', 'uid', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
     }
