@@ -4,11 +4,12 @@ namespace MugoWeb\Eep\Bundle\Command;
 
 use MugoWeb\Eep\Bundle\Services\EepLogger;
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
-use eZ\Publish\API\Repository\ContentTypeService;
+use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
+use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -19,13 +20,13 @@ class EepContentFieldInfoCommand extends Command
 {
     public function __construct
     (
-        ContentTypeService $contentTypeService,
+        ContentService $contentService,
         PermissionResolver $permissionResolver,
         UserService $userService,
         EepLogger $logger
     )
     {
-        $this->contentTypeService = $contentTypeService;
+        $this->contentService = $contentService;
         $this->permissionResolver = $permissionResolver;
         $this->userService = $userService;
         $this->logger = $logger;
@@ -44,7 +45,7 @@ EOD;
             ->setName('eep:contentfield:info')
             ->setAliases(array('eep:cf:info'))
             ->setDescription('Returns content field information')
-            ->addArgument('content-type-identifier', InputArgument::REQUIRED, 'Content type identifier')
+            ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
             ->addArgument('content-field-identifier', InputArgument::REQUIRED, 'Content field identifier')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
@@ -53,14 +54,13 @@ EOD;
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $inputContentTypeIdentifier = $input->getArgument('content-type-identifier');
+        $inputContentId = $input->getArgument('content-id');
         $inputContentFieldIdentifier = $input->getArgument('content-field-identifier');
         $inputUserId = $input->getOption('user-id');
 
         $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
-        $contentType = $this->contentTypeService->loadContentTypeByIdentifier($inputContentTypeIdentifier);
-        $field = $contentType->fieldDefinitionsByIdentifier[$inputContentFieldIdentifier];
+        $contentField = $this->contentService->loadContent($inputContentId)->getField($inputContentFieldIdentifier);
 
         $headers = array
         (
@@ -74,7 +74,7 @@ EOD;
         (
             new TableCell
             (
-                "{$this->getName()} [$inputContentTypeIdentifier,$inputContentFieldIdentifier]",
+                "{$this->getName()} [$inputContentId,$inputContentFieldIdentifier]",
                 array('colspan' => count($headers[0]))
             )
         );
@@ -82,18 +82,16 @@ EOD;
 
         $rows = array
         (
-            array('id', $field->id),
-            array('identifier', $field->identifier),
-            array('fieldGroup', $field->fieldGroup),
-            array('position', $field->position),
-            array('fieldTypeIdentifier', $field->fieldTypeIdentifier),
-            array('isTranslatable', (integer) $field->isTranslatable),
-            array('isRequired', (integer) $field->isRequired),
-            array('isInfoCollector', (integer) $field->isInfoCollector),
-            array('isSearchable', (integer) $field->isSearchable),
-            array('mainLanguageCode', $field->mainLanguageCode),
-            array('name', $field->names[$field->mainLanguageCode]),
+            array('id', $contentField->id),
+            array('fieldDefIdentifier', $contentField->fieldDefIdentifier),
+            array('languageCode', $contentField->languageCode),
+            array('fieldTypeIdentifier', $contentField->fieldTypeIdentifier),
+            new TableSeparator(),
         );
+        foreach ($contentField->value as $key => $value)
+        {
+            $rows[] = array($key, $value);
+        }
 
         $io = new SymfonyStyle($input, $output);
         $table = new Table($output);
