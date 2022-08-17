@@ -2,6 +2,7 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
+use MugoWeb\Eep\Bundle\Services\EepLogger;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
@@ -20,12 +21,14 @@ class EepContentFieldInfoCommand extends Command
     (
         ContentTypeService $contentTypeService,
         PermissionResolver $permissionResolver,
-        UserService $userService
+        UserService $userService,
+        EepLogger $logger
     )
     {
         $this->contentTypeService = $contentTypeService;
         $this->permissionResolver = $permissionResolver;
         $this->userService = $userService;
+        $this->logger = $logger;
 
         parent::__construct();
     }

@@ -2,6 +2,7 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
+use MugoWeb\Eep\Bundle\Services\EepLogger;
 use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\LocationService;
 use eZ\Publish\API\Repository\PermissionResolver;
@@ -20,13 +21,15 @@ class EepContentDeleteCommand extends Command
         ContentService $contentService,
         LocationService $locationService,
         PermissionResolver $permissionResolver,
-        UserService $userService
+        UserService $userService,
+        EepLogger $logger
     )
     {
         $this->contentService = $contentService;
         $this->locationService = $locationService;
         $this->permissionResolver = $permissionResolver;
         $this->userService = $userService;
+        $this->logger = $logger;
 
         parent::__construct();
     }

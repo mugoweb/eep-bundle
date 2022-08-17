@@ -2,6 +2,7 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
+use MugoWeb\Eep\Bundle\Services\EepLogger;
 use eZ\Publish\API\Repository\LocationService;
 use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\ContentTypeService;
@@ -22,7 +23,8 @@ class EepContentCreateCommand extends Command
         ContentService $contentService,
         ContentTypeService $contentTypeService,
         PermissionResolver $permissionResolver,
-        UserService $userService
+        UserService $userService,
+        EepLogger $logger
     )
     {
         $this->locationService = $locationService;
@@ -30,6 +32,7 @@ class EepContentCreateCommand extends Command
         $this->contentTypeService = $contentTypeService;
         $this->permissionResolver = $permissionResolver;
         $this->userService = $userService;
+        $this->logger = $logger;
 
         parent::__construct();
     }
