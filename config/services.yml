@@ -3,6 +3,9 @@ services:
     autowire: true
     autoconfigure: true
 
+  MugoWeb\Eep\Bundle\Services\:
+    resource: '../src/Services/*'
+
   MugoWeb\Eep\Bundle\Command\:
     resource: '../src/Command/*'
     tags: ['console.command']

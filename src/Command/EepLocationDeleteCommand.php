@@ -2,6 +2,7 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
+use MugoWeb\Eep\Bundle\Services\EepLogger;
 use eZ\Publish\API\Repository\LocationService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
@@ -18,12 +19,15 @@ class EepLocationDeleteCommand extends Command
     (
         LocationService $locationService,
         PermissionResolver $permissionResolver,
-        UserService $userService
+        UserService $userService,
+        EepLogger $logger
     )
     {
         $this->locationService = $locationService;
         $this->permissionResolver = $permissionResolver;
         $this->userService = $userService;
+        $this->userService = $userService;
+        $this->logger = $logger;
 
         parent::__construct();
     }
@@ -50,7 +54,7 @@ EOD;
         $inputLocationId = $input->getArgument('location-id');
         $inputUserId = $input->getOption('user-id');
 
-	$this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
+        $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
         $location = $this->locationService->loadLocation($inputLocationId);
 

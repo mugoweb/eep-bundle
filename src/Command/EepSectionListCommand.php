@@ -2,6 +2,7 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
+use MugoWeb\Eep\Bundle\Services\EepLogger;
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
 use eZ\Publish\API\Repository\SectionService;
 use eZ\Publish\API\Repository\PermissionResolver;
@@ -19,7 +20,8 @@ class EepSectionListCommand extends Command
     {
         $this->sectionService = $sectionService;
         $this->permissionResolver = $permissionResolver;
-	    $this->userService = $userService;
+        $this->userService = $userService;
+        $this->logger = $logger;
 
 	    parent::__construct();
     }

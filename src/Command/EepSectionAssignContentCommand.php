@@ -2,6 +2,7 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
+use MugoWeb\Eep\Bundle\Services\EepLogger;
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\SectionId;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
@@ -23,14 +24,16 @@ class EepSectionAssignContentCommand extends Command
     (
         SectionService $sectionService,
         ContentService $contentService,
-	    PermissionResolver $permissionResolver,
-	    UserService $userService
+        PermissionResolver $permissionResolver,
+        UserService $userService,
+        EepLogger $logger
     )
     {
         $this->sectionService = $sectionService;
         $this->contentService = $contentService;
         $this->permissionResolver = $permissionResolver;
         $this->userService = $userService;
+        $this->logger = $logger;
 
         parent::__construct();
     }
