@@ -10,6 +10,7 @@ use eZ\Publish\API\Repository\SectionService;
 use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
+use eZ\Publish\API\Repository\Exceptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Input\InputArgument;
@@ -71,12 +72,12 @@ EOD;
             $contentInfo = $this->contentService->loadContentInfo($inputContentId);
 
             $this->sectionService->assignSection($contentInfo, $section);
+
+            $io->success('Assignment successful');
         }
-        catch(\eZ\Publish\API\Repository\Exceptions\UnauthorizedException $e)
+        catch(UnauthorizedException $e)
         {
             $io->error($e->getMessage());
         }
-
-        $io->success('Assignment successful');
     }
 }

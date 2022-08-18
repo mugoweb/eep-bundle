@@ -6,6 +6,7 @@ use MugoWeb\Eep\Bundle\Services\EepLogger;
 use eZ\Publish\API\Repository\LocationService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
+use eZ\Publish\API\Repository\Exceptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -76,13 +77,13 @@ EOD;
             try
             {
                 $this->locationService->hideLocation($location);
+
+                $io->success('Hide successful');
             }
-            catch(\eZ\Publish\API\Repository\Exceptions\UnauthorizedException $e)
+            catch(UnauthorizedException $e)
             {
                 $io->error($e->getMessage());
             }
-
-            $io->success('Hide successful');
         }
         else
         {

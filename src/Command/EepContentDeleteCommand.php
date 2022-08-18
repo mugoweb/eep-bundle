@@ -7,6 +7,7 @@ use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\LocationService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
+use eZ\Publish\API\Repository\Exceptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -80,13 +81,13 @@ EOD;
             try
             {
                 $this->contentService->deleteContent($contentInfo);
+
+                $io->success('Delete successful');
             }
-            catch(\eZ\Publish\API\Repository\Exceptions\UnauthorizedException $e)
+            catch(UnauthorizedException $e)
             {
                 $io->error($e->getMessage());
             }
-
-            $io->success('Delete successful');
         }
         else
         {
