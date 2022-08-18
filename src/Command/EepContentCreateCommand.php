@@ -120,9 +120,9 @@ EOD;
             }
             catch
             (
-                ContentFieldValidationException
-                | ContentValidationException
-                | UnauthorizedException
+                ContentFieldValidationException |
+                ContentValidationException |
+                UnauthorizedException
                 $e
             )
             {
