@@ -64,14 +64,14 @@ EOD;
 
         $headers = array
         (
-           array
-           (
+            array
+            (
                'id',
                'fieldDefIdentifier',
                'value',
                'languageCode',
                'fieldTypeIdentifier',
-           )
+            )
         );
         if (!$input->getOption('full-value'))
         {
