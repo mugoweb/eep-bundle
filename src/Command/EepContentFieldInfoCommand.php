@@ -66,7 +66,7 @@ EOD;
         (
             array
             (
-                'key',
+                'key/innerKey(s)',
                 'value',
             )
         );
@@ -90,7 +90,23 @@ EOD;
         );
         foreach ($contentField->value as $key => $value)
         {
-            $rows[] = array($key, $value);
+            $key = "value/{$key}";
+            if (is_array($value) || is_object($value))
+            {
+                if (!$value)
+                {
+                    $rows[] = array($key, '');
+                    continue;
+                }
+
+                foreach ((array)$value as $keyInner => $valueInner) {
+                    $rows[] = array("{$key}/{$keyInner}", $valueInner);
+                }
+            }
+            else
+            {
+                $rows[] = array($key, $value);
+            }
         }
 
         $io = new SymfonyStyle($input, $output);
