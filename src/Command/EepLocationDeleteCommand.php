@@ -27,7 +27,6 @@ class EepLocationDeleteCommand extends Command
         $this->locationService = $locationService;
         $this->permissionResolver = $permissionResolver;
         $this->userService = $userService;
-        $this->userService = $userService;
         $this->logger = $logger;
 
         parent::__construct();

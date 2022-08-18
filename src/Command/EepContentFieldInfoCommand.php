@@ -99,7 +99,8 @@ EOD;
                     continue;
                 }
 
-                foreach ((array)$value as $keyInner => $valueInner) {
+                foreach ((array)$value as $keyInner => $valueInner)
+                {
                     $rows[] = array("{$key}/{$keyInner}", $valueInner);
                 }
             }

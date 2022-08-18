@@ -71,7 +71,7 @@ EOD;
                'value',
                'languageCode',
                'fieldTypeIdentifier',
-            ),
+            )
         );
         if (!$input->getOption('full-value'))
         {
