@@ -8,6 +8,7 @@ use eZ\Publish\API\Repository\LocationService;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
+use eZ\Publish\API\Repository\Exceptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -94,13 +95,13 @@ EOD;
             try
             {
                 $this->locationService->copySubtree($sourceLocation, $targetLocation);
-            }
-            catch(\eZ\Publish\API\Repository\Exceptions\UnauthorizedException $e)
-            {
-                $io->error( $e->getMessage() );
-            }
 
-            $io->success('Copy successful');
+                $io->success('Copy successful');
+            }
+            catch(UnauthorizedException $e)
+            {
+                $io->error($e->getMessage());
+            }
         }
         else
         {

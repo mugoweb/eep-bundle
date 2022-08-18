@@ -6,6 +6,7 @@ use MugoWeb\Eep\Bundle\Services\EepLogger;
 use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
+use eZ\Publish\API\Repository\Exceptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -96,21 +97,19 @@ EOD;
                 // update and publish draft
                 $contentDraft = $this->contentService->updateContent($contentDraft->versionInfo, $contentUpdateStruct);
                 $content = $this->contentService->publishVersion($contentDraft->versionInfo);
-            }
-            catch (\eZ\Publish\API\Repository\Exceptions\ContentFieldValidationException $e)
-            {
-                $io->error($e->getMessage());
-            }
-            catch (\eZ\Publish\API\Repository\Exceptions\ContentValidationException $e)
-            {
-                $io->error($e->getMessage());
-            }
-            catch(\eZ\Publish\API\Repository\Exceptions\UnauthorizedException $e)
-            {
-                $io->error($e->getMessage());
-            }
 
-            $io->success('Update successful');
+                $io->success('Update successful');
+            }
+            catch
+            (
+                ContentFieldValidationException |
+                ContentValidationException |
+                UnauthorizedException
+                $e
+            )
+            {
+                $io->error($e->getMessage());
+            }
         }
         else
         {

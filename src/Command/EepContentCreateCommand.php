@@ -8,6 +8,7 @@ use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
+use eZ\Publish\API\Repository\Exceptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -103,21 +104,19 @@ EOD;
                 // create a draft using the content and location create struct and publish it
                 $draft = $this->contentService->createContent($contentCreateStruct, array($locationCreateStruct));
                 $content = $this->contentService->publishVersion($draft->versionInfo);
-            }
-            catch (\eZ\Publish\API\Repository\Exceptions\ContentFieldValidationException $e)
-            {
-                $io->error($e->getMessage());
-            }
-            catch (\eZ\Publish\API\Repository\Exceptions\ContentValidationException $e)
-            {
-                $io->error($e->getMessage());
-            }
-            catch(\eZ\Publish\API\Repository\Exceptions\UnauthorizedException $e)
-            {
-                $io->error($e->getMessage());
-            }
 
-            $io->success('Create successful');
+                $io->success('Create successful');
+            }
+            catch
+            (
+                ContentFieldValidationException |
+                ContentValidationException |
+                UnauthorizedException
+                $e
+            )
+            {
+                $io->error($e->getMessage());
+            }
         }
         else
         {
