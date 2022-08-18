@@ -92,15 +92,25 @@ EOD;
 
         if ($confirm)
         {
+            $loggerContext = array
+            (
+                $inputSourceLocationId,
+                $inputTargetLocationId,
+                $inputUserId
+            );
+            $this->logger->info($this->getName() . " confirmed", $loggerContext);
+
             try
             {
                 $this->locationService->copySubtree($sourceLocation, $targetLocation);
 
                 $io->success('Copy successful');
+                $this->logger->info($this->getName() . " successful");
             }
             catch(UnauthorizedException $e)
             {
-                $io->error( $e->getMessage() );
+                $io->error($e->getMessage());
+                $this->logger->error($this->getName() . " error", $e->getMessage());
             }
         }
         else
