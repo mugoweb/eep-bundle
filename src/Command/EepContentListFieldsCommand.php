@@ -45,6 +45,7 @@ EOD;
             ->setAliases(array('eep:co:listfields'))
             ->setDescription('Returns content field list')
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
+            ->addOption('full-value', 'f', InputOption::VALUE_NONE, 'Show full field value')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
@@ -59,6 +60,7 @@ EOD;
 
         $content = $this->contentService->loadContent($inputContentId);
         $fields = $content->getFields();
+        $truncateLength = 80;
 
         $headers = array
         (
@@ -71,6 +73,17 @@ EOD;
                'fieldTypeIdentifier',
            )
         );
+        if (!$input->getOption('full-value'))
+        {
+            $headers[] = array
+            (
+                new TableCell
+                (
+                    "m = modified output (EOL chars stripped, truncated - showing first/last " . $truncateLength/2 . ")",
+                    array('colspan' => count($headers[0]))
+                )
+            );
+        }
         $infoHeader = array
         (
             new TableCell
@@ -84,11 +97,19 @@ EOD;
         $rows = array();
         foreach ($fields as $field)
         {
+            $fieldValue = $field->value;
+            if (!$input->getOption('full-value'))
+            {
+                $fieldValue = str_replace(PHP_EOL, '', $field->value);
+                // styles, see Symfony\Component\Console\Formatter\OutputFormatterStyle
+                $fieldValue = (strlen($fieldValue) > $truncateLength)? "<fg=black;bg=yellow>[m]</> "  . substr($fieldValue, 0, $truncateLength/2) . ' ... ' . substr($fieldValue, -($truncateLength/2), $truncateLength/2) : $fieldValue;
+            }
+
             $rows[] = array
             (
                 $field->id,
                 $field->fieldDefIdentifier,
-                $field->value,
+                $fieldValue,
                 $field->languageCode,
                 $field->fieldTypeIdentifier,
             );
