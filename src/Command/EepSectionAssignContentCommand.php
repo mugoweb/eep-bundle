@@ -66,18 +66,38 @@ EOD;
         $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
         $io = new SymfonyStyle($input, $output);
-        try
+        $confirm = $input->getOption('no-interaction');
+        if (!$confirm)
         {
-            $section = $this->sectionService->loadSectionByIdentifier($inputSectionIdentifier);
-            $contentInfo = $this->contentService->loadContentInfo($inputContentId);
-
-            $this->sectionService->assignSection($contentInfo, $section);
-
-            $io->success('Assignment successful');
+            $confirm = $io->confirm(
+                sprintf(
+                    'Are you sure you want to assign section "%s" to content id %d?',
+                    $inputSectionIdentifier,
+                    $inputContentId
+                ),
+                false
+            );
         }
-        catch(UnauthorizedException $e)
+
+        if ($confirm)
         {
-            $io->error($e->getMessage());
+            try
+            {
+                $section = $this->sectionService->loadSectionByIdentifier($inputSectionIdentifier);
+                $contentInfo = $this->contentService->loadContentInfo($inputContentId);
+
+                $this->sectionService->assignSection($contentInfo, $section);
+
+                $io->success('Assignment successful');
+            }
+            catch (UnauthorizedException $e)
+            {
+                $io->error($e->getMessage());
+            }
+        }
+        else
+        {
+            $io->writeln('Assignment cancelled by user action');
         }
 
         return Command::SUCCESS;
