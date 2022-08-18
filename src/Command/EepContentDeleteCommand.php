@@ -90,7 +90,7 @@ EOD;
                 $this->contentService->deleteContent($contentInfo);
 
                 $io->success('Delete successful');
-                $this->logger->info($this->getName() . " successful", array($inputContentId));
+                $this->logger->info($this->getName() . " successful");
             }
             catch(UnauthorizedException $e)
             {
