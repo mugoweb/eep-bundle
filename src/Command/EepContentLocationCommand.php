@@ -56,7 +56,7 @@ EOD;
 
         $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
-	    $content = $this->contentService->loadContent($inputContentId);
+        $content = $this->contentService->loadContent($inputContentId);
 
         $io = new SymfonyStyle($input, $output);
         if ($input->getOption('no-newline'))

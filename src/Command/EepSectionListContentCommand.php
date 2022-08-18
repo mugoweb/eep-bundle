@@ -65,7 +65,7 @@ EOD;
         $inputSectionIdentifier = $input->getArgument('section-identifier');
         $inputUserId = $input->getOption('user-id');
 
-	    $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
+        $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
         $section = $this->sectionService->loadSectionByIdentifier($inputSectionIdentifier);
 

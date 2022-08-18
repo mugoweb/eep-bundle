@@ -56,7 +56,7 @@ EOD;
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $inputContentId = $input->getArgument('content-id');
-	    $inputUserId = $input->getOption('user-id');
+        $inputUserId = $input->getOption('user-id');
 
         $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 

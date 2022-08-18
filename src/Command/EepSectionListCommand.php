@@ -29,7 +29,7 @@ class EepSectionListCommand extends Command
         $this->userService = $userService;
         $this->logger = $logger;
 
-	    parent::__construct();
+        parent::__construct();
     }
 
     protected function configure()

@@ -54,7 +54,7 @@ EOD;
         $inputLocationId = $input->getArgument('location-id');
         $inputUserId = $input->getOption('user-id');
 
-	    $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
+        $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
         $location = $this->locationService->loadLocation($inputLocationId);
 
