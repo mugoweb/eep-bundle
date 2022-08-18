@@ -85,6 +85,16 @@ EOD;
 
         if ($confirm)
         {
+            $loggerContext = array
+            (
+                $inputContentTypeIdentifier,
+                $inputParentLocationId,
+                '--',
+                $inputMainLanguageCode,
+                $inputUserId
+            );
+            $this->logger->info($this->getName() . " confirmed", $loggerContext);
+
             try
             {
                 $contentType = $this->contentTypeService->loadContentTypeByIdentifier($inputContentTypeIdentifier);
@@ -106,6 +116,7 @@ EOD;
                 $content = $this->contentService->publishVersion($draft->versionInfo);
 
                 $io->success('Create successful');
+                $this->logger->info($this->getName() . " successful", array($content->id));
             }
             catch
             (
@@ -116,6 +127,7 @@ EOD;
             )
             {
                 $io->error($e->getMessage());
+                $this->logger->error($this->getName() . " error", $e->getMessage());
             }
         }
         else

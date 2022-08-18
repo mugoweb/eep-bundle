@@ -77,6 +77,15 @@ EOD;
 
         if ($confirm)
         {
+            $loggerContext = array
+            (
+                $inputContentId,
+                '--',
+                $inputInitialLanguageCode,
+                $inputUserId
+            );
+            $this->logger->info($this->getName() . " confirmed", $loggerContext);
+
             try
             {
                 // create a content draft from the current published version
@@ -99,6 +108,7 @@ EOD;
                 $content = $this->contentService->publishVersion($contentDraft->versionInfo);
 
                 $io->success('Update successful');
+                $this->logger->info($this->getName() . " successful");
             }
             catch
             (
@@ -109,6 +119,7 @@ EOD;
             )
             {
                 $io->error($e->getMessage());
+                $this->logger->error($this->getName() . " error", $e->getMessage());
             }
         }
         else

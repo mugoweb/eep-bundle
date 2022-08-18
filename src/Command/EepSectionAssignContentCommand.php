@@ -81,6 +81,14 @@ EOD;
 
         if ($confirm)
         {
+            $loggerContext = array
+            (
+                $inputSectionIdentifier,
+                $inputContentId,
+                $inputUserId
+            );
+            $this->logger->info($this->getName() . " confirmed", $loggerContext);
+
             try
             {
                 $section = $this->sectionService->loadSectionByIdentifier($inputSectionIdentifier);
@@ -89,10 +97,12 @@ EOD;
                 $this->sectionService->assignSection($contentInfo, $section);
 
                 $io->success('Assignment successful');
+                $this->logger->info($this->getName() . " successful");
             }
             catch (UnauthorizedException $e)
             {
                 $io->error($e->getMessage());
+                $this->logger->error($this->getName() . " error", $e->getMessage());
             }
         }
         else
