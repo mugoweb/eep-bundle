@@ -41,7 +41,70 @@ class EepContentCreateCommand extends Command
     protected function configure()
     {
         $help = <<<EOD
-TODO
+<info>Usage</info>
+-----
+eep:content:create folder 43 '{ "name": "Foobar" }' eng-GB
+
+eep:content:create --from-file folder 43 './foobar.json' eng-GB
+
+
+<info>Content FieldType => Input format map</info>
+-------------------------------------
+<info>Text line [ezstring]</info>
+A string e.g. 'foobar'
+
+<info>Text block [eztext]</info>
+A string e.g. 'foobar'
+
+<info>Rich text [ezrichtext]</info>
+A docbook XML string
+e.g.
+'<section xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ezxhtml="http://ez.no/xmlns/ezpublish/docbook/xhtml" xmlns:ezcustom="http://ez.no/xmlns/ezpublish/docbook/custom" version="5.0-variant ezpublish-1.0"><para>Lorem <emphasis role="strong">ipsum</emphasis> dolor sit amet.</para></section>'
+
+<info>Image [ezimage]</info>
+An image path as a simple string e.g. 'images/foobar.jpg'
+
+<info>File [ezbinaryfile]</info>
+A file path as a simple string e.g. 'images/foobar.txt'
+
+<info>Date and time [ezdatetime]</info>
+A timestamp integer or PHP DateTime compatible string
+e.g.
+1661947200
+'Wednesday, 31-Aug-22 12:00:00 GMT+0000'
+
+<info>Date [ezdate]</info>
+The date value as a timestamp integer or PHP DateTime compatible string
+e.g.
+1661904000
+'Wednesday, 31-Aug-22 00:00:00 GMT+0000'
+
+<info>Checkbox [ezboolean]</info>
+A true/false integer e.g. 0 or 1
+
+<info>Content relation (single) [ezobjectrelation]</info>
+A content id integer e.g. 41
+
+<info>Content relations (multiple) [ezobjectrelationlist]</info>
+An array of content ids e.g. [1,41]
+
+
+<info>Field data example (JSON)</info>
+-------------------------
+eep_test_content content type data with all fields described above in order
+
+{
+    "title": "Text line field content",
+    "description_simple": "Text block content",
+    "description_rich": "<section xmlns=\"http:\/\/docbook.org\/ns\/docbook\" xmlns:xlink=\"http:\/\/www.w3.org\/1999\/xlink\" xmlns:ezxhtml=\"http:\/\/ez.no\/xmlns\/ezpublish\/docbook\/xhtml\" xmlns:ezcustom=\"http:\/\/ez.no\/xmlns\/ezpublish\/docbook\/custom\" version=\"5.0-variant ezpublish-1.0\"><para>Lorem <emphasis role=\"strong\">Rich<\/emphasis> text content.<\/para><\/section>",
+    "image": "./eep_test.jpg",
+    "file": "./eep_test.txt",
+    "date_time": 1661947200,
+    "date": 1661904000,
+    "checkbox": 1,
+    "relation_single": 41,
+    "relation_multi": [1,41]
+}
 
 EOD;
 
