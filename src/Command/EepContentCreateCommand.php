@@ -53,6 +53,7 @@ EOD;
             ->addArgument('parent-location-id', InputArgument::REQUIRED, 'Parent location id')
             ->addArgument('field-data', InputArgument::REQUIRED, 'Content field data as JSON string')
             ->addArgument('main-language-code', InputArgument::REQUIRED, 'Main language code')
+            ->addOption('from-file', 'f', InputOption::VALUE_NONE, 'Field data should be read from file. Treat field data argument as file path')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
@@ -62,7 +63,7 @@ EOD;
     {
         $inputContentTypeIdentifier = $input->getArgument('content-type-identifier');
         $inputParentLocationId = $input->getArgument('parent-location-id');
-        $inputFieldData = $input->getArgument('field-data');
+        $inputFieldData = ($input->getOption('from-file'))? file_get_contents($input->getArgument('field-data')) : $input->getArgument('field-data');
         $inputMainLanguageCode = $input->getArgument('main-language-code');
         $inputUserId = $input->getOption('user-id');
 
@@ -99,12 +100,19 @@ EOD;
             {
                 $contentType = $this->contentTypeService->loadContentTypeByIdentifier($inputContentTypeIdentifier);
                 $contentCreateStruct = $this->contentService->newContentCreateStruct($contentType, $inputMainLanguageCode);
-
-                // TODO: only basic field handling
-                // { "name": "Foo", "description": "Bar" }
                 $fieldData = json_decode($inputFieldData, true);
-                foreach($fieldData as $fieldIdentifier => $fieldValue)
+
+                foreach ($fieldData as $fieldIdentifier => $fieldValue)
                 {
+                    switch ($contentType->getFieldDefinition($fieldIdentifier)->fieldTypeIdentifier)
+                    {
+                        case 'ezboolean':
+                        {
+                            // need to cast; fromString not implemented to support boolean like values
+                            $fieldValue = (boolean) $fieldValue;
+                        }
+                        break;
+                    }
                     $contentCreateStruct->setField($fieldIdentifier, $fieldValue);
                 }
 

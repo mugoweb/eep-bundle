@@ -46,6 +46,7 @@ EOD;
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
             ->addArgument('field-data', InputArgument::REQUIRED, 'Content field data as JSON string')
             ->addArgument('initial-language-code', InputArgument::REQUIRED, 'Initial language code for new version')
+            ->addOption('from-file', 'f', InputOption::VALUE_NONE, 'Field data should be read from file. Treat field data argument as file path')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
@@ -54,13 +55,14 @@ EOD;
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $inputContentId = $input->getArgument('content-id');
-        $inputFieldData = $input->getArgument('field-data');
+        $inputFieldData = ($input->getOption('from-file'))? file_get_contents($input->getArgument('field-data')) : $input->getArgument('field-data');
         $inputInitialLanguageCode = $input->getArgument('initial-language-code');
         $inputUserId = $input->getOption('user-id');
 
         $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
-        $contentInfo = $this->contentService->loadContentInfo($inputContentId);
+        $content = $this->contentService->loadContent($inputContentId);
+        $contentType = $content->getContentType();
 
         $io = new SymfonyStyle($input, $output);
         $confirm = $input->getOption('no-interaction');
@@ -69,7 +71,7 @@ EOD;
             $confirm = $io->confirm(
                 sprintf(
                     'Are you sure you want to update content "%s"?',
-                    $contentInfo->name
+                    $content->contentInfo->name
                 ),
                 false
             );
@@ -89,17 +91,24 @@ EOD;
             try
             {
                 // create a content draft from the current published version
-                $contentDraft = $this->contentService->createContentDraft($contentInfo);
+                $contentDraft = $this->contentService->createContentDraft($content->contentInfo);
 
                 // instantiate a content update struct and set the new fields
                 $contentUpdateStruct = $this->contentService->newContentUpdateStruct();
                 $contentUpdateStruct->initialLanguageCode = $inputInitialLanguageCode;
 
-                // TODO: only basic field handling
-                // { "name": "Foo", "description": "Bar" }
                 $fieldData = json_decode($inputFieldData, true);
-                foreach($fieldData as $fieldIdentifier => $fieldValue)
+                foreach ($fieldData as $fieldIdentifier => $fieldValue)
                 {
+                    switch ($contentType->getFieldDefinition($fieldIdentifier)->fieldTypeIdentifier)
+                    {
+                        case 'ezboolean':
+                        {
+                            // need to cast; fromString not implemented to support boolean like values
+                            $fieldValue = (boolean) $fieldValue;
+                        }
+                        break;
+                    }
                     $contentUpdateStruct->setField($fieldIdentifier, $fieldValue);
                 }
 
