@@ -18,6 +18,8 @@ To enable the bundle in all environments, add `MugoWeb\Eep\Bundle\MugoWebEepBund
 ```
 eep                          Ease eZ Platform/Ibexa DXP development (placeholder)
 
+eep:cache:purge              [eep:ca:purge] Purge cache by tag(s)
+
 eep:content:create           [eep:co:create] Create content at location
 eep:content:delete           [eep:co:delete] Delete content
 eep:content:info             [eep:co:info] Returns content information
