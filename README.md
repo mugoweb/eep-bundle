@@ -95,6 +95,40 @@ I contentId I mainLocationId I sectionId I currentVersionNo I remoteId          
 +-----------+----------------+-----------+------------------+----------------------------------+---------------------+
 ```
 
+### eep & friends: awk, xargs, grep ...
+eep shines when it is used in combination with other command line utilities like awk, xargs, grep and many others.   
+
+Due to the way the data tables are formatted, header and data columns use different column separators, they can be easily parsed and processed further.   
+e.g.   
+Only return content ids of folder objects.
+```
+php bin/console eep:contenttype:listcontent folder --limit=6 | awk '$1=="|" {print $2}'
+
+1
+41
+45
+49
+50
+51
+```
+
+Return location ids for those content ids.   
+```
+php bin/console eep:contenttype:listcontent folder --limit=6 | awk '$1=="|" {print $2}' > my_content_ids.txt
+
+cat my_content_ids.txt | xargs -ICONTENTID php bin/console eep:content:location CONTENTID
+
+2
+43
+48
+51
+52
+53
+```
+_(Could also be combined into a single pipeline by omitting the file output/input step)_
+
+
+
 ## Work in progress
 Currently developed against eZ Platform 2.5 LTS, Ibexa DXP 3.3 LTS
 ```
