@@ -9,3 +9,6 @@ services:
   MugoWeb\Eep\Bundle\Command\:
     resource: '../src/Command/*'
     tags: ['console.command']
+
+  EzSystems\PlatformHttpCacheBundle\PurgeClient\RepositoryPrefixDecorator:
+    alias: ezplatform.http_cache.purge_client_decorator
