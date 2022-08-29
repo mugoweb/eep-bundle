@@ -185,8 +185,8 @@ EOD;
                 {
                     // update content meta data in new version
                     $draft = $this->contentService->createContentDraft($contentInfo);
-                    $this->contentService->updateContentMetadata($draft->contentInfo, $contentMetadataUpdateStruct);
                     $content = $this->contentService->publishVersion($draft->versionInfo);
+                    $this->contentService->updateContentMetadata($content->contentInfo, $contentMetadataUpdateStruct);
                 }
                 else
                 {
