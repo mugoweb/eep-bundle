@@ -42,7 +42,7 @@ EOD;
         $this
             ->setName('eep:content:update')
             ->setAliases(array('eep:co:update'))
-            ->setDescription('(experimental!) Update content')
+            ->setDescription('Update content')
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
             ->addArgument('field-data', InputArgument::REQUIRED, 'Content field data as JSON string')
             ->addArgument('initial-language-code', InputArgument::REQUIRED, 'Initial language code for new version')

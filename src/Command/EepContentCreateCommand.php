@@ -111,7 +111,7 @@ EOD;
         $this
             ->setName('eep:content:create')
             ->setAliases(array('eep:co:create'))
-            ->setDescription('(experimental!) Create content at location')
+            ->setDescription('Create content at location')
             ->addArgument('content-type-identifier', InputArgument::REQUIRED, 'Content type identifier')
             ->addArgument('parent-location-id', InputArgument::REQUIRED, 'Parent location id')
             ->addArgument('field-data', InputArgument::REQUIRED, 'Content field data as JSON string')
