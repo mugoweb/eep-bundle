@@ -77,8 +77,12 @@ EOD;
         $query->performCount = true;
 
         $result = $this->searchService->findContentInfo($query);
-        $resultLimit = ($input->getOption('limit'))? ($query->offset + $query->limit) : $result->totalCount;
         $query->performCount = false;
+
+        $resultCount = count($result->searchHits);
+        $resultOffset = ($resultCount)? ($query->offset + 1) : 0;
+        $resultLimit = ($resultCount)? ($query->offset + $resultCount) : 0;
+        $resultSet = ($resultOffset == $resultLimit)? $resultLimit : $resultOffset . " - " . $resultLimit;
 
         $headers = array
         (
@@ -115,7 +119,7 @@ EOD;
             ),
             new TableCell
             (
-                "Results: " . ($query->offset + 1) . " - {$resultLimit} / {$result->totalCount}",
+                "Results: $resultSet / $result->totalCount",
                 array('colspan' => 1)
             )
         );
