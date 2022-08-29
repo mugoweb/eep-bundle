@@ -53,7 +53,7 @@ EOD;
             ->setDescription('Returns location information')
             ->addArgument('location-id', InputArgument::REQUIRED, 'Location id')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
-            ->addOption('with-content-info', 'wci', InputOption::VALUE_NONE, 'Display location\'s content info')
+            ->addOption('with-content-info', 'w', InputOption::VALUE_NONE, 'Display location\'s content info')
             ->setHelp($help)
         ;
     }
@@ -81,12 +81,23 @@ EOD;
                 'value',
             ),
         );
+        $colWidth = count($headers[0]);
+        $legendHeaders = array
+        (
+            new TableCell("# 2nd data section(s) shows custom/composite/lookup values", array('colspan' => $colWidth)),
+            new TableCell("# contentInfo values shown with custom 'content' key prefix", array('colspan' => $colWidth)),
+        );
+        $legendHeaders = array_reverse($legendHeaders);
+        foreach ($legendHeaders as $row)
+        {
+            array_unshift($headers, array($row));
+        }
         $infoHeader = array
         (
             new TableCell
             (
                 "{$this->getName()} [{$location->id}]",
-                array('colspan' => count($headers[0]))
+                array('colspan' => $colWidth)
             )
         );
         array_unshift($headers, $infoHeader);
@@ -135,7 +146,7 @@ EOD;
                 array
                 (
                     new TableSeparator(),
-
+                    new TableSeparator(),
                     /*
                         eZ\Publish\API\Repository\Values\Content\ContentInfo Object
                         (
@@ -170,21 +181,22 @@ EOD;
                     // location contentInfo details
                     array('contentId', $location->getContentInfo()->id),
                     array('contentTypeId', $location->getContentInfo()->contentTypeId),
-                    array('contentTypeIdentifier', $this->contentTypeService->loadContentType($location->getContentInfo()->contentTypeId)->identifier),
                     array('contentName', $location->getContentInfo()->name),
                     array('contentSectionId', $location->getContentInfo()->sectionId),
                     array('contentCurrentVersionNo', $location->getContentInfo()->currentVersionNo),
                     array('contentPublished', $location->getContentInfo()->published),
                     array('contentOwnerId', $location->getContentInfo()->ownerId),
                     array('contentModificationDate', $location->getContentInfo()->modificationDate->format('c')),
-                    array('contentModificationDateTimestamp', $location->getContentInfo()->modificationDate->format('U')),
                     array('contentPublishedDate', $location->getContentInfo()->publishedDate->format('c')),
-                    array('contentPublishedDateTimestamp', $location->getContentInfo()->publishedDate->format('U')),
                     array('contentAlwaysAvailable', $location->getContentInfo()->alwaysAvailable),
                     array('contentRemoteId', $location->getContentInfo()->remoteId),
                     array('contentMainLanguageCode', $location->getContentInfo()->mainLanguageCode),
                     array('contentMainLocationId', $location->getContentInfo()->mainLocationId),
                     array('contentStatus', $location->getContentInfo()->status),
+                    new TableSeparator(),
+                    array('contentTypeIdentifier', $this->contentTypeService->loadContentType($location->getContentInfo()->contentTypeId)->identifier),
+                    array('contentModificationDateTimestamp', $location->getContentInfo()->modificationDate->format('U')),
+                    array('contentPublishedDateTimestamp', $location->getContentInfo()->publishedDate->format('U')),
                     // reverse related count?
                 )
             );

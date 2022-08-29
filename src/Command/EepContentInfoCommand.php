@@ -10,6 +10,7 @@ use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
+use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -70,9 +71,20 @@ EOD;
                 'value',
             ),
         );
+        $colWidth = count($headers[0]);
+        $legendHeaders = array
+        (
+            new TableCell("# 2nd data section shows custom/composite/lookup values", array('colspan' => $colWidth)),
+            // ...
+        );
+        $legendHeaders = array_reverse($legendHeaders);
+        foreach ($legendHeaders as $row)
+        {
+            array_unshift($headers, array($row));
+        }
         $infoHeader = array
         (
-            new TableCell("{$this->getName()} [$inputContentId]", array('colspan' => count($headers[0])))
+            new TableCell("{$this->getName()} [$inputContentId]", array('colspan' => $colWidth))
         );
         array_unshift($headers, $infoHeader);
 
@@ -80,21 +92,22 @@ EOD;
         (
             array('id', $content->contentInfo->id),
             array('contentTypeId', $content->contentInfo->contentTypeId),
-            array('contentTypeIdentifier', $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId)->identifier),
             array('name', $content->contentInfo->name),
             array('sectionId', $content->contentInfo->sectionId),
             array('currentVersionNo', $content->contentInfo->currentVersionNo),
             array('published', $content->contentInfo->published),
             array('ownerId', $content->contentInfo->ownerId),
             array('modificationDate', $content->contentInfo->modificationDate->format('c')),
-            array('modificationDateTimestamp', $content->contentInfo->modificationDate->format('U')),
             array('publishedDate', $content->contentInfo->publishedDate->format('c')),
-            array('publishedDateTimestamp', $content->contentInfo->publishedDate->format('U')),
-            array('alwaysAvailable', $content->contentInfo->alwaysAvailable),
+            array('alwaysAvailable', (integer) $content->contentInfo->alwaysAvailable),
             array('remoteId', $content->contentInfo->remoteId),
             array('mainLanguageCode', $content->contentInfo->mainLanguageCode),
             array('mainLocationId', $content->contentInfo->mainLocationId),
             array('status', $content->contentInfo->status),
+            new TableSeparator(),
+            array('contentTypeIdentifier', $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId)->identifier),
+            array('modificationDateTimestamp', $content->contentInfo->modificationDate->format('U')),
+            array('publishedDateTimestamp', $content->contentInfo->publishedDate->format('U')),
         );
 
         $io = new SymfonyStyle($input, $output);

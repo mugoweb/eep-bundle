@@ -14,6 +14,7 @@ use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
+use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -90,21 +91,33 @@ EOD;
             (
                 'locationId',
                 'contentId',
-                'contentTypeIdentifier',
+                'contentTypeId',
+                'contentTypeIdentifier *',
                 'pathString',
-                'children',
                 'priority',
                 'hidden',
                 'invisible',
                 'name',
+                'children *',
             ),
         );
+        $colWidth = count($headers[0]);
+        $legendHeaders = array
+        (
+            new TableCell("* = custom/composite/lookup value", array('colspan' => $colWidth)),
+            // ...
+        );
+        $legendHeaders = array_reverse($legendHeaders);
+        foreach ($legendHeaders as $row)
+        {
+            array_unshift($headers, array($row));
+        }
         $infoHeader = array
         (
             new TableCell
             (
                 "{$this->getName()} [$inputLocationId]",
-                array('colspan' => count($headers[0])-1)
+                array('colspan' => $colWidth-1)
             ),
             new TableCell
             (
@@ -123,13 +136,14 @@ EOD;
                 (
                     $searchHit->valueObject->id,
                     $searchHit->valueObject->contentInfo->id,
+                    $searchHit->valueObject->contentInfo->contentTypeId,
                     $this->contentTypeService->loadContentType($searchHit->valueObject->contentInfo->contentTypeId)->identifier,
                     $searchHit->valueObject->pathString,
-                    $this->locationService->getLocationChildCount($searchHit->valueObject),
                     $searchHit->valueObject->priority,
                     (integer) $searchHit->valueObject->hidden,
                     (integer) $searchHit->valueObject->invisible,
                     $searchHit->valueObject->contentInfo->name,
+                    $this->locationService->getLocationChildCount($searchHit->valueObject),
                 );
             }
 
