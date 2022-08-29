@@ -83,7 +83,7 @@ EOD;
             ),
             new TableCell
             (
-                "Results: 1 - $contentTypesCount / $contentTypesCount",
+                "Results: " . (($contentTypesCount)? 1 : 0) . " - $contentTypesCount / $contentTypesCount",
                 array('colspan' => 1)
             )
         );

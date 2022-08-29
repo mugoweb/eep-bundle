@@ -75,7 +75,7 @@ EOD;
             ),
             new TableCell
             (
-                "Results: 1 - $sectionsCount / $sectionsCount",
+                "Results: " . (($sectionsCount)? 1 : 0) . " - $sectionsCount / $sectionsCount",
                 array('colspan' => 1)
             )
         );

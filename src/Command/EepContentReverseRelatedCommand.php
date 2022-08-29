@@ -50,8 +50,8 @@ EOD;
             ->setDescription('Returns reverse related content information')
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
-            ->addOption('offset', null, InputOption::VALUE_OPTIONAL, 'Offset')
-            ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit')
+            ->addOption('offset', null, InputOption::VALUE_OPTIONAL, 'Offset', 0)
+            ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit', 20)
             ->setHelp($help)
         ;
     }
@@ -60,12 +60,21 @@ EOD;
     {
         $inputContentId = $input->getArgument('content-id');
         $inputUserId = $input->getOption('user-id');
+        $inputOffset = $input->getOption('offset');
+        $inputLimit = $input->getOption('limit');
 
         $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
         $content = $this->contentService->loadContent($inputContentId);
-        $reverseRelated = $this->contentService->loadReverseRelations($content->contentInfo);
-        $reverseRelatedCount = count($reverseRelated);
+
+        $reverseRelationsCount = $this->contentService->countReverseRelations($content->contentInfo);
+        $inputLimit = (!$reverseRelationsCount || $inputLimit >= $reverseRelationsCount)? $reverseRelationsCount : $inputLimit;
+        $reverseRelationList = $this->contentService->loadReverseRelationList($content->contentInfo, $inputOffset, $inputLimit);
+
+        $resultCount = count($reverseRelationList->items);
+        $resultOffset = ($resultCount)? ($inputOffset + 1) : 0;
+        $resultLimit = ($resultCount)? ($inputOffset + $resultCount) : 0;
+        $resultSet = ($resultOffset == $resultLimit)? $resultLimit : $resultOffset . " - " . $resultLimit;
 
         $headers = array
         (
@@ -101,15 +110,16 @@ EOD;
             ),
             new TableCell
             (
-                "Results: " . (($reverseRelatedCount)? 1 : 0) . " - $reverseRelatedCount / $reverseRelatedCount",
+                "Results: $resultSet / $reverseRelationsCount",
                 array('colspan' => 1)
             )
         );
         array_unshift($headers, $infoHeader);
 
         $rows = array();
-        foreach ($reverseRelated as $relation)
+        foreach ($reverseRelationList->items as $relationListItem)
         {
+            $relation = $relationListItem->getRelation();
             $rows[] = array
             (
                 $relation->sourceContentInfo->id,
