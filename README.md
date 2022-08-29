@@ -29,6 +29,7 @@ eep:content:related          [eep:co:related] Returns related content informatio
 eep:content:republish        [eep:co:republish] Re-publishes content by id
 eep:content:reverserelated   [eep:co:reverserelated] Returns reverse related content information
 eep:content:update           [eep:co:update] Update content
+eep:content:updatemeta       [eep:co:updatemeta] Update content meta data
 
 eep:contentfield:info        [eep:cf:info] Returns content field information
 eep:contentfield:tostring    [eep:cf:tostring] (experimental!) Returns string representation of content field information
