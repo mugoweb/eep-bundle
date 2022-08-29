@@ -73,23 +73,25 @@ EOD;
                'fieldTypeIdentifier',
             )
         );
+        $colWidth = count($headers[0]);
         if (!$input->getOption('full-value'))
         {
-            $headers[] = array
+            $legendHeaders = array
             (
-                new TableCell
-                (
-                    "m = modified output (EOL chars stripped, truncated - showing first/last " . $truncateLength/2 . ")",
-                    array('colspan' => count($headers[0]))
-                )
+                new TableCell("m = modified output (EOL chars stripped, truncated - showing first/last " . $truncateLength/2 . ")", array('colspan' => $colWidth))
             );
+            $legendHeaders = array_reverse($legendHeaders);
+            foreach ($legendHeaders as $row)
+            {
+                array_unshift($headers, array($row));
+            }
         }
         $infoHeader = array
         (
             new TableCell
             (
                 "{$this->getName()} [$inputContentId]",
-                array('colspan' => count($headers[0]))
+                array('colspan' => $colWidth)
             )
         );
         array_unshift($headers, $infoHeader);

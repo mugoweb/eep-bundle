@@ -13,6 +13,7 @@ use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
+use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -84,21 +85,33 @@ EOD;
             array
             (
                 'contentId',
+                'contentTypeId',
+                'contentTypeIdentifier *',
                 'mainLocationId',
                 'sectionId',
                 'ownerId',
                 'currentVersionNo',
                 'remoteId',
-                'contentTypeIdentifier',
                 'name',
             ),
         );
+        $colWidth = count($headers[0]);
+        $legendHeaders = array
+        (
+            new TableCell("* = custom/composite/lookup value", array('colspan' => $colWidth)),
+            // ...
+        );
+        $legendHeaders = array_reverse($legendHeaders);
+        foreach ($legendHeaders as $row)
+        {
+            array_unshift($headers, array($row));
+        }
         $infoHeader = array
         (
             new TableCell
             (
                 "{$this->getName()} [$inputSectionIdentifier]",
-                array('colspan' => count($headers[0])-1)
+                array('colspan' => $colWidth-1)
             ),
             new TableCell
             (
@@ -116,12 +129,13 @@ EOD;
                 $rows[] = array
                 (
                     $searchHit->valueObject->id,
+                    $searchHit->valueObject->contentTypeId,
+                    $this->contentTypeService->loadContentType($searchHit->valueObject->contentTypeId)->identifier,
                     $searchHit->valueObject->mainLocationId,
                     $searchHit->valueObject->sectionId,
                     $searchHit->valueObject->ownerId,
                     $searchHit->valueObject->currentVersionNo,
                     $searchHit->valueObject->remoteId,
-                    $this->contentTypeService->loadContentType($searchHit->valueObject->contentTypeId)->identifier,
                     $searchHit->valueObject->name,
                 );
             }
