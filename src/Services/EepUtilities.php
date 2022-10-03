@@ -19,4 +19,16 @@ class EepUtilities
 
         return (isset($labels[$relationTypeId]))? $labels[$relationTypeId] : 'N/A';
     }
+
+    public static function getContentVersionStatusLabel($statusId)
+    {
+        $labels = array
+        (
+            \eZ\Publish\API\Repository\Values\Content\VersionInfo::STATUS_DRAFT => 'DRAFT',
+            \eZ\Publish\API\Repository\Values\Content\VersionInfo::STATUS_PUBLISHED => 'PUBLISHED',
+            \eZ\Publish\API\Repository\Values\Content\VersionInfo::STATUS_ARCHIVED => 'ARCHIVED',
+        );
+
+        return (isset($labels[$statusId]))? $labels[$statusId] : 'N/A';
+    }
 }
