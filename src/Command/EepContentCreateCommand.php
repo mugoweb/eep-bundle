@@ -198,7 +198,7 @@ EOD;
             )
             {
                 $io->error($e->getMessage());
-                $this->logger->error($this->getName() . " error", $e->getMessage());
+                $this->logger->error($this->getName() . " error", array($e->getMessage()));
             }
         }
         else
