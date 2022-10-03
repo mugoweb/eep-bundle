@@ -48,6 +48,7 @@ eep:location:info            [eep:lo:info] Returns location information
 eep:location:move            [eep:lo:move] Move source location to be child of target location
 eep:location:reveal          [eep:lo:reveal] Reveal location subtree
 eep:location:subtree         [eep:lo:subtree] Returns subtree information
+eep:location:swap            [eep:lo:swap] Swap source- and target location
 
 eep:section:assigncontent    [eep:se:assigncontent] Assign content to section
 eep:section:list             [eep:se:list] Returns section list
