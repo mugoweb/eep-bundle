@@ -3,10 +3,10 @@
 namespace MugoWeb\Eep\Bundle\Command;
 
 use MugoWeb\Eep\Bundle\Services\EepLogger;
-use eZ\Publish\API\Repository\ContentService;
-use eZ\Publish\API\Repository\FieldTypeService;
-use eZ\Publish\API\Repository\PermissionResolver;
-use eZ\Publish\API\Repository\UserService;
+use Ibexa\Contracts\Core\Repository\ContentService;
+use Ibexa\Contracts\Core\Repository\FieldTypeService;
+use Ibexa\Contracts\Core\Repository\PermissionResolver;
+use Ibexa\Contracts\Core\Repository\UserService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

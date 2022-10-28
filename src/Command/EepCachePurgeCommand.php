@@ -3,9 +3,9 @@
 namespace MugoWeb\Eep\Bundle\Command;
 
 use MugoWeb\Eep\Bundle\Services\EepLogger;
-use eZ\Publish\API\Repository\PermissionResolver;
-use eZ\Publish\API\Repository\UserService;
-use EzSystems\PlatformHttpCacheBundle\PurgeClient\RepositoryPrefixDecorator;
+use Ibexa\Contracts\Core\Repository\PermissionResolver;
+use Ibexa\Contracts\Core\Repository\UserService;
+use Ibexa\HttpCache\PurgeClient\RepositoryPrefixDecorator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

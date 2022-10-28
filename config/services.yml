@@ -11,4 +11,4 @@ services:
     tags: ['console.command']
 
   EzSystems\PlatformHttpCacheBundle\PurgeClient\RepositoryPrefixDecorator:
-    alias: ezplatform.http_cache.purge_client_decorator
+    alias: ibexa.cache.http.purge_client_decorator
