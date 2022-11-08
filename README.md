@@ -56,6 +56,9 @@ eep:location:swap            [eep:lo:swap] Swap source- and target location
 eep:section:assigncontent    [eep:se:assigncontent] Assign content to section
 eep:section:list             [eep:se:list] Returns section list
 eep:section:listcontent      [eep:se:listcontent] Returns content list by section identifier
+
+eep:user:info                [eep:us:info] Returns user information
+eep:user:list                [eep:us:list] Returns user list
 ```
 Symfony's console help `-h` providers further information about command arguments and input/output formats.   
 e.g.   
