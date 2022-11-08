@@ -31,4 +31,15 @@ class EepUtilities
 
         return (isset($labels[$statusId]))? $labels[$statusId] : 'N/A';
     }
+
+    public static function getUserHashAlgorithmLabel($hashAlgorithmId)
+    {
+        $labels = array
+        (
+            \eZ\Publish\API\Repository\Values\User\User::PASSWORD_HASH_BCRYPT => 'BCRYPT',
+            \eZ\Publish\API\Repository\Values\User\User::PASSWORD_HASH_PHP_DEFAULT => 'PHP_DEFAULT',
+        );
+
+        return (isset($labels[$hashAlgorithmId]))? $labels[$hashAlgorithmId] : 'N/A';
+    }
 }
