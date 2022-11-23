@@ -1,6 +1,16 @@
 # eep - Ease eZ Platform/Ibexa DXP
 A Symfony command bundle to support developers using eZ Platform/Ibexa DXP
 
+## Work in progress
+Currently developed against eZ Platform 2.5 LTS, Ibexa DXP 3.3 LTS & 4.2
+```
+master : targets Ibexa DXP 3.3 LTS   
+2.5-lts: targets eZPlatform 2.5 LTS   
+3.3-lts: targets Ibexa DXP 3.3 LTS   
+4.2    : targets Ibexa DXP 4.2
+```
+Bug reports and feature suggestions welcome.
+
 ## Installation
 `composer require mugoweb/eep-bundle:dev-master`   
 _Please check which version of the CMS master is targeting, or use version specific `dev-2.5-lts`, `dev-3.3-lts` or `4.2.x-dev`_
@@ -138,17 +148,4 @@ cat my_content_ids.txt | xargs -ICONTENTID php bin/console eep:content:location 
 53
 ```
 _(Could also be combined into a single pipeline by omitting the file output/input step)_
-
-
-
-## Work in progress
-Currently developed against eZ Platform 2.5 LTS, Ibexa DXP 3.3 LTS & 4.2
-```
-master : targets eZPlatform 2.5 LTS   
-2.5-lts: targets eZPlatform 2.5 LTS   
-3.3-lts: targets Ibexa DXP 3.3 LTS   
-4.2    : targets Ibexa DXP 4.2
-```
-Bug reports and feature suggestions welcome.
-
 
