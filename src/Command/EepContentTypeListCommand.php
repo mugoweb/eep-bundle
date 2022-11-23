@@ -108,5 +108,7 @@ EOD;
         $table->setRows($rows);
         $table->render();
         $io->newLine();
+
+        return Command::SUCCESS;
     }
 }

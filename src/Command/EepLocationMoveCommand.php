@@ -117,5 +117,7 @@ EOD;
         {
             $io->writeln('Move cancelled by user action');
         }
+
+        return Command::SUCCESS;
     }
 }

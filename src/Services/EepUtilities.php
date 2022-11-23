@@ -36,10 +36,6 @@ class EepUtilities
     {
         $labels = array
         (
-            \eZ\Publish\API\Repository\Values\User\User::PASSWORD_HASH_MD5_PASSWORD => 'MD5_PASSWORD',
-            \eZ\Publish\API\Repository\Values\User\User::PASSWORD_HASH_MD5_USER => 'MD5_USER',
-            \eZ\Publish\API\Repository\Values\User\User::PASSWORD_HASH_MD5_SITE => 'MD5_SITE',
-            \eZ\Publish\API\Repository\Values\User\User::PASSWORD_HASH_PLAINTEXT => 'PLAINTEXT',
             \eZ\Publish\API\Repository\Values\User\User::PASSWORD_HASH_BCRYPT => 'BCRYPT',
             \eZ\Publish\API\Repository\Values\User\User::PASSWORD_HASH_PHP_DEFAULT => 'PHP_DEFAULT',
         );

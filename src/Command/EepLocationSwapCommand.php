@@ -43,7 +43,7 @@ EOD;
         $this
             ->setName('eep:location:swap')
             ->setAliases(array('eep:lo:swap'))
-            ->setDescription('Swap source- and target location')
+            ->setDescription('Swap source- and target locations')
             ->addArgument('source-location-id', InputArgument::REQUIRED, 'Source location id')
             ->addArgument('target-location-id', InputArgument::REQUIRED, 'Target location id')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
@@ -103,5 +103,7 @@ EOD;
         {
             $io->writeln('Swap cancelled by user action');
         }
+
+        return Command::SUCCESS;
     }
 }

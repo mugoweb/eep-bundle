@@ -135,5 +135,7 @@ EOD;
         {
             $io->writeln('Update cancelled by user action');
         }
+
+        return Command::SUCCESS;
     }
 }

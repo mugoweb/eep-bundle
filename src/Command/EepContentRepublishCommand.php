@@ -64,5 +64,7 @@ EOD;
 
         $io = new SymfonyStyle($input, $output);
         $io->writeln($report);
+
+        return Command::SUCCESS;
     }
 }

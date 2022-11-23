@@ -109,5 +109,7 @@ EOD;
         {
             $io->writeln('Assignment cancelled by user action');
         }
+
+        return Command::SUCCESS;
     }
 }

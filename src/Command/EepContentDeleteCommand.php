@@ -102,5 +102,7 @@ EOD;
         {
             $io->writeln('Delete cancelled by user action');
         }
+
+        return Command::SUCCESS;
     }
 }

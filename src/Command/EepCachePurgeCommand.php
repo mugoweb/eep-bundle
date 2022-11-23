@@ -95,5 +95,7 @@ EOD;
         {
             $io->writeln('Purge cancelled by user action');
         }
+
+        return Command::SUCCESS;
     }
 }

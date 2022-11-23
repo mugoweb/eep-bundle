@@ -60,7 +60,7 @@ EOD;
         $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
         $contentType = $this->contentTypeService->loadContentTypeByIdentifier($inputContentTypeIdentifier);
-        $field = $contentType->fieldDefinitionsByIdentifier[$inputContentFieldIdentifier];
+        $field = $contentType->getFieldDefinition($inputContentFieldIdentifier);
 
         $headers = array
         (
@@ -101,5 +101,7 @@ EOD;
         $table->setRows($rows);
         $table->render();
         $io->newLine();
+
+        return Command::SUCCESS;
     }
 }

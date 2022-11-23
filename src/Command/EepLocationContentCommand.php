@@ -67,5 +67,7 @@ EOD;
         {
             $io->writeln($location->contentId);
         }
+
+        return Command::SUCCESS;
     }
 }

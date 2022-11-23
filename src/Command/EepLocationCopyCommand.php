@@ -117,5 +117,7 @@ EOD;
         {
             $io->writeln('Copy cancelled by user action');
         }
+
+        return Command::SUCCESS;
     }
 }

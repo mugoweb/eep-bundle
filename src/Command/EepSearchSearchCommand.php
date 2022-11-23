@@ -75,7 +75,7 @@ EOD;
         if ($this->params->get('search_engine') !== 'solr' && ($input->getOption('raw-query') || $input->getOption('raw-filter')))
         {
             $io->error('The --raw-* options require the configured search_engine to be solr. Configured search_engine is '. $this->params->get('search_engine'));
-            exit(1);
+            return Command::FAILURE;
         }
 
         $inputQuery = $input->getArgument('query');
@@ -189,5 +189,7 @@ EOD;
         $table->setRows($rows);
         $table->render();
         $io->newLine();
+
+        return Command::SUCCESS;
     }
 }
