@@ -9,3 +9,8 @@ services:
   MugoWeb\Eep\Bundle\Command\:
     resource: '../src/Command/*'
     tags: ['console.command']
+
+  MugoWeb\Eep\Bundle\Query\Solr\CriterionVisitor\Raw:
+    tags:
+      - { name: ezpublish.search.solr.query.content.criterion_visitor }
+      - { name: ezpublish.search.solr.query.location.criterion_visitor }
