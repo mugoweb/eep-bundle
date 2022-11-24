@@ -2,6 +2,7 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
+use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
 use MugoWeb\Eep\Bundle\Services\EepLogger;
 use Ibexa\Contracts\Core\Repository\LocationService;
 use Ibexa\Contracts\Core\Repository\ContentService;
@@ -10,6 +11,7 @@ use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
 use Ibexa\Contracts\Core\Repository\Exceptions;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -117,6 +119,8 @@ EOD;
             ->addArgument('field-data', InputArgument::REQUIRED, 'Content field data as JSON string')
             ->addArgument('main-language-code', InputArgument::REQUIRED, 'Main language code')
             ->addOption('from-file', 'f', InputOption::VALUE_NONE, 'Field data should be read from file. Treat field data argument as file path')
+            ->addOption('result-format', 'r', InputOption::VALUE_OPTIONAL, 'Result display format. One of: default, table, minimal', 'default')
+            ->addOption('no-newline', 'x', InputOption::VALUE_NONE, 'Result display without trailing newline. Only applies when --result-format=minimal')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
@@ -153,7 +157,7 @@ EOD;
             (
                 $inputContentTypeIdentifier,
                 $inputParentLocationId,
-                '--',
+                $input->getArgument('field-data'),
                 $inputMainLanguageCode,
                 $inputUserId
             );
@@ -186,8 +190,55 @@ EOD;
                 $draft = $this->contentService->createContent($contentCreateStruct, array($locationCreateStruct));
                 $content = $this->contentService->publishVersion($draft->versionInfo);
 
-                $io->success('Create successful');
-                $this->logger->info($this->getName() . " successful", array($content->id));
+                switch ($input->getOption('result-format'))
+                {
+                    case 'table':
+                    {
+                        $rows = array
+                        (
+                            array
+                            (
+                                $content->id,
+                                $content->contentInfo->mainLocationId
+                            )
+                        );
+                        $headers = array
+                        (
+                            new TableCell
+                            (
+                                "{$this->getName()} [$inputContentTypeIdentifier $inputParentLocationId {$input->getArgument('field-data')} $inputMainLanguageCode]",
+                                array('colspan' => count($rows[0]))
+                            )
+                        );
+
+                        $table = new Table($output);
+                        $table->setHeaders($headers);
+                        $table->setRows($rows);
+                        $table->render();
+                    }
+                    break;
+
+                    case 'minimal':
+                    {
+                        if ($input->getOption('no-newline'))
+                        {
+                            $io->write("{$content->id} {$content->contentInfo->mainLocationId}");
+                        }
+                        else
+                        {
+                            $io->writeln("{$content->id} {$content->contentInfo->mainLocationId}");
+                        }
+                    }
+                    break;
+
+                    default:
+                    {
+                        $io->success("Create successful. contentId: {$content->id} mainLocationId: {$content->contentInfo->mainLocationId}");
+                    }
+                    break;
+                }
+
+                $this->logger->info($this->getName() . " successful", array($content->id, $content->contentInfo->mainLocationId));
             }
             catch
             (
