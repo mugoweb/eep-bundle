@@ -47,7 +47,7 @@ EOD;
             ->setAliases(array('eep:co:versiondelete'))
             ->setDescription('Deletes content version')
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
-            ->addArgument('version-id', InputArgument::REQUIRED, 'Version id')
+            ->addArgument('version-number', InputArgument::REQUIRED, 'Version number')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
@@ -56,7 +56,7 @@ EOD;
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $inputContentId = $input->getArgument('content-id');
-        $inputVersionId = $input->getArgument('version-id');
+        $inputVersionNumber = $input->getArgument('version-number');
         $inputUserId = $input->getOption('user-id');
 
         $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
@@ -70,7 +70,7 @@ EOD;
             $confirm = $io->confirm(
                 sprintf(
                     'Are you sure you want to delete version %d of content "%s"?',
-                    $inputVersionId,
+                    $inputVersionNumber,
                     $contentInfo->name,
                 ),
                 false
@@ -82,14 +82,14 @@ EOD;
             $loggerContext = array
             (
                 $inputContentId,
-                $inputVersionId,
+                $inputVersionNumber,
                 $inputUserId
             );
             $this->logger->info($this->getName() . " confirmed", $loggerContext);
 
             try
             {
-                $this->contentService->deleteVersion($this->contentService->loadVersionInfoById($inputContentId, $inputVersionId));
+                $this->contentService->deleteVersion($this->contentService->loadVersionInfoById($inputContentId, $inputVersionNumber));
 
                 $io->success('Delete successful');
                 $this->logger->info($this->getName() . " successful");

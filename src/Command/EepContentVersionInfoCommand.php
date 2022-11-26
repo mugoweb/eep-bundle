@@ -50,7 +50,7 @@ EOD;
             ->setAliases(array('eep:co:versioninfo'))
             ->setDescription('Returns content version information')
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
-            ->addArgument('version-id', InputArgument::REQUIRED, 'Version id')
+            ->addArgument('version-number', InputArgument::REQUIRED, 'Version number')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
@@ -59,12 +59,12 @@ EOD;
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $inputContentId = $input->getArgument('content-id');
-        $inputVersionId = $input->getArgument('version-id');
+        $inputVersionNumber = $input->getArgument('version-number');
         $inputUserId = $input->getOption('user-id');
 
         $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
-        $versionInfo = $this->contentService->loadVersionInfoById($inputContentId, $inputVersionId);
+        $versionInfo = $this->contentService->loadVersionInfoById($inputContentId, $inputVersionNumber);
 
         $headers = array
         (
