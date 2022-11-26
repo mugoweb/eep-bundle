@@ -32,6 +32,9 @@ eep:cache:purge              [eep:ca:purge] Purge cache by tag(s)
 
 eep:content:create           [eep:co:create] Create content at location
 eep:content:delete           [eep:co:delete] Delete content
+eep:content:draftcreate      [eep:co:draftcreate] Create draft from content
+eep:content:draftlist        [eep:co:draftlist] Returns content draft list
+eep:content:draftpublish     [eep:co:draftpublish] Publish content draft
 eep:content:info             [eep:co:info] Returns content information
 eep:content:listfields       [eep:co:listfields] Returns content field list
 eep:content:listversions     [eep:co:listversions] Returns content version list
