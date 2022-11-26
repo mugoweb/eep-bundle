@@ -121,6 +121,7 @@ EOD;
             ->addOption('from-file', 'f', InputOption::VALUE_NONE, 'Field data should be read from file. Treat field data argument as file path')
             ->addOption('result-format', 'r', InputOption::VALUE_OPTIONAL, 'Result display format. One of: default, table, minimal', 'default')
             ->addOption('no-newline', 'x', InputOption::VALUE_NONE, 'Result display without trailing newline. Only applies when --result-format=minimal')
+            ->addOption('no-publish', null, InputOption::VALUE_NONE, 'Create content as draft')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->setHelp($help)
         ;
@@ -144,7 +145,8 @@ EOD;
         {
             $confirm = $io->confirm(
                 sprintf(
-                    'Are you sure you want to create content at "%s"?',
+                    'Are you sure you want to create content%sat "%s"?',
+                    ($input->getOption('no-publish'))? ' (draft) ' : ' ',
                     $location->contentInfo->name
                 ),
                 false
@@ -188,9 +190,13 @@ EOD;
 
                 // create a draft using the content and location create struct and publish it
                 $draft = $this->contentService->createContent($contentCreateStruct, array($locationCreateStruct));
-                $content = $this->contentService->publishVersion($draft->versionInfo);
+                $content = $draft;
+                if(!$input->getOption('no-publish'))
+                {
+                    $content = $this->contentService->publishVersion($draft->versionInfo);
+                }
 
-                switch($input->getOption('result-format'))
+                switch ($input->getOption('result-format'))
                 {
                     case 'table':
                         {
