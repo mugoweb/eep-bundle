@@ -44,11 +44,10 @@ EOD;
         $this
             ->setName('eep:contentfield:tostring')
             ->setAliases(array('eep:cf:tostring'))
-            ->setDescription('(experimental!) Returns string representation of content field information')
+            ->setDescription('Returns content field value as JSON string')
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
             ->addArgument('content-field-identifier', InputArgument::REQUIRED, 'Content field identifier')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
-            ->addOption('separator', 's', InputOption::VALUE_OPTIONAL, 'Separator character', '|')
             ->addOption('no-newline', 'x', null, 'Output without newline')
             ->setHelp($help)
         ;
@@ -65,8 +64,33 @@ EOD;
         $content = $this->contentService->loadContent($inputContentId);
         $field = $content->getField($inputContentFieldIdentifier);
         $fieldType = $this->fieldTypeService->getFieldType($field->fieldTypeIdentifier);
-        $fieldValueHash = $fieldType->toHash($field->value);
-        $fieldValueString = implode($input->getOption('separator'), (array) $fieldValueHash);
+
+        switch ($field->fieldTypeIdentifier)
+        {
+            case 'ezboolean':
+            {
+                $fieldValueString = (boolean) $field->value ? 1 : 0;
+            }
+            break;
+
+            case 'ezobjectrelation':
+            {
+                $fieldValueString = (integer) $field->value->destinationContentId;
+            }
+            break;
+
+            case 'ezobjectrelationlist':
+            {
+                $fieldValueString = $field->value->destinationContentIds;
+            }
+            break;
+
+            default:
+            {
+                $fieldValueString = (string) $field->value;
+            }
+        }
+        $fieldValueString = json_encode($fieldValueString);
 
         $io = new SymfonyStyle($input, $output);
         if ($input->getOption('no-newline'))
@@ -77,5 +101,7 @@ EOD;
         {
             $io->writeln($fieldValueString);
         }
+
+        return Command::SUCCESS;
     }
 }
