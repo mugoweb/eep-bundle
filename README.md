@@ -35,9 +35,7 @@ eep:content:delete           [eep:co:delete] Delete content
 eep:content:draftcreate      [eep:co:draftcreate] Create draft from content
 eep:content:draftlist        [eep:co:draftlist] Returns content draft list
 eep:content:draftpublish     [eep:co:draftpublish] Publish content draft
-eep:contentfield:fromstring  [eep:cf:fromstring] Set content field value from JSON string
 eep:content:info             [eep:co:info] Returns content information
-eep:contentfield:tostring    [eep:cf:tostring] Returns content field value as JSON string
 eep:content:listfields       [eep:co:listfields] Returns content field list
 eep:content:listversions     [eep:co:listversions] Returns content version list
 eep:content:location         [eep:co:lo|eep:co:location] Returns main location id by content id
@@ -49,8 +47,9 @@ eep:content:updatemeta       [eep:co:updatemeta] Update content meta data
 eep:content:versiondelete    [eep:co:versiondelete] Deletes content version
 eep:content:versioninfo      [eep:co:versioninfo] Returns content version information
 
+eep:contentfield:fromstring  [eep:cf:fromstring] Set content field value from JSON string
 eep:contentfield:info        [eep:cf:info] Returns content field information
-eep:contentfield:tostring    [eep:cf:tostring] (experimental!) Returns string representation of content field information
+eep:contentfield:tostring    [eep:cf:tostring] Returns content field value as JSON string
 
 eep:contenttype:info         [eep:ct:info] Returns content type information
 eep:contenttype:list         [eep:ct:list] Returns content type list
