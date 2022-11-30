@@ -70,8 +70,8 @@ EOD;
                 'id',
                 'identifier',
                 'isContainer',
+                'remoteId',
                 'name',
-                'remoteId'
             ),
         );
         $infoHeader = array
@@ -97,8 +97,8 @@ EOD;
                 $contentType->id,
                 $contentType->identifier,
                 (integer) $contentType->isContainer,
+                $contentType->remoteId,
                 $contentType->names[$contentType->mainLanguageCode],
-                $contentType->remoteId
             );
         }
 

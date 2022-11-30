@@ -101,8 +101,8 @@ EOD;
                 'priority',
                 'hidden',
                 'invisible',
-                'name',
                 'children *',
+                'name',
             ),
         );
         $colWidth = count($headers[0]);
@@ -146,8 +146,8 @@ EOD;
                     $searchHit->valueObject->priority,
                     (integer) $searchHit->valueObject->hidden,
                     (integer) $searchHit->valueObject->invisible,
-                    $searchHit->valueObject->contentInfo->name,
                     $this->locationService->getLocationChildCount($searchHit->valueObject),
+                    $searchHit->valueObject->contentInfo->name,
                 );
             }
 

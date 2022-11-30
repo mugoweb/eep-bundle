@@ -68,9 +68,9 @@ EOD;
             (
                'id',
                'fieldDefIdentifier',
-               'value',
                'languageCode',
                'fieldTypeIdentifier',
+                'value',
             )
         );
         $colWidth = count($headers[0]);
@@ -111,9 +111,9 @@ EOD;
             (
                 $field->id,
                 $field->fieldDefIdentifier,
-                $fieldValue,
                 $field->languageCode,
                 $field->fieldTypeIdentifier,
+                $fieldValue,
             );
         }
 
