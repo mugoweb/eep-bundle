@@ -117,7 +117,7 @@ EOD;
             ->addArgument('content-type-identifier', InputArgument::REQUIRED, 'Content type identifier')
             ->addArgument('parent-location-id', InputArgument::REQUIRED, 'Parent location id')
             ->addArgument('field-data', InputArgument::REQUIRED, 'Content field data as JSON string')
-            ->addArgument('main-language-code', InputArgument::REQUIRED, 'Main language code')
+            ->addArgument('main-language-code', InputArgument::OPTIONAL, 'Main language code', null)
             ->addOption('from-file', 'f', InputOption::VALUE_NONE, 'Field data should be read from file. Treat field data argument as file path')
             ->addOption('result-format', 'r', InputOption::VALUE_OPTIONAL, 'Result display format. One of: default, table, minimal', 'default')
             ->addOption('no-newline', 'x', InputOption::VALUE_NONE, 'Result display without trailing newline. Only applies when --result-format=minimal')
@@ -168,6 +168,7 @@ EOD;
             try
             {
                 $contentType = $this->contentTypeService->loadContentTypeByIdentifier($inputContentTypeIdentifier);
+                $inputMainLanguageCode = (!$inputMainLanguageCode)? $contentType->mainLanguageCode : $inputMainLanguageCode;
                 $contentCreateStruct = $this->contentService->newContentCreateStruct($contentType, $inputMainLanguageCode);
                 $fieldData = json_decode($inputFieldData, true);
 
