@@ -211,12 +211,21 @@ EOD;
                         );
                         $headers = array
                         (
+                            array
+                            (
+                                'contentId',
+                                'mainLocationId'
+                            )
+                        );
+                        $infoHeader = array
+                        (
                             new TableCell
                             (
                                 "{$this->getName()} [$inputContentTypeIdentifier $inputParentLocationId {$input->getArgument('field-data')} $inputMainLanguageCode]",
-                                array('colspan' => count($rows[0]))
+                                array('colspan' => count($headers[0]))
                             )
                         );
+                        array_unshift($headers, $infoHeader);
 
                         $table = new Table($output);
                         $table->setHeaders($headers);
@@ -242,7 +251,6 @@ EOD;
                     {
                         $io->success("Create successful. contentId: {$content->id} mainLocationId: {$content->contentInfo->mainLocationId}");
                     }
-                    break;
                 }
 
                 $this->logger->info($this->getName() . " successful", array($content->id, $content->contentInfo->mainLocationId));
