@@ -48,7 +48,7 @@ EOD;
             ->setDescription('Update content')
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
             ->addArgument('field-data', InputArgument::REQUIRED, 'Content field data as JSON string')
-            ->addArgument('initial-language-code', InputArgument::REQUIRED, 'Initial language code for new version')
+            ->addArgument('initial-language-code', InputArgument::OPTIONAL, 'Initial language code for new version', null)
             ->addArgument('version-number', InputArgument::OPTIONAL, 'Version number to apply the update to', null)
             ->addOption('from-file', 'f', InputOption::VALUE_NONE, 'Field data should be read from file. Treat field data argument as file path')
             ->addOption('result-format', 'r', InputOption::VALUE_OPTIONAL, 'Result display format. One of: default, table, minimal', 'default')
@@ -113,7 +113,10 @@ EOD;
 
                 // instantiate a content update struct and set the new fields
                 $contentUpdateStruct = $this->contentService->newContentUpdateStruct();
-                $contentUpdateStruct->initialLanguageCode = $inputInitialLanguageCode;
+                if ($inputInitialLanguageCode)
+                {
+                    $contentUpdateStruct->initialLanguageCode = $inputInitialLanguageCode;
+                }
 
                 $fieldData = json_decode($inputFieldData, true);
                 foreach ($fieldData as $fieldIdentifier => $fieldValue)
