@@ -79,10 +79,10 @@ EOD;
                 'modificationDateTimestamp *',
                 'creationDateTimestamp *',
                 'languageCodes',
-                'name',
                 'contentId',
                 'contentTypeId',
                 'contentTypeIdentifier *',
+                'name',
             )
         );
         $colWidth = count($headers[0]);
@@ -125,10 +125,10 @@ EOD;
                     $versionInfo->modificationDate->format('U'),
                     $versionInfo->creationDate->format('U'),
                     implode(',', $versionInfo->languageCodes),
-                    $versionInfo->getName(),
                     $contentInfo->id,
                     $contentInfo->contentTypeId,
                     $this->contentTypeService->loadContentType($contentInfo->contentTypeId)->identifier,
+                    $versionInfo->getName(),
                 );
             }
         }
