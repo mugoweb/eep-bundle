@@ -81,13 +81,13 @@ EOD;
             array
             (
                 'id',
-                'name *',
                 'login',
                 'email',
                 'passwordHash',
                 'hashAlgorithm',
                 'hashLabel * ',
                 'enabled',
+                'name *',
             ),
         );
         $colWidth = count($headers[0]);
@@ -126,13 +126,13 @@ EOD;
                 $rows[] = array
                 (
                     $user->id,
-                    $user->getName(),
                     $user->login,
                     $user->email,
                     $user->passwordHash,
                     $user->hashAlgorithm,
                     EepUtilities::getUserHashAlgorithmLabel($user->hashAlgorithm),
                     (integer) $user->enabled,
+                    $user->getName(),
                 );
             }
 
