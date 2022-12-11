@@ -52,6 +52,7 @@ EOD;
             ->addOption('offset', null, InputOption::VALUE_OPTIONAL, 'Offset', 0)
             ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit', 25)
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('hide-columns', null, InputOption::VALUE_OPTIONAL, 'CSV of column(s) to hide from results table')
             ->setHelp($help)
         ;
     }
@@ -85,6 +86,18 @@ EOD;
                 'name',
             )
         );
+
+        $hideColumns = ($input->getOption('hide-columns'))? explode(',', $input->getOption('hide-columns')) : array();
+        $headerKeys = array_map(array('MugoWeb\Eep\Bundle\Services\EepUtilities', 'stripColumnMarkers'), $headers[0]);
+        foreach($hideColumns as $columnKey)
+        {
+            $searchResultKey = array_search($columnKey, $headerKeys);
+            if($searchResultKey !== false)
+            {
+                unset($headers[0][$searchResultKey]);
+            }
+        }
+
         $colWidth = count($headers[0]);
         $legendHeaders = array
         (
@@ -101,7 +114,7 @@ EOD;
             new TableCell
             (
                 "{$this->getName()} [{$input->getArgument('draft-user-id')}]",
-                array('colspan' => $colWidth-1)
+                array('colspan' => ($colWidth == 1)? 1 : $colWidth-1)
             ),
             new TableCell
             (
@@ -118,18 +131,18 @@ EOD;
             {
                 $versionInfo = $draftListItem->getVersionInfo();
                 $contentInfo = $versionInfo->getContentInfo();
-                $rows[] = array
-                (
-                    $versionInfo->id,
-                    $versionInfo->versionNo,
-                    $versionInfo->modificationDate->format('U'),
-                    $versionInfo->creationDate->format('U'),
-                    implode(',', $versionInfo->languageCodes),
-                    $contentInfo->id,
-                    $contentInfo->contentTypeId,
-                    $this->contentTypeService->loadContentType($contentInfo->contentTypeId)->identifier,
-                    $versionInfo->getName(),
-                );
+                $row = array();
+                if(!in_array('id', $hideColumns)) { $row[] = $versionInfo->id; }
+                if(!in_array('versionNo', $hideColumns)) { $row[] = $versionInfo->versionNo; }
+                if(!in_array('modificationDateTimestamp', $hideColumns)) { $row[] = $versionInfo->modificationDate->format('U'); }
+                if(!in_array('creationDateTimestamp', $hideColumns)) { $row[] = $versionInfo->creationDate->format('U'); }
+                if(!in_array('languageCodes', $hideColumns)) { $row[] = implode(',', $versionInfo->languageCodes); }
+                if(!in_array('contentId', $hideColumns)) { $row[] = $contentInfo->id; }
+                if(!in_array('contentTypeId', $hideColumns)) { $row[] = $contentInfo->contentTypeId; }
+                if(!in_array('contentTypeIdentifier', $hideColumns)) { $row[] = $this->contentTypeService->loadContentType($contentInfo->contentTypeId)->identifier; }
+                if(!in_array('name', $hideColumns)) { $row[] = $versionInfo->getName(); }
+
+                $rows[] = $row;
             }
         }
 

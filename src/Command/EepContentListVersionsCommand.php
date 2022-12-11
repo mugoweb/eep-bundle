@@ -47,6 +47,7 @@ EOD;
             ->setDescription('Returns content version list')
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('hide-columns', null, InputOption::VALUE_OPTIONAL, 'CSV of column(s) to hide from results table')
             ->setHelp($help)
         ;
     }
@@ -76,6 +77,18 @@ EOD;
                 'languageCodes',
             )
         );
+
+        $hideColumns = ($input->getOption('hide-columns'))? explode(',', $input->getOption('hide-columns')) : array();
+        $headerKeys = array_map(array('MugoWeb\Eep\Bundle\Services\EepUtilities', 'stripColumnMarkers'), $headers[0]);
+        foreach($hideColumns as $columnKey)
+        {
+            $searchResultKey = array_search($columnKey, $headerKeys);
+            if($searchResultKey !== false)
+            {
+                unset($headers[0][$searchResultKey]);
+            }
+        }
+
         $colWidth = count($headers[0]);
         $legendHeaders = array
         (
@@ -92,7 +105,7 @@ EOD;
             new TableCell
             (
                 "{$this->getName()} [$inputContentId]",
-                array('colspan' => $colWidth-1)
+                array('colspan' => ($colWidth == 1)? 1 : $colWidth-1)
             ),
             new TableCell
             (
@@ -105,17 +118,17 @@ EOD;
         $rows = array();
         foreach ($versions as $versionInfo)
         {
-            $rows[] = array
-            (
-                $versionInfo->id,
-                $versionInfo->versionNo,
-                $versionInfo->modificationDate->format('U'),
-                $versionInfo->creatorId,
-                $versionInfo->creationDate->format('U'),
-                $versionInfo->status,
-                EepUtilities::getContentVersionStatusLabel($versionInfo->status),
-                implode(',', $versionInfo->languageCodes),
-            );
+            $row = array();
+            if(!in_array('id', $hideColumns)) { $row[] = $versionInfo->id; }
+            if(!in_array('versionNo', $hideColumns)) { $row[] = $versionInfo->versionNo; }
+            if(!in_array('modificationDateTimestamp', $hideColumns)) { $row[] = $versionInfo->modificationDate->format('U'); }
+            if(!in_array('creatorId', $hideColumns)) { $row[] = $versionInfo->creatorId; }
+            if(!in_array('creationDateTimestamp', $hideColumns)) { $row[] = $versionInfo->creationDate->format('U'); }
+            if(!in_array('status', $hideColumns)) { $row[] = $versionInfo->status; }
+            if(!in_array('statusLabel', $hideColumns)) { $row[] = EepUtilities::getContentVersionStatusLabel($versionInfo->status); }
+            if(!in_array('languageCodes', $hideColumns)) { $row[] = implode(',', $versionInfo->languageCodes); }
+
+            $rows[] = $row;
         }
 
         $io = new SymfonyStyle($input, $output);

@@ -54,6 +54,7 @@ EOD;
             ->setDescription('Returns related content information')
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('hide-columns', null, InputOption::VALUE_OPTIONAL, 'CSV of column(s) to hide from results table')
             ->setHelp($help)
         ;
     }
@@ -85,6 +86,18 @@ EOD;
                 'name',
             ),
         );
+
+        $hideColumns = ($input->getOption('hide-columns'))? explode(',', $input->getOption('hide-columns')) : array();
+        $headerKeys = array_map(array('MugoWeb\Eep\Bundle\Services\EepUtilities', 'stripColumnMarkers'), $headers[0]);
+        foreach($hideColumns as $columnKey)
+        {
+            $searchResultKey = array_search($columnKey, $headerKeys);
+            if($searchResultKey !== false)
+            {
+                unset($headers[0][$searchResultKey]);
+            }
+        }
+
         $colWidth = count($headers[0]);
         $legendHeaders = array
         (
@@ -101,7 +114,7 @@ EOD;
             new TableCell
             (
                 "{$this->getName()} [$inputContentId]",
-                array('colspan' => $colWidth-1)
+                array('colspan' => ($colWidth == 1)? 1 : $colWidth-1)
             ),
             new TableCell
             (
@@ -114,19 +127,19 @@ EOD;
         $rows = array();
         foreach ($related as $relation)
         {
-            $rows[] = array
-            (
-                $relation->destinationContentInfo->id,
-                $relation->destinationContentInfo->mainLocationId,
-                $relation->destinationContentInfo->sectionId,
-                $this->sectionService->loadSection($relation->destinationContentInfo->sectionId)->identifier,
-                $relation->destinationContentInfo->contentTypeId,
-                $this->contentTypeService->loadContentType($relation->destinationContentInfo->contentTypeId)->identifier,
-                $relation->sourceFieldDefinitionIdentifier,
-                $relation->type,
-                EepUtilities::getContentRelationTypeLabel($relation->type),
-                $relation->destinationContentInfo->name,
-            );
+            $row = array();
+            if(!in_array('id', $hideColumns)) { $row[] = $relation->destinationContentInfo->id; }
+            if(!in_array('mainLocationId', $hideColumns)) { $row[] = $relation->destinationContentInfo->mainLocationId; }
+            if(!in_array('sectionId', $hideColumns)) { $row[] = $relation->destinationContentInfo->sectionId; }
+            if(!in_array('sectionIdentifier', $hideColumns)) { $row[] = $this->sectionService->loadSection($relation->destinationContentInfo->sectionId)->identifier; }
+            if(!in_array('contentTypeId', $hideColumns)) { $row[] = $relation->destinationContentInfo->contentTypeId; }
+            if(!in_array('contentTypeIdentifier', $hideColumns)) { $row[] = $this->contentTypeService->loadContentType($relation->destinationContentInfo->contentTypeId)->identifier; }
+            if(!in_array('sourceFieldIdentifier', $hideColumns)) { $row[] = $relation->sourceFieldDefinitionIdentifier; }
+            if(!in_array('relationTypeId', $hideColumns)) { $row[] = $relation->type; }
+            if(!in_array('relationType', $hideColumns)) { $row[] = EepUtilities::getContentRelationTypeLabel($relation->type); }
+            if(!in_array('name', $hideColumns)) { $row[] = $relation->destinationContentInfo->name; }
+
+            $rows[] = $row;
         }
 
         $io = new SymfonyStyle($input, $output);

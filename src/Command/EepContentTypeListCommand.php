@@ -44,6 +44,7 @@ EOD;
             ->setAliases(array('eep:ct:list'))
             ->setDescription('Returns content type list')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('hide-columns', null, InputOption::VALUE_OPTIONAL, 'CSV of column(s) to hide from results table')
             ->setHelp($help)
         ;
     }
@@ -74,12 +75,24 @@ EOD;
                 'name',
             ),
         );
+
+        $hideColumns = ($input->getOption('hide-columns'))? explode(',', $input->getOption('hide-columns')) : array();
+        $headerKeys = array_map(array('MugoWeb\Eep\Bundle\Services\EepUtilities', 'stripColumnMarkers'), $headers[0]);
+        foreach($hideColumns as $columnKey)
+        {
+            $searchResultKey = array_search($columnKey, $headerKeys);
+            if($searchResultKey !== false)
+            {
+                unset($headers[0][$searchResultKey]);
+            }
+        }
+
         $infoHeader = array
         (
             new TableCell
             (
                 "{$this->getName()}",
-                array('colspan' => count($headers[0])-1)
+                array('colspan' => (count($headers[0]) == 1)? 1 : count($headers[0])-1)
             ),
             new TableCell
             (
@@ -92,14 +105,14 @@ EOD;
         $rows = array();
         foreach ($contentTypes as $contentType)
         {
-            $rows[] = array
-            (
-                $contentType->id,
-                $contentType->identifier,
-                (integer) $contentType->isContainer,
-                $contentType->remoteId,
-                $contentType->names[$contentType->mainLanguageCode],
-            );
+            $row = array();
+            if(!in_array('id', $hideColumns)) { $row[] = $contentType->id; }
+            if(!in_array('identifier', $hideColumns)) { $row[] = $contentType->identifier; }
+            if(!in_array('isContainer', $hideColumns)) { $row[] = (integer) $contentType->isContainer; }
+            if(!in_array('remoteId', $hideColumns)) { $row[] = $contentType->remoteId; }
+            if(!in_array('name', $hideColumns)) { $row[] = $contentType->names[$contentType->mainLanguageCode]; }
+
+            $rows[] = $row;
         }
 
         $io = new SymfonyStyle($input, $output);
