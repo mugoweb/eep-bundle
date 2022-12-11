@@ -64,6 +64,7 @@ EOD;
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->addOption('offset', null, InputOption::VALUE_OPTIONAL, 'Offset')
             ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit', 25)
+            ->addOption('hide-columns', null, InputOption::VALUE_OPTIONAL, 'CSV of column(s) to hide from results table')
             ->setHelp($help)
         ;
     }
@@ -132,6 +133,18 @@ EOD;
                 'name',
             ),
         );
+
+        $hideColumns = ($input->getOption('hide-columns'))? explode(',', $input->getOption('hide-columns')) : array();
+        $headerKeys = array_map(array('MugoWeb\Eep\Bundle\Services\EepUtilities', 'stripColumnMarkers'), $headers[0]);
+        foreach($hideColumns as $columnKey)
+        {
+            $searchResultKey = array_search($columnKey, $headerKeys);
+            if($searchResultKey !== false)
+            {
+                unset($headers[0][$searchResultKey]);
+            }
+        }
+
         $colWidth = count($headers[0]);
         $legendHeaders = array
         (
@@ -149,7 +162,7 @@ EOD;
             new TableCell
             (
                 "{$this->getName()} [$inputQuery]",
-                array('colspan' => $colWidth-1)
+                array('colspan' => ($colWidth == 1)? 1 : $colWidth-1)
             ),
             new TableCell
             (
@@ -164,20 +177,20 @@ EOD;
         {
             foreach ($result->searchHits as $searchHit)
             {
-                $rows[] = array
-                (
-                    $searchHit->valueObject->id,
-                    $searchHit->valueObject->contentInfo->id,
-                    $searchHit->valueObject->contentInfo->contentTypeId,
-                    $this->contentTypeService->loadContentType($searchHit->valueObject->contentInfo->contentTypeId)->identifier,
-                    $searchHit->valueObject->pathString,
-                    $searchHit->valueObject->priority,
-                    (integer) $searchHit->valueObject->hidden,
-                    (integer) $searchHit->valueObject->invisible,
-                    $this->locationService->getLocationChildCount($searchHit->valueObject),
-                    $searchHit->score,
-                    $searchHit->valueObject->contentInfo->name,
-                );
+                $row = array();
+                if(!in_array('locationId', $hideColumns)) { $row[] = $searchHit->valueObject->id; }
+                if(!in_array('contentId', $hideColumns)) { $row[] = $searchHit->valueObject->contentInfo->id; }
+                if(!in_array('contentTypeId', $hideColumns)) { $row[] = $searchHit->valueObject->contentInfo->contentTypeId; }
+                if(!in_array('contentTypeIdentifier', $hideColumns)) { $row[] = $this->contentTypeService->loadContentType($searchHit->valueObject->contentInfo->contentTypeId)->identifier; }
+                if(!in_array('pathString', $hideColumns)) { $row[] = $searchHit->valueObject->pathString; }
+                if(!in_array('priority', $hideColumns)) { $row[] = $searchHit->valueObject->priority; }
+                if(!in_array('hidden', $hideColumns)) { $row[] = (integer) $searchHit->valueObject->hidden; }
+                if(!in_array('invisible', $hideColumns)) { $row[] = (integer) $searchHit->valueObject->invisible; }
+                if(!in_array('children', $hideColumns)) { $row[] = $this->locationService->getLocationChildCount($searchHit->valueObject); }
+                if(!in_array('score', $hideColumns)) { $row[] = $searchHit->score; }
+                if(!in_array('name', $hideColumns)) { $row[] = $searchHit->valueObject->contentInfo->name; }
+
+                $rows[] = $row;
             }
 
             $query->offset += $query->limit;

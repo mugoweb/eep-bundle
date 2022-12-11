@@ -51,6 +51,7 @@ EOD;
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->addOption('offset', null, InputOption::VALUE_OPTIONAL, 'Offset')
             ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit')
+            ->addOption('hide-columns', null, InputOption::VALUE_OPTIONAL, 'CSV of column(s) to hide from results table')
             ->setHelp($help)
         ;
     }
@@ -90,6 +91,18 @@ EOD;
                 'name *',
             ),
         );
+
+        $hideColumns = ($input->getOption('hide-columns'))? explode(',', $input->getOption('hide-columns')) : array();
+        $headerKeys = array_map(array('MugoWeb\Eep\Bundle\Services\EepUtilities', 'stripColumnMarkers'), $headers[0]);
+        foreach($hideColumns as $columnKey)
+        {
+            $searchResultKey = array_search($columnKey, $headerKeys);
+            if($searchResultKey !== false)
+            {
+                unset($headers[0][$searchResultKey]);
+            }
+        }
+
         $colWidth = count($headers[0]);
         $legendHeaders = array
         (
@@ -106,7 +119,7 @@ EOD;
             new TableCell
             (
                 "{$this->getName()} [$contentTypeIdentifier]",
-                array('colspan' => $colWidth-1)
+                array('colspan' => ($colWidth == 1)? 1 : $colWidth-1)
             ),
             new TableCell
             (
@@ -123,17 +136,17 @@ EOD;
             {
                 $user = $this->userService->loadUser($searchHit->valueObject->id);
 
-                $rows[] = array
-                (
-                    $user->id,
-                    $user->login,
-                    $user->email,
-                    $user->passwordHash,
-                    $user->hashAlgorithm,
-                    EepUtilities::getUserHashAlgorithmLabel($user->hashAlgorithm),
-                    (integer) $user->enabled,
-                    $user->getName(),
-                );
+                $row = array();
+                if(!in_array('id', $hideColumns)) { $row[] = $user->id; }
+                if(!in_array('login', $hideColumns)) { $row[] = $user->login; }
+                if(!in_array('email', $hideColumns)) { $row[] = $user->email; }
+                if(!in_array('passwordHash', $hideColumns)) { $row[] = $user->passwordHash; }
+                if(!in_array('hashAlgorithm', $hideColumns)) { $row[] = $user->hashAlgorithm; }
+                if(!in_array('hashLabel', $hideColumns)) { $row[] = EepUtilities::getUserHashAlgorithmLabel($user->hashAlgorithm); }
+                if(!in_array('enabled', $hideColumns)) { $row[] = (integer) $user->enabled; }
+                if(!in_array('name', $hideColumns)) { $row[] = $user->getName(); }
+
+                $rows[] = $row;
             }
 
             $query->offset += $query->limit;

@@ -50,6 +50,7 @@ EOD;
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->addOption('offset', null, InputOption::VALUE_OPTIONAL, 'Offset')
             ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit')
+            ->addOption('hide-columns', null, InputOption::VALUE_OPTIONAL, 'CSV of column(s) to hide from results table')
             ->setHelp($help)
         ;
     }
@@ -87,12 +88,24 @@ EOD;
                 'name',
             ),
         );
+
+        $hideColumns = ($input->getOption('hide-columns'))? explode(',', $input->getOption('hide-columns')) : array();
+        $headerKeys = array_map(array('MugoWeb\Eep\Bundle\Services\EepUtilities', 'stripColumnMarkers'), $headers[0]);
+        foreach($hideColumns as $columnKey)
+        {
+            $searchResultKey = array_search($columnKey, $headerKeys);
+            if($searchResultKey !== false)
+            {
+                unset($headers[0][$searchResultKey]);
+            }
+        }
+
         $infoHeader = array
         (
             new TableCell
             (
                 "{$this->getName()} [$inputContentTypeIdentifier]",
-                array('colspan' => count($headers[0])-1)
+                array('colspan' => (count($headers[0]) == 1)? 1 : count($headers[0])-1)
             ),
             new TableCell
             (
@@ -107,15 +120,15 @@ EOD;
         {
             foreach ($result->searchHits as $searchHit)
             {
-                $rows[] = array
-                (
-                    $searchHit->valueObject->id,
-                    $searchHit->valueObject->mainLocationId,
-                    $searchHit->valueObject->sectionId,
-                    $searchHit->valueObject->currentVersionNo,
-                    $searchHit->valueObject->remoteId,
-                    $searchHit->valueObject->name,
-                );
+                $row = array();
+                if(!in_array('contentId', $hideColumns)) { $row[] = $searchHit->valueObject->id; }
+                if(!in_array('mainLocationId', $hideColumns)) { $row[] = $searchHit->valueObject->mainLocationId; }
+                if(!in_array('sectionId', $hideColumns)) { $row[] = $searchHit->valueObject->sectionId; }
+                if(!in_array('currentVersionNo', $hideColumns)) { $row[] = $searchHit->valueObject->currentVersionNo; }
+                if(!in_array('remoteId', $hideColumns)) { $row[] = $searchHit->valueObject->remoteId; }
+                if(!in_array('name', $hideColumns)) { $row[] = $searchHit->valueObject->name; }
+
+                $rows[] = $row;
             }
 
             $query->offset += $query->limit;

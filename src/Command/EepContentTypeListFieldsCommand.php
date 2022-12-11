@@ -46,6 +46,7 @@ EOD;
             ->setDescription('Returns content type field list')
             ->addArgument('content-type-identifier', InputArgument::REQUIRED, 'Content type identifier')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('hide-columns', null, InputOption::VALUE_OPTIONAL, 'CSV of column(s) to hide from results table')
             ->setHelp($help)
         ;
     }
@@ -77,6 +78,18 @@ EOD;
                'name',
            )
         );
+
+        $hideColumns = ($input->getOption('hide-columns'))? explode(',', $input->getOption('hide-columns')) : array();
+        $headerKeys = array_map(array('MugoWeb\Eep\Bundle\Services\EepUtilities', 'stripColumnMarkers'), $headers[0]);
+        foreach($hideColumns as $columnKey)
+        {
+            $searchResultKey = array_search($columnKey, $headerKeys);
+            if($searchResultKey !== false)
+            {
+                unset($headers[0][$searchResultKey]);
+            }
+        }
+
         $infoHeader = array
         (
             new TableCell
@@ -90,20 +103,20 @@ EOD;
         $rows = array();
         foreach ($fieldDefinitions as $fieldIdentifier => $fieldDefinition)
         {
-            $rows[] = array
-            (
-                $fieldDefinition->identifier,
-                $fieldDefinition->mainLanguageCode,
-                $fieldDefinition->id,
-                $fieldDefinition->fieldTypeIdentifier,
-                (integer) $fieldDefinition->isSearchable,
-                (integer) $fieldDefinition->isRequired,
-                (integer) $fieldDefinition->isTranslatable,
-                (integer) $fieldDefinition->isInfoCollector,
-                $fieldDefinition->position,
-                $fieldDefinition->fieldGroup,
-                $fieldDefinition->names[$fieldDefinition->mainLanguageCode],
-            );
+            $row = array();
+            if(!in_array('identifier', $hideColumns)) { $row[] = $fieldDefinition->identifier; }
+            if(!in_array('mainLanguageCode', $hideColumns)) { $row[] = $fieldDefinition->mainLanguageCode; }
+            if(!in_array('id', $hideColumns)) { $row[] = $fieldDefinition->id; }
+            if(!in_array('fieldTypeIdentifier', $hideColumns)) { $row[] = $fieldDefinition->fieldTypeIdentifier; }
+            if(!in_array('isSearchable', $hideColumns)) { $row[] = (integer) $fieldDefinition->isSearchable; }
+            if(!in_array('isRequired', $hideColumns)) { $row[] = (integer) $fieldDefinition->isRequired; }
+            if(!in_array('isTranslatable', $hideColumns)) { $row[] = (integer) $fieldDefinition->isTranslatable; }
+            if(!in_array('isInfoCollector', $hideColumns)) { $row[] = (integer) $fieldDefinition->isInfoCollector; }
+            if(!in_array('position', $hideColumns)) { $row[] = $fieldDefinition->position; }
+            if(!in_array('fieldGroup', $hideColumns)) { $row[] = $fieldDefinition->fieldGroup; }
+            if(!in_array('name', $hideColumns)) { $row[] = $fieldDefinition->names[$fieldDefinition->mainLanguageCode]; }
+
+            $rows[] = $row;
         }
 
         $io = new SymfonyStyle($input, $output);

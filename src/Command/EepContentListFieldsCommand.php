@@ -47,6 +47,7 @@ EOD;
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
             ->addOption('full-value', 'f', InputOption::VALUE_NONE, 'Show full field value')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->addOption('hide-columns', null, InputOption::VALUE_OPTIONAL, 'CSV of column(s) to hide from results table')
             ->setHelp($help)
         ;
     }
@@ -73,6 +74,18 @@ EOD;
                 'value',
             )
         );
+
+        $hideColumns = ($input->getOption('hide-columns'))? explode(',', $input->getOption('hide-columns')) : array();
+        $headerKeys = array_map(array('MugoWeb\Eep\Bundle\Services\EepUtilities', 'stripColumnMarkers'), $headers[0]);
+        foreach($hideColumns as $columnKey)
+        {
+            $searchResultKey = array_search($columnKey, $headerKeys);
+            if($searchResultKey !== false)
+            {
+                unset($headers[0][$searchResultKey]);
+            }
+        }
+
         $colWidth = count($headers[0]);
         if (!$input->getOption('full-value'))
         {
@@ -91,7 +104,7 @@ EOD;
             new TableCell
             (
                 "{$this->getName()} [$inputContentId]",
-                array('colspan' => $colWidth)
+                array('colspan' => ($colWidth == 1)? 1 : $colWidth)
             )
         );
         array_unshift($headers, $infoHeader);
@@ -107,14 +120,14 @@ EOD;
                 $fieldValue = (strlen($fieldValue) > $truncateLength)? "<fg=black;bg=yellow>[m]</> "  . substr($fieldValue, 0, $truncateLength/2) . ' ... ' . substr($fieldValue, -($truncateLength/2), $truncateLength/2) : $fieldValue;
             }
 
-            $rows[] = array
-            (
-                $field->id,
-                $field->fieldDefIdentifier,
-                $field->languageCode,
-                $field->fieldTypeIdentifier,
-                $fieldValue,
-            );
+            $row = array();
+            if(!in_array('id', $hideColumns)) { $row[] = $field->id; }
+            if(!in_array('fieldDefIdentifier', $hideColumns)) { $row[] = $field->fieldDefIdentifier; }
+            if(!in_array('languageCode', $hideColumns)) { $row[] = $field->languageCode; }
+            if(!in_array('fieldTypeIdentifier', $hideColumns)) { $row[] = $field->fieldTypeIdentifier; }
+            if(!in_array('value', $hideColumns)) { $row[] = $fieldValue; }
+
+            $rows[] = $row;
         }
 
         $io = new SymfonyStyle($input, $output);
