@@ -42,4 +42,12 @@ class EepUtilities
 
         return (isset($labels[$hashAlgorithmId]))? $labels[$hashAlgorithmId] : 'N/A';
     }
+
+    public static function stripColumnMarkers($columnIdentifier)
+    {
+        $s = array( ' *' );
+        $r = array( '' );
+
+        return str_replace($s,$r, $columnIdentifier);
+    }
 }
