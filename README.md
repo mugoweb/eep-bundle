@@ -120,6 +120,7 @@ I contentId I mainLocationId I sectionId I currentVersionNo I remoteId          
 | 51        | 53             | 3         | 1                | 09082deb98662a104f325aaa8c4933d3 | Multimedia          |
 +-----------+----------------+-----------+------------------+----------------------------------+---------------------+
 ```
+_Note: Commands supporting the ```--hide-columns``` option allow for the results table display to be modified by hiding one or more of its columns._
 
 ### eep & friends: awk, xargs, grep ...
 eep shines when it is used in combination with other command line utilities like awk, xargs, grep and many others.   
