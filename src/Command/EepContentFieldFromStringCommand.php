@@ -60,7 +60,7 @@ EOD;
         $inputContentId = $input->getArgument('content-id');
         $inputContentFieldIdentifier = $input->getArgument('content-field-identifier');
         $inputFieldData = ($input->getOption('from-file'))? file_get_contents($input->getArgument('field-data')) : $input->getArgument('field-data');
-        $inputFieldData = json_decode($inputFieldData);
+        $inputFieldData = json_decode($inputFieldData)->$inputContentFieldIdentifier;
         $inputUserId = $input->getOption('user-id');
 
         $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
