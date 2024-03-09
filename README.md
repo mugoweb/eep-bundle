@@ -6,14 +6,17 @@ Currently developed against eZ Platform 2.5 LTS, Ibexa DXP 3.3 LTS & 4.2
 ```
 master : targets Ibexa DXP 3.3 LTS   
 2.5-lts: targets eZPlatform 2.5 LTS   
-3.3-lts: targets Ibexa DXP 3.3 LTS   
+3.3-lts: targets Ibexa DXP 3.3 LTS
+4.6-lts: targets Ibexa DXP 4.6 LTS
+
+(archived)   
 4.2    : targets Ibexa DXP 4.2
 ```
 Bug reports and feature suggestions welcome.
 
 ## Installation
 `composer require mugoweb/eep-bundle:dev-master`   
-_Please check which version of the CMS master is targeting, or use version specific `dev-2.5-lts`, `dev-3.3-lts` or `4.2.x-dev`_
+_Please check which version of the CMS master is targeting, or use version specific `dev-2.5-lts`, `dev-3.3-lts` or `dev-4.6-lts`_
 
 Afterward, you need to enable the bundle.   
 ### eZ Platform
@@ -55,6 +58,7 @@ eep:contenttype:info         [eep:ct:info] Returns content type information
 eep:contenttype:list         [eep:ct:list] Returns content type list
 eep:contenttype:listcontent  [eep:ct:listcontent] Returns content information by content type identifier
 eep:contenttype:listfields   [eep:ct:listfields] Returns content type field list
+
 eep:contenttypefield:info    [eep:ctf:info] Returns content type field information
 
 eep:location:content         [eep:lo:co|eep:lo:content] Returns content id by location id
