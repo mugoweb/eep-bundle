@@ -9,22 +9,22 @@ master : targets Ibexa DXP 4.6 LTS
 3.3-lts: targets Ibexa DXP 3.3 LTS
 4.6-lts: targets Ibexa DXP 4.6 LTS
 
-(archived)
+(archived)   
 4.2    : targets Ibexa DXP 4.2
 ```
 Bug reports and feature suggestions welcome.
 
 ## Installation
-`composer require mugoweb/eep-bundle:dev-master`
+`composer require mugoweb/eep-bundle:dev-master`   
 _Please check which version of the CMS master is targeting, or use version specific `dev-2.5-lts`, `dev-3.3-lts` or `dev-4.6-lts`_
 
-Afterward, you need to enable the bundle.
+Afterward, you need to enable the bundle.   
 ### eZ Platform
-Update `app/AppKernel.php`
+Update `app/AppKernel.php`   
 To enable the bundle in all environments, add `new MugoWeb\Eep\Bundle\MugoWebEepBundle(),` to the `$bundles` array.
 
 ### Ibexa DXP
-Update `config/bundles.php`
+Update `config/bundles.php`   
 To enable the bundle in all environments, add `MugoWeb\Eep\Bundle\MugoWebEepBundle::class => ['all' => true],` to the array.
 
 ## Features
@@ -80,8 +80,8 @@ eep:search:search            [eep:sr:search] Returns search result information
 eep:user:info                [eep:us:info] Returns user information
 eep:user:list                [eep:us:list] Returns user list
 ```
-Symfony's console help `-h` providers further information about command arguments and input/output formats.
-e.g.
+Symfony's console help `-h` providers further information about command arguments and input/output formats.   
+e.g.   
 ```
 $ php bin/console eep:contenttype:listcontent -h
 
@@ -127,10 +127,10 @@ I contentId I mainLocationId I sectionId I currentVersionNo I remoteId          
 _Note: Commands supporting the ```--hide-columns``` option allow for the results table display to be modified by hiding one or more of its columns._
 
 ### eep & friends: awk, xargs, grep ...
-eep shines when it is used in combination with other command line utilities like awk, xargs, grep and many others.
+eep shines when it is used in combination with other command line utilities like awk, xargs, grep and many others.   
 
-Due to the way the data tables are formatted, header and data columns use different column separators, they can be easily parsed and processed further.
-e.g.
+Due to the way the data tables are formatted, header and data columns use different column separators, they can be easily parsed and processed further.   
+e.g.   
 Only return content ids of folder objects.
 ```
 php bin/console eep:contenttype:listcontent folder --limit=6 | awk '$1=="|" {print $2}'
@@ -143,7 +143,7 @@ php bin/console eep:contenttype:listcontent folder --limit=6 | awk '$1=="|" {pri
 51
 ```
 
-Return location ids for those content ids.
+Return location ids for those content ids.   
 ```
 php bin/console eep:contenttype:listcontent folder --limit=6 | awk '$1=="|" {print $2}' > my_content_ids.txt
 
