@@ -3,8 +3,8 @@
 namespace MugoWeb\Eep\Bundle\Query\Solr\CriterionVisitor;
 
 use MugoWeb\Eep\Bundle\Query\Solr\Criterion as EepSolrCriterion;
-use eZ\Publish\API\Repository\Values\Content\Query\Criterion;
-use EzSystems\EzPlatformSolrSearchEngine\Query\CriterionVisitor;
+use Ibexa\Contracts\Core\Repository\Values\Content\Query\Criterion;
+use Ibexa\Contracts\Solr\Query\CriterionVisitor;
 
 /**
  * Visits the Raw criterion.

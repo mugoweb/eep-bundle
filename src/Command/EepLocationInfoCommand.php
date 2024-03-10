@@ -4,11 +4,11 @@ namespace MugoWeb\Eep\Bundle\Command;
 
 use MugoWeb\Eep\Bundle\Services\EepLogger;
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
-use eZ\Publish\API\Repository\LocationService;
-use eZ\Publish\API\Repository\ContentService;
-use eZ\Publish\API\Repository\ContentTypeService;
-use eZ\Publish\API\Repository\PermissionResolver;
-use eZ\Publish\API\Repository\UserService;
+use Ibexa\Contracts\Core\Repository\LocationService;
+use Ibexa\Contracts\Core\Repository\ContentService;
+use Ibexa\Contracts\Core\Repository\ContentTypeService;
+use Ibexa\Contracts\Core\Repository\PermissionResolver;
+use Ibexa\Contracts\Core\Repository\UserService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableSeparator;
@@ -107,7 +107,7 @@ EOD;
             /*
                 eZ\Publish\Core\Repository\Values\Content\Location Object
                 (
-                    [contentInfo:protected] => eZ\Publish\API\Repository\Values\Content\ContentInfo Object
+                    [contentInfo:protected] => Ibexa\Contracts\Core\Repository\Values\Content\ContentInfo Object
                     [path:protected] =>
                     [id:protected] => 43
                     [status] => 1
@@ -148,7 +148,7 @@ EOD;
                     new TableSeparator(),
                     new TableSeparator(),
                     /*
-                        eZ\Publish\API\Repository\Values\Content\ContentInfo Object
+                        Ibexa\Contracts\Core\Repository\Values\Content\ContentInfo Object
                         (
                             [id:protected] => 626
                             [contentTypeId:protected] => 38

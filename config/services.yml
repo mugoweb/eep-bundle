@@ -12,8 +12,8 @@ services:
 
   MugoWeb\Eep\Bundle\Query\Solr\CriterionVisitor\Raw:
     tags:
-      - { name: ezpublish.search.solr.query.content.criterion_visitor }
-      - { name: ezpublish.search.solr.query.location.criterion_visitor }
+      - { name: ibexa.search.solr.query.content.criterion.visitor }
+      - { name: ibexa.search.solr.query.location.criterion.visitor }
 
   EzSystems\PlatformHttpCacheBundle\PurgeClient\RepositoryPrefixDecorator:
-    alias: ezplatform.http_cache.purge_client_decorator
+    alias: ibexa.cache.http.purge_client_decorator

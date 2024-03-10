@@ -4,8 +4,8 @@ A Symfony command bundle to support developers using eZ Platform/Ibexa DXP
 ## Work in progress
 Currently developed against eZ Platform 2.5 LTS, Ibexa DXP 3.3 LTS & 4.6 LTS
 ```
-master : targets Ibexa DXP 3.3 LTS   
-2.5-lts: targets eZPlatform 2.5 LTS   
+master : targets Ibexa DXP 4.6 LTS
+2.5-lts: targets eZPlatform 2.5 LTS
 3.3-lts: targets Ibexa DXP 3.3 LTS
 4.6-lts: targets Ibexa DXP 4.6 LTS
 
