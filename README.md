@@ -36,6 +36,7 @@ eep:cache:purge              [eep:ca:purge] Purge cache by tag(s)
 eep:content:create           [eep:co:create] Create content at location
 eep:content:delete           [eep:co:delete] Delete content
 eep:content:draftcreate      [eep:co:draftcreate] Create draft from content
+eep:content:draftdelete      Deletes content version
 eep:content:draftlist        [eep:co:draftlist] Returns content draft list
 eep:content:draftpublish     [eep:co:draftpublish] Publish content draft
 eep:content:info             [eep:co:info] Returns content information
@@ -47,7 +48,7 @@ eep:content:republish        [eep:co:republish] Re-publishes content by id
 eep:content:reverserelated   [eep:co:reverserelated] Returns reverse related content information
 eep:content:update           [eep:co:update] Update content
 eep:content:updatemeta       [eep:co:updatemeta] Update content meta data
-eep:content:versiondelete    [eep:co:versiondelete] Deletes content version
+eep:content:versiondelete    [eep:co:versiondelete|eep:content:draftdelete|eep:co:draftdelete] Deletes content version
 eep:content:versioninfo      [eep:co:versioninfo] Returns content version information
 
 eep:contentfield:fromstring  [eep:cf:fromstring] Set content field value from JSON string
@@ -69,13 +70,13 @@ eep:location:info            [eep:lo:info] Returns location information
 eep:location:move            [eep:lo:move] Move source location to be child of target location
 eep:location:reveal          [eep:lo:reveal] Reveal location subtree
 eep:location:subtree         [eep:lo:subtree] Returns subtree information
-eep:location:swap            [eep:lo:swap] Swap source- and target location
+eep:location:swap            [eep:lo:swap] Swap source- and target locations
+
+eep:search:search            [eep:sr:search] Returns search result information
 
 eep:section:assigncontent    [eep:se:assigncontent] Assign content to section
 eep:section:list             [eep:se:list] Returns section list
 eep:section:listcontent      [eep:se:listcontent] Returns content list by section identifier
-
-eep:search:search            [eep:sr:search] Returns search result information
 
 eep:user:info                [eep:us:info] Returns user information
 eep:user:list                [eep:us:list] Returns user list
