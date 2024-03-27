@@ -44,7 +44,14 @@ EOD;
 
         $this
             ->setName('eep:content:versiondelete')
-            ->setAliases(array('eep:co:versiondelete'))
+            ->setAliases(
+                array
+                (
+                    'eep:co:versiondelete',
+                    'eep:content:draftdelete',
+                    'eep:co:draftdelete'
+                )
+            )
             ->setDescription('Deletes content version')
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
             ->addArgument('version-number', InputArgument::REQUIRED, 'Version number')
