@@ -15,7 +15,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class EepContentVersionDeleteCommand extends Command
+class EepContentDraftDeleteCommand extends Command
 {
     public function __construct
     (
@@ -43,9 +43,9 @@ TODO
 EOD;
 
         $this
-            ->setName('eep:content:versiondelete')
-            ->setAliases(array('eep:co:versiondelete'))
-            ->setDescription('Deletes content version')
+            ->setName('eep:content:draftdelete')
+            ->setAliases(array('eep:co:draftdelete'))
+            ->setDescription('Deletes content draft version')
             ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
             ->addArgument('version-number', InputArgument::REQUIRED, 'Version number')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
@@ -62,10 +62,23 @@ EOD;
         $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
         $contentInfo = $this->contentService->loadContentInfo($inputContentId);
+        $versionInfo = $this->contentService->loadVersionInfoById($inputContentId, $inputVersionNumber);
 
         $io = new SymfonyStyle($input, $output);
+        $isDraftVersion = ($versionInfo->status === \eZ\Publish\API\Repository\Values\Content\VersionInfo::STATUS_DRAFT)? true : false;
+        if (!$isDraftVersion)
+        {
+            $isNotDraftError = sprintf(
+                'Version %d of content "%s" is not a draft version. Aborting.',
+                $inputVersionNumber,
+                $contentInfo->name,
+            );
+            $io->error($isNotDraftError);
+            $this->logger->error($this->getName() . " error", array($isNotDraftError));
+        }
+
         $confirm = $input->getOption('no-interaction');
-        if (!$confirm)
+        if ($isDraftVersion && !$confirm)
         {
             $confirm = $io->confirm(
                 sprintf(
@@ -77,7 +90,7 @@ EOD;
             );
         }
 
-        if ($confirm)
+        if ($isDraftVersion && $confirm)
         {
             $loggerContext = array
             (
@@ -104,7 +117,7 @@ EOD;
                 $this->logger->error($this->getName() . " error", array($e->getMessage()));
             }
         }
-        else
+        elseif ($isDraftVersion && !$confirm)
         {
             $io->writeln('Delete cancelled by user action');
         }
