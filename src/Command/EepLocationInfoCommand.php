@@ -9,6 +9,7 @@ use Ibexa\Contracts\Core\Repository\ContentService;
 use Ibexa\Contracts\Core\Repository\ContentTypeService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
+use Ibexa\Contracts\Core\Repository\URLAliasService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableSeparator;
@@ -27,6 +28,7 @@ class EepLocationInfoCommand extends Command
         ContentTypeService $contentTypeService,
         PermissionResolver $permissionResolver,
         UserService $userService,
+        URLAliasService $urlAliasService,
         EepLogger $logger
     )
     {
@@ -35,6 +37,7 @@ class EepLocationInfoCommand extends Command
         $this->contentTypeService = $contentTypeService;
         $this->permissionResolver = $permissionResolver;
         $this->userService = $userService;
+        $this->urlAliasService = $urlAliasService;
         $this->logger = $logger;
 
         parent::__construct();
@@ -137,6 +140,8 @@ EOD;
             array('sortOrder', $location->sortOrder),
             new TableSeparator(),
             array('childCount', $this->locationService->getLocationChildCount($location)),
+            array('subtreeSize', $this->locationService->getSubtreeSize($location)),
+            array('urlAlias', $this->urlAliasService->reverseLookup($location)->path),
         );
         if ($inputWithContentInfo)
         {
@@ -197,7 +202,6 @@ EOD;
                     array('contentTypeIdentifier', $this->contentTypeService->loadContentType($location->getContentInfo()->contentTypeId)->identifier),
                     array('contentModificationDateTimestamp', $location->getContentInfo()->modificationDate->format('U')),
                     array('contentPublishedDateTimestamp', $location->getContentInfo()->publishedDate->format('U')),
-                    // reverse related count?
                 )
             );
         }

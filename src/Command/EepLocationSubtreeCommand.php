@@ -12,6 +12,7 @@ use Ibexa\Contracts\Core\Repository\LocationService;
 use Ibexa\Contracts\Core\Repository\ContentTypeService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
+use Ibexa\Contracts\Core\Repository\URLAliasService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableSeparator;
@@ -30,6 +31,7 @@ class EepLocationSubtreeCommand extends Command
         ContentTypeService $contentTypeService,
         PermissionResolver $permissionResolver,
         UserService $userService,
+        URLAliasService $urlAliasService,
         EepLogger $logger
     )
     {
@@ -38,6 +40,7 @@ class EepLocationSubtreeCommand extends Command
         $this->contentTypeService = $contentTypeService;
         $this->permissionResolver = $permissionResolver;
         $this->userService = $userService;
+        $this->urlAliasService = $urlAliasService;
         $this->logger = $logger;
 
         parent::__construct();
@@ -99,10 +102,12 @@ EOD;
                 'contentTypeId',
                 'contentTypeIdentifier *',
                 'pathString',
+                'urlAlias *',
                 'priority',
                 'hidden',
                 'invisible',
                 'children *',
+                'subtreeSize *',
                 'name',
             ),
         );
@@ -155,10 +160,12 @@ EOD;
                 if(!in_array('contentTypeId', $hideColumns)) { $row[] = $searchHit->valueObject->contentInfo->contentTypeId; }
                 if(!in_array('contentTypeIdentifier', $hideColumns)) { $row[] = $this->contentTypeService->loadContentType($searchHit->valueObject->contentInfo->contentTypeId)->identifier; }
                 if(!in_array('pathString', $hideColumns)) { $row[] = $searchHit->valueObject->pathString; }
+                if(!in_array('urlAlias', $hideColumns)) { $row[] = $this->urlAliasService->reverseLookup($searchHit->valueObject)->path; }
                 if(!in_array('priority', $hideColumns)) { $row[] = $searchHit->valueObject->priority; }
                 if(!in_array('hidden', $hideColumns)) { $row[] = (integer) $searchHit->valueObject->hidden; }
                 if(!in_array('invisible', $hideColumns)) { $row[] = (integer) $searchHit->valueObject->invisible; }
                 if(!in_array('children', $hideColumns)) { $row[] = $this->locationService->getLocationChildCount($searchHit->valueObject); }
+                if(!in_array('subtreeSize', $hideColumns)) { $row[] = $this->locationService->getSubtreeSize($searchHit->valueObject); }
                 if(!in_array('name', $hideColumns)) { $row[] = $searchHit->valueObject->contentInfo->name; }
 
                 $rows[] = $row;
