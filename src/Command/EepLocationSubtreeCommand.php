@@ -12,6 +12,7 @@ use eZ\Publish\API\Repository\LocationService;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
+use eZ\Publish\API\Repository\URLAliasService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableSeparator;
@@ -30,6 +31,7 @@ class EepLocationSubtreeCommand extends Command
         ContentTypeService $contentTypeService,
         PermissionResolver $permissionResolver,
         UserService $userService,
+        URLAliasService $urlAliasService,
         EepLogger $logger
     )
     {
@@ -38,6 +40,7 @@ class EepLocationSubtreeCommand extends Command
         $this->contentTypeService = $contentTypeService;
         $this->permissionResolver = $permissionResolver;
         $this->userService = $userService;
+        $this->urlAliasService = $urlAliasService;
         $this->logger = $logger;
 
         parent::__construct();
@@ -99,6 +102,7 @@ EOD;
                 'contentTypeId',
                 'contentTypeIdentifier *',
                 'pathString',
+                'urlAlias *',
                 'priority',
                 'hidden',
                 'invisible',
@@ -155,6 +159,7 @@ EOD;
                 if(!in_array('contentTypeId', $hideColumns)) { $row[] = $searchHit->valueObject->contentInfo->contentTypeId; }
                 if(!in_array('contentTypeIdentifier', $hideColumns)) { $row[] = $this->contentTypeService->loadContentType($searchHit->valueObject->contentInfo->contentTypeId)->identifier; }
                 if(!in_array('pathString', $hideColumns)) { $row[] = $searchHit->valueObject->pathString; }
+                if(!in_array('urlAlias', $hideColumns)) { $row[] = $this->urlAliasService->reverseLookup($searchHit->valueObject)->path; }
                 if(!in_array('priority', $hideColumns)) { $row[] = $searchHit->valueObject->priority; }
                 if(!in_array('hidden', $hideColumns)) { $row[] = (integer) $searchHit->valueObject->hidden; }
                 if(!in_array('invisible', $hideColumns)) { $row[] = (integer) $searchHit->valueObject->invisible; }

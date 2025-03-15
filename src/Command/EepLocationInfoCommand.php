@@ -9,6 +9,7 @@ use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
+use eZ\Publish\API\Repository\URLAliasService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableSeparator;
@@ -27,6 +28,7 @@ class EepLocationInfoCommand extends Command
         ContentTypeService $contentTypeService,
         PermissionResolver $permissionResolver,
         UserService $userService,
+        URLAliasService $urlAliasService,
         EepLogger $logger
     )
     {
@@ -35,6 +37,7 @@ class EepLocationInfoCommand extends Command
         $this->contentTypeService = $contentTypeService;
         $this->permissionResolver = $permissionResolver;
         $this->userService = $userService;
+        $this->urlAliasService = $urlAliasService;
         $this->logger = $logger;
 
         parent::__construct();
@@ -137,6 +140,7 @@ EOD;
             array('sortOrder', $location->sortOrder),
             new TableSeparator(),
             array('childCount', $this->locationService->getLocationChildCount($location)),
+            array('urlAlias', $this->urlAliasService->reverseLookup($location)->path)
         );
         if ($inputWithContentInfo)
         {
