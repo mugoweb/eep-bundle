@@ -81,9 +81,10 @@ EOD;
         {
             $confirm = $io->confirm(
                 sprintf(
-                    'Are you sure you want to move "%s" subtree (%d children) into "%s"? This may take a while for subtrees with a large number of nested children',
+                    'Are you sure you want to move "%s" subtree (%d children; subtree size %d) into "%s"? This may take a while for subtrees with a large number of nested children',
                     $sourceLocation->contentInfo->name,
                     $this->locationService->getLocationChildCount($sourceLocation),
+                    $this->locationService->getSubtreeSize($sourceLocation),
                     $targetLocation->contentInfo->name
                 ),
                 false

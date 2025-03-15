@@ -64,9 +64,10 @@ EOD;
         {
             $confirm = $io->confirm(
                 sprintf(
-                    'Are you sure you want to delete "%s" subtree (%d children)? This may take a while for subtrees with a large number of nested children',
+                    'Are you sure you want to delete "%s" subtree (%d children; subtree size %d)? This may take a while for subtrees with a large number of nested children',
                     $location->contentInfo->name,
-                    $this->locationService->getLocationChildCount($location)
+                    $this->locationService->getLocationChildCount($location),
+                    $this->locationService->getSubtreeSize($location)
                 ),
                 false
             );
