@@ -83,6 +83,7 @@ eep:user:list                [eep:us:list] Returns user list
 ```
 Symfony's console help `-h` providers further information about command arguments and input/output formats.   
 e.g.   
+
 ```
 $ php bin/console eep:contenttype:listcontent -h
 
@@ -110,8 +111,9 @@ Options:
 ```
 
 ### Example output
-`php bin/console eep:contenttype:listcontent folder --limit=6`
 ```
+$ php bin/console eep:contenttype:listcontent folder --limit=6
+
 +-----------+----------------+-----------+------------------+----------------------------------+---------------------+
 I eep:contenttype:listcontent [folder]                                                         I Results: 1 - 6 / 12 I
 +-----------+----------------+-----------+------------------+----------------------------------+---------------------+
@@ -133,8 +135,9 @@ eep shines when it is used in combination with other command line utilities like
 Due to the way the data tables are formatted, header and data columns use different column separators, they can be easily parsed and processed further.   
 e.g.   
 Only return content ids of folder objects.
+
 ```
-php bin/console eep:contenttype:listcontent folder --limit=6 | awk '$1=="|" {print $2}'
+$ php bin/console eep:contenttype:listcontent folder --limit=6 | awk '$1=="|" {print $2}'
 
 1
 41
@@ -145,10 +148,11 @@ php bin/console eep:contenttype:listcontent folder --limit=6 | awk '$1=="|" {pri
 ```
 
 Return location ids for those content ids.   
-```
-php bin/console eep:contenttype:listcontent folder --limit=6 | awk '$1=="|" {print $2}' > my_content_ids.txt
 
-cat my_content_ids.txt | xargs -ICONTENTID php bin/console eep:content:location CONTENTID
+```
+$ php bin/console eep:contenttype:listcontent folder --limit=6 | awk '$1=="|" {print $2}' > my_content_ids.txt
+
+$ cat my_content_ids.txt | xargs -ICONTENTID php bin/console eep:content:location CONTENTID
 
 2
 43
@@ -158,3 +162,94 @@ cat my_content_ids.txt | xargs -ICONTENTID php bin/console eep:content:location 
 53
 ```
 _(Could also be combined into a single pipeline by omitting the file output/input step)_
+
+## Example use cases
+
+### Content reports
+A site is preparing for content migration and requires a report of file type content within the content structure.   
+e.g.
+
+```
+site/
+├── article1
+│   ├── file
+│   ├── file
+│   ├── file
+│   ├── image
+│   ├── image
+│   └── video
+└── article2
+    ├── file
+    ├── video
+    ├── video
+    ├── video
+    └── video
+```
+Using the eep:location:subtree command and filtering via awk can generate a quick CSV report.
+
+```
+# get list of all location 2 subtree content
+# from the tables data columns ($1=="|") select file rows (col $8=="file")
+# from those rows, print CSV of: locationId, contentId, contentTypeIdentifier, pathString, urlAlias, and name
+$ php bin/console eep:location:subtree 2 | awk '$1=="|" && $8=="file" {print $2","$4","$8","$10","$12","$24}'
+
+# returns something like
+60,59,file,/1/2/59/60/,/article1/file,File
+61,60,file,/1/2/59/61/,/article1/file2,File
+62,61,file,/1/2/59/62/,/article1/file3,File
+66,65,file,/1/2/65/66/,/article2/file,File
+67,66,file,/1/2/65/67/,/article2/file2,File
+68,67,file,/1/2/65/68/,/article2/file3,File
+```
+
+### Content migration
+A site has a collection of articles that each have children representing assets of various types.   
+e.g.
+
+```
+site/
+├── article1
+│   ├── file
+│   ├── file
+│   ├── file
+│   ├── image
+│   ├── image
+│   └── video
+└── article2
+    ├── file
+    ├── video
+    ├── video
+    ├── video
+    └── video
+```
+
+To allow easier re-use, all assets should be moved to a central location separated by type.   
+e.g.
+
+```
+media/
+└── article_assets
+    ├── file
+    ├── image
+    └── video
+```
+
+Combining eep's commands and core command line tools (awk, xargs) migration pipelines can be created easily.
+
+```
+# get list of all article content
+# get location ids (col $4) from the article list data columns ($1=="|")
+# save the location ids to file
+$ php bin/console eep:contenttype:listcontent article | awk '$1=="|" {print $4}' > article_location_ids.txt
+
+# iterate over saved article location ids 
+# from the article subtree data columns get the file location id (col $2) for file content type (col $8) items
+# save the location ids to file
+$ cat article_location_ids.txt | xargs -ILOCATION_ID php bin/console eep:location:subtree LOCATION_ID | awk '$1=="|" && $8=="file" {print $2}' > file_location_ids.txt
+
+# move all file content to the central assets location for file content (location id: 100) without do prompting for user confirmation
+$ cat file_location_ids.txt | xargs -ILOCATION_ID php bin/console eep:location:move --no-interaction LOCATION_ID 100
+
+# repeat for image and video content
+```
+
