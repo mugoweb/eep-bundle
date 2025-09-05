@@ -2,14 +2,14 @@
 
 namespace MugoWeb\Eep\Bundle\Services;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
 class EepLogger extends Logger
 {
-    public function __construct(ContainerInterface $container)
+    public function __construct(KernelInterface $kernel)
     {
-        parent::__construct('eep', [new StreamHandler($container->get('kernel')->getLogDir() . "/eep.log")]);
+        parent::__construct('eep', [new StreamHandler($kernel->getLogDir() . "/eep.log")]);
     }
 }
