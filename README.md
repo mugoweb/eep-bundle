@@ -2,12 +2,13 @@
 A Symfony command bundle to support developers using eZ Platform/Ibexa DXP
 
 ## Work in progress
-Currently developed against eZ Platform 2.5 LTS, Ibexa DXP 3.3 LTS & 4.6 LTS
+Currently developed against eZ Platform 2.5 LTS, Ibexa DXP 3.3 LTS, 4.6 LTS, & 5.0 LTS
 ```
-master : targets Ibexa DXP 4.6 LTS
+master : targets Ibexa DXP 5.0 LTS
 2.5-lts: targets eZPlatform 2.5 LTS
 3.3-lts: targets Ibexa DXP 3.3 LTS
 4.6-lts: targets Ibexa DXP 4.6 LTS
+5.0-lts: targets Ibexa DXP 5.0 LTS
 
 (archived)   
 4.2    : targets Ibexa DXP 4.2
@@ -16,7 +17,7 @@ Bug reports and feature suggestions welcome.
 
 ## Installation
 `composer require mugoweb/eep-bundle:dev-master`   
-_Please check which version of the CMS master is targeting, or use version specific `dev-2.5-lts`, `dev-3.3-lts` or `dev-4.6-lts`_
+_Please check which version of the CMS master is targeting, or use version specific `dev-2.5-lts`, `dev-3.3-lts`, `dev-4.6-lts` or_`dev-5.0-lts`
 
 Afterward, you need to enable the bundle.   
 ### eZ Platform
