@@ -3,7 +3,7 @@
 namespace MugoWeb\Eep\Bundle\Query\Solr\CriterionVisitor;
 
 use MugoWeb\Eep\Bundle\Query\Solr\Criterion as EepSolrCriterion;
-use Ibexa\Contracts\Core\Repository\Values\Content\Query\Criterion;
+use Ibexa\Contracts\Core\Repository\Values\Content\Query\CriterionInterface;
 use Ibexa\Contracts\Solr\Query\CriterionVisitor;
 
 /**
@@ -16,7 +16,7 @@ class Raw extends CriterionVisitor
      *
      * @return bool
      */
-    public function canVisit(Criterion $criterion)
+    public function canVisit(CriterionInterface $criterion): bool
     {
         return $criterion instanceof EepSolrCriterion\Raw;
     }
@@ -28,7 +28,7 @@ class Raw extends CriterionVisitor
      *
      * @return string
      */
-    public function visit(Criterion $criterion, CriterionVisitor $subVisitor = null)
+    public function visit(CriterionInterface $criterion, CriterionVisitor $subVisitor = null): string
     {
         return $criterion->value[0];
     }

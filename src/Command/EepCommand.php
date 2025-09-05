@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class EepCommand extends Command
 {
-    protected function configure()
+    protected function configure(): void
     {
         $help = <<<EOD
 TODO
@@ -22,7 +22,7 @@ EOD;
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // TODO: maybe show some examples here with eep, awk, xargs
         // or get rid of the command

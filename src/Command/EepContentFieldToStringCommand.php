@@ -2,9 +2,7 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
-use MugoWeb\Eep\Bundle\Services\EepLogger;
 use Ibexa\Contracts\Core\Repository\ContentService;
-use Ibexa\Contracts\Core\Repository\FieldTypeService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
 use Symfony\Component\Console\Command\Command;
@@ -18,23 +16,15 @@ class EepContentFieldToStringCommand extends Command
 {
     public function __construct
     (
-        ContentService $contentService,
-        FieldTypeService $fieldTypeService,
-        PermissionResolver $permissionResolver,
-        UserService $userService,
-        EepLogger $logger
+        private readonly ContentService $contentService,
+        private readonly PermissionResolver $permissionResolver,
+        private readonly UserService $userService
     )
     {
-        $this->contentService = $contentService;
-        $this->fieldTypeService = $fieldTypeService;
-        $this->permissionResolver = $permissionResolver;
-        $this->userService = $userService;
-        $this->logger = $logger;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $help = <<<EOD
 TODO
@@ -53,7 +43,7 @@ EOD;
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $inputContentId = $input->getArgument('content-id');
         $inputContentFieldIdentifier = $input->getArgument('content-field-identifier');
@@ -63,23 +53,22 @@ EOD;
 
         $content = $this->contentService->loadContent($inputContentId);
         $field = $content->getField($inputContentFieldIdentifier);
-        $fieldType = $this->fieldTypeService->getFieldType($field->fieldTypeIdentifier);
 
         switch ($field->fieldTypeIdentifier)
         {
-            case 'ezboolean':
+            case 'ibexa_boolean':
             {
                 $fieldValueString = (boolean) $field->value ? 1 : 0;
             }
             break;
 
-            case 'ezobjectrelation':
+            case 'ibexa_object_relation':
             {
                 $fieldValueString = (integer) $field->value->destinationContentId;
             }
             break;
 
-            case 'ezobjectrelationlist':
+            case 'ibexa_object_relation':
             {
                 $fieldValueString = $field->value->destinationContentIds;
             }

@@ -9,7 +9,12 @@ use Ibexa\Contracts\Core\Repository\ContentService;
 use Ibexa\Contracts\Core\Repository\ContentTypeService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
-use Ibexa\Contracts\Core\Repository\Exceptions;
+use Ibexa\Contracts\Core\Repository\Exceptions\BadStateException;
+use Ibexa\Contracts\Core\Repository\Exceptions\ContentFieldValidationException;
+use Ibexa\Contracts\Core\Repository\Exceptions\ContentValidationException;
+use Ibexa\Contracts\Core\Repository\Exceptions\InvalidArgumentException;
+use Ibexa\Contracts\Core\Repository\Exceptions\NotFoundException;
+use Ibexa\Contracts\Core\Repository\Exceptions\UnauthorizedException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Input\InputArgument;
@@ -22,25 +27,18 @@ class EepContentCreateCommand extends Command
 {
     public function __construct
     (
-        LocationService $locationService,
-        ContentService $contentService,
-        ContentTypeService $contentTypeService,
-        PermissionResolver $permissionResolver,
-        UserService $userService,
-        EepLogger $logger
+        private readonly LocationService $locationService,
+        private readonly ContentService $contentService,
+        private readonly ContentTypeService $contentTypeService,
+        private readonly PermissionResolver $permissionResolver,
+        private readonly UserService $userService,
+        private readonly EepLogger $logger
     )
     {
-        $this->locationService = $locationService;
-        $this->contentService = $contentService;
-        $this->contentTypeService = $contentTypeService;
-        $this->permissionResolver = $permissionResolver;
-        $this->userService = $userService;
-        $this->logger = $logger;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $help = <<<EOD
 <info>Usage</info>
@@ -52,42 +50,42 @@ eep:content:create --from-file folder 43 './foobar.json' eng-GB
 
 <info>Content FieldType => Input format map</info>
 -------------------------------------
-<info>Text line [ezstring]</info>
+<info>Text line [ibexa_string]</info>
 A string e.g. 'foobar'
 
-<info>Text block [eztext]</info>
+<info>Text block [ibexa_text]</info>
 A string e.g. 'foobar'
 
-<info>Rich text [ezrichtext]</info>
+<info>Rich text [ibexa_richtext]</info>
 A docbook XML string
 e.g.
 '<section xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ezxhtml="http://ez.no/xmlns/ezpublish/docbook/xhtml" xmlns:ezcustom="http://ez.no/xmlns/ezpublish/docbook/custom" version="5.0-variant ezpublish-1.0"><para>Lorem <emphasis role="strong">ipsum</emphasis> dolor sit amet.</para></section>'
 
-<info>Image [ezimage]</info>
+<info>Image [ibexa_image]</info>
 An image path as a simple string e.g. 'images/foobar.jpg'
 
-<info>File [ezbinaryfile]</info>
+<info>File [ibexa_binaryfile]</info>
 A file path as a simple string e.g. 'images/foobar.txt'
 
-<info>Date and time [ezdatetime]</info>
+<info>Date and time [ibexa_datetime]</info>
 A timestamp integer or PHP DateTime compatible string
 e.g.
 1661947200
 'Wednesday, 31-Aug-22 12:00:00 GMT+0000'
 
-<info>Date [ezdate]</info>
+<info>Date [ibexa_date]</info>
 The date value as a timestamp integer or PHP DateTime compatible string
 e.g.
 1661904000
 'Wednesday, 31-Aug-22 00:00:00 GMT+0000'
 
-<info>Checkbox [ezboolean]</info>
+<info>Checkbox [ibexa_boolean]</info>
 A true/false integer e.g. 0 or 1
 
-<info>Content relation (single) [ezobjectrelation]</info>
+<info>Content relation (single) [ibexa_object_relation]</info>
 A content id integer e.g. 41
 
-<info>Content relations (multiple) [ezobjectrelationlist]</info>
+<info>Content relations (multiple) [ibexa_object_relation_list]</info>
 An array of content ids e.g. [1,41]
 
 
@@ -127,7 +125,7 @@ EOD;
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $inputContentTypeIdentifier = $input->getArgument('content-type-identifier');
         $inputParentLocationId = $input->getArgument('parent-location-id');
@@ -176,7 +174,7 @@ EOD;
                 {
                     switch ($contentType->getFieldDefinition($fieldIdentifier)->fieldTypeIdentifier)
                     {
-                        case 'ezboolean':
+                        case 'ibexa_boolean':
                         {
                             // need to cast; fromString not implemented to support boolean like values
                             $fieldValue = (boolean) $fieldValue;
@@ -257,8 +255,11 @@ EOD;
             }
             catch
             (
+                BadStateException |
                 ContentFieldValidationException |
                 ContentValidationException |
+                InvalidArgumentException |
+                NotFoundException |
                 UnauthorizedException
                 $e
             )

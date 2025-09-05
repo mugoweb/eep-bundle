@@ -2,7 +2,6 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
-use MugoWeb\Eep\Bundle\Services\EepLogger;
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
 use Ibexa\Contracts\Core\Repository\LocationService;
 use Ibexa\Contracts\Core\Repository\ContentService;
@@ -23,27 +22,18 @@ class EepLocationInfoCommand extends Command
 {
     public function __construct
     (
-        LocationService $locationService,
-        ContentService $contentService,
-        ContentTypeService $contentTypeService,
-        PermissionResolver $permissionResolver,
-        UserService $userService,
-        URLAliasService $urlAliasService,
-        EepLogger $logger
+        private readonly LocationService $locationService,
+        private readonly ContentService $contentService,
+        private readonly ContentTypeService $contentTypeService,
+        private readonly PermissionResolver $permissionResolver,
+        private readonly UserService $userService,
+        private readonly URLAliasService $urlAliasService
     )
     {
-        $this->locationService = $locationService;
-        $this->contentService = $contentService;
-        $this->contentTypeService = $contentTypeService;
-        $this->permissionResolver = $permissionResolver;
-        $this->userService = $userService;
-        $this->urlAliasService = $urlAliasService;
-        $this->logger = $logger;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $help = <<<EOD
 TODO
@@ -61,7 +51,7 @@ EOD;
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $inputLocationId = $input->getArgument('location-id');
         $inputUserId = $input->getOption('user-id');
@@ -107,25 +97,6 @@ EOD;
 
         $rows = array
         (
-            /*
-                eZ\Publish\Core\Repository\Values\Content\Location Object
-                (
-                    [contentInfo:protected] => Ibexa\Contracts\Core\Repository\Values\Content\ContentInfo Object
-                    [path:protected] =>
-                    [id:protected] => 43
-                    [status] => 1
-                    [priority:protected] => 0
-                    [hidden:protected] =>
-                    [invisible:protected] =>
-                    [remoteId:protected] => 75c715a51699d2d309a924eca6a95145
-                    [parentLocationId:protected] => 1
-                    [pathString:protected] => /1/43/
-                    [depth:protected] => 1
-                    [sortField:protected] => 8
-                    [sortOrder:protected] => 1
-                    [content:protected] => eZ\Publish\Core\Repository\Values\Content\ContentProxy Object
-                )
-            */
             // location details
             array('id', $location->id),
             array('status', $location->status),
@@ -152,37 +123,6 @@ EOD;
                 (
                     new TableSeparator(),
                     new TableSeparator(),
-                    /*
-                        Ibexa\Contracts\Core\Repository\Values\Content\ContentInfo Object
-                        (
-                            [id:protected] => 626
-                            [contentTypeId:protected] => 38
-                            [name:protected] => Media
-                            [sectionId:protected] => 3
-                            [currentVersionNo:protected] => 1
-                            [published:protected] => 1
-                            [ownerId:protected] => 59
-                            [modificationDate:protected] => DateTime Object
-                                (
-                                    [date] => 2018-11-08 02:16:23.000000
-                                    [timezone_type] => 3
-                                    [timezone] => America/Edmonton
-                                )
-
-                            [publishedDate:protected] => DateTime Object
-                                (
-                                    [date] => 2018-11-08 02:16:23.000000
-                                    [timezone_type] => 3
-                                    [timezone] => America/Edmonton
-                                )
-
-                            [alwaysAvailable:protected] => 0
-                            [remoteId:protected] => 8faf6ac73303080f7c264d6e3af5ca66
-                            [mainLanguageCode:protected] => eng-CA
-                            [mainLocationId:protected] => 43
-                            [status:protected] => 1
-                        )
-                    */
                     // location contentInfo details
                     array('contentId', $location->getContentInfo()->id),
                     array('contentTypeId', $location->getContentInfo()->contentTypeId),

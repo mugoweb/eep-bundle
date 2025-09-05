@@ -2,8 +2,6 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
-use eZ\Publish\Core\REST\Server\Input\Parser\ContentQuery;
-use MugoWeb\Eep\Bundle\Services\EepLogger;
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
 use Ibexa\Contracts\Core\Repository\Values\Content\LocationQuery;
 use Ibexa\Contracts\Core\Repository\Values\Content\Query\Criterion\ContentTypeIdentifier;
@@ -13,7 +11,6 @@ use Ibexa\Contracts\Core\Repository\UserService;
 use MugoWeb\Eep\Bundle\Services\EepUtilities;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,21 +20,15 @@ class EepUserListCommand extends Command
 {
     public function __construct
     (
-        SearchService $searchService,
-        PermissionResolver $permissionResolver,
-        UserService $userService,
-        EepLogger $logger
+        private readonly SearchService $searchService,
+        private readonly PermissionResolver $permissionResolver,
+        private readonly UserService $userService
     )
     {
-        $this->searchService = $searchService;
-        $this->permissionResolver = $permissionResolver;
-        $this->userService = $userService;
-        $this->logger = $logger;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $help = <<<EOD
 TODO
@@ -56,7 +47,7 @@ EOD;
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $contentTypeIdentifier = 'user';
         $inputUserId = $input->getOption('user-id');

@@ -17,21 +17,16 @@ class EepCachePurgeCommand extends Command
 {
     public function __construct
     (
-        RepositoryPrefixDecorator $purgeClient,
-        PermissionResolver $permissionResolver,
-        UserService $userService,
-        EepLogger $logger
+        private readonly RepositoryPrefixDecorator $purgeClient,
+        private readonly PermissionResolver $permissionResolver,
+        private readonly UserService $userService,
+        private readonly EepLogger $logger
     )
     {
-        $this->purgeClient = $purgeClient;
-        $this->permissionResolver = $permissionResolver;
-        $this->userService = $userService;
-        $this->logger = $logger;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $help = <<<EOD
 TODO
@@ -48,7 +43,7 @@ EOD;
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $inputTags = $input->getArgument('tags');
         $inputUserId = $input->getOption('user-id');
@@ -85,7 +80,7 @@ EOD;
                 $io->success('Purged: ' . $tagString);
                 $this->logger->info($this->getName() . " successful");
             }
-            catch (Exception $e)
+            catch (\Exception $e)
             {
                 $io->error($e->getMessage());
                 $this->logger->error($this->getName() . " error", array($e->getMessage()));

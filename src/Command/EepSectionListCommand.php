@@ -2,7 +2,6 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
-use MugoWeb\Eep\Bundle\Services\EepLogger;
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
 use Ibexa\Contracts\Core\Repository\SectionService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
@@ -18,21 +17,15 @@ class EepSectionListCommand extends Command
 {
     public function __construct
     (
-        SectionService $sectionService,
-        PermissionResolver $permissionResolver,
-        UserService $userService,
-        EepLogger $logger
+        private readonly SectionService $sectionService,
+        private readonly PermissionResolver $permissionResolver,
+        private readonly UserService $userService
     )
     {
-        $this->sectionService = $sectionService;
-        $this->permissionResolver = $permissionResolver;
-        $this->userService = $userService;
-        $this->logger = $logger;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $help = <<<EOD
 TODO
@@ -49,7 +42,7 @@ EOD;
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $inputUserId = $input->getOption('user-id');
 

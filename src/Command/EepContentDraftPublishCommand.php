@@ -2,12 +2,12 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
-use eZ\Publish\Core\Base\Exceptions\BadStateException;
 use MugoWeb\Eep\Bundle\Services\EepLogger;
 use Ibexa\Contracts\Core\Repository\ContentService;
-use Ibexa\Contracts\Core\Repository\ContentTypeService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
+use Ibexa\Contracts\Core\Repository\Exceptions\BadStateException;
+use Ibexa\Contracts\Core\Repository\Exceptions\UnauthorizedException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,23 +19,16 @@ class EepContentDraftPublishCommand extends Command
 {
     public function __construct
     (
-        ContentService $contentService,
-        ContentTypeService $contentTypeService,
-        PermissionResolver $permissionResolver,
-        UserService $userService,
-        EepLogger $logger
+        private readonly ContentService $contentService,
+        private readonly PermissionResolver $permissionResolver,
+        private readonly UserService $userService,
+        private readonly EepLogger $logger
     )
     {
-        $this->contentService = $contentService;
-        $this->contentTypeService = $contentTypeService;
-        $this->permissionResolver = $permissionResolver;
-        $this->userService = $userService;
-        $this->logger = $logger;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $help = <<<EOD
 TODO
@@ -53,7 +46,7 @@ EOD;
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $inputContentId = $input->getArgument('content-id');
         $inputVersionNumber = $input->getArgument('version-number');
@@ -96,8 +89,9 @@ EOD;
             }
             catch
             (
-                UnauthorizedException |
-                BadStateException $e
+                BadStateException |
+                UnauthorizedException
+                $e
             )
             {
                 $io->error($e->getMessage());

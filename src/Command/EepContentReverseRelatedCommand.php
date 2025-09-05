@@ -2,17 +2,15 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
-use MugoWeb\Eep\Bundle\Services\EepLogger;
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
+use MugoWeb\Eep\Bundle\Services\EepUtilities;
 use Ibexa\Contracts\Core\Repository\ContentService;
 use Ibexa\Contracts\Core\Repository\ContentTypeService;
 use Ibexa\Contracts\Core\Repository\SectionService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
-use MugoWeb\Eep\Bundle\Services\EepUtilities;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
-use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -23,25 +21,17 @@ class EepContentReverseRelatedCommand extends Command
 {
     public function __construct
     (
-        ContentService $contentService,
-        ContentTypeService $contentTypeService,
-        SectionService $sectionService,
-        PermissionResolver $permissionResolver,
-        UserService $userService,
-        EepLogger $logger
+        private readonly ContentService $contentService,
+        private readonly ContentTypeService $contentTypeService,
+        private readonly SectionService $sectionService,
+        private readonly PermissionResolver $permissionResolver,
+        private readonly UserService $userService
     )
     {
-        $this->contentService = $contentService;
-        $this->contentTypeService = $contentTypeService;
-        $this->sectionService = $sectionService;
-        $this->permissionResolver = $permissionResolver;
-        $this->userService = $userService;
-        $this->logger = $logger;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $help = <<<EOD
 TODO
@@ -61,7 +51,7 @@ EOD;
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $inputContentId = $input->getArgument('content-id');
         $inputUserId = $input->getOption('user-id');

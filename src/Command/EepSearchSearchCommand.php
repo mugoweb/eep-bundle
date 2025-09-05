@@ -12,9 +12,9 @@ use Ibexa\Contracts\Core\Repository\LocationService;
 use Ibexa\Contracts\Core\Repository\ContentTypeService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
+use Ibexa\Contracts\Core\Repository\Exceptions\InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
-use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -26,27 +26,19 @@ class EepSearchSearchCommand extends Command
 {
     public function __construct
     (
-        SearchService $searchService,
-        LocationService $locationService,
-        ContentTypeService $contentTypeService,
-        PermissionResolver $permissionResolver,
-        UserService $userService,
-        EepLogger $logger,
-        ParameterBagInterface $params
+        private readonly SearchService $searchService,
+        private readonly LocationService $locationService,
+        private readonly ContentTypeService $contentTypeService,
+        private readonly PermissionResolver $permissionResolver,
+        private readonly UserService $userService,
+        private readonly EepLogger $logger,
+        private readonly ParameterBagInterface $params
     )
     {
-        $this->searchService = $searchService;
-        $this->locationService = $locationService;
-        $this->contentTypeService = $contentTypeService;
-        $this->permissionResolver = $permissionResolver;
-        $this->userService = $userService;
-        $this->logger = $logger;
-        $this->params = $params;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $help = <<<EOD
 TODO
@@ -69,7 +61,7 @@ EOD;
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
@@ -86,15 +78,10 @@ EOD;
         $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
         $query = new LocationQuery();
-        $query->query = new Criterion\FullText($inputQuery);
-        if ($input->getOption('raw-query'))
+        $query->query = ($input->getOption('raw-query'))? new EepSolrCriterion\Raw($inputQuery) : new Criterion\FullText($inputQuery);
+        if ($inputFilter)
         {
-            $query->query = new EepSolrCriterion\Raw($inputQuery);
-        }
-        $query->filter = ($input->getArgument('filter'))? new Criterion\FullText($input->getArgument('filter')) : '';
-        if ($input->getOption('raw-filter'))
-        {
-            $query->filter = ($input->getArgument('filter'))? new EepSolrCriterion\Raw($input->getArgument('filter')) : '';
+            $query->filter = ($input->getOption('raw-filter'))? new EepSolrCriterion\Raw($inputFilter) : new Criterion\FullText($inputFilter);
         }
         $query->offset = ($input->getOption('offset'))? (integer) $input->getOption('offset') : $query->offset;
         $query->limit = ($input->getOption('limit'))? (integer) $input->getOption('limit') : $query->limit;
@@ -104,7 +91,7 @@ EOD;
         {
             $result = $this->searchService->findLocations($query);
         }
-        catch(Exception $e)
+        catch(InvalidArgumentException $e)
         {
             $io->error($e->getMessage());
             $this->logger->error($this->getName() . " error", array($e->getMessage()));
@@ -156,7 +143,7 @@ EOD;
         {
             array_unshift($headers, array($row));
         }
-        $inputFilter = ($inputFilter)? $inputFilter : " $inputFilter";
+
         $infoHeader = array
         (
             new TableCell

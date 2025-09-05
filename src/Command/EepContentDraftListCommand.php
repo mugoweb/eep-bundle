@@ -2,9 +2,7 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
-use MugoWeb\Eep\Bundle\Services\EepLogger;
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
-use MugoWeb\Eep\Bundle\Services\EepUtilities;
 use Ibexa\Contracts\Core\Repository\ContentService;
 use Ibexa\Contracts\Core\Repository\ContentTypeService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
@@ -21,23 +19,16 @@ class EepContentDraftListCommand extends Command
 {
     public function __construct
     (
-        ContentService $contentService,
-        ContentTypeService $contentTypeService,
-        PermissionResolver $permissionResolver,
-        UserService $userService,
-        EepLogger $logger
+        private readonly ContentService $contentService,
+        private readonly ContentTypeService $contentTypeService,
+        private readonly PermissionResolver $permissionResolver,
+        private readonly UserService $userService
     )
     {
-        $this->contentService = $contentService;
-        $this->contentTypeService = $contentTypeService;
-        $this->permissionResolver = $permissionResolver;
-        $this->userService = $userService;
-        $this->logger = $logger;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $help = <<<EOD
 TODO
@@ -57,7 +48,7 @@ EOD;
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $inputDraftUser = ($input->getArgument('draft-user-id'))? $this->userService->loadUser($input->getArgument('draft-user-id')) : $input->getArgument('draft-user-id');
         $inputUserId = $input->getOption('user-id');

@@ -3,16 +3,13 @@
 namespace MugoWeb\Eep\Bundle\Command;
 
 use MugoWeb\Eep\Bundle\Services\EepLogger;
-use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
-use Ibexa\Contracts\Core\Repository\Values\Content\Query\Criterion\SectionId;
-use Ibexa\Contracts\Core\Repository\Values\Content\LocationQuery;
 use Ibexa\Contracts\Core\Repository\SectionService;
 use Ibexa\Contracts\Core\Repository\ContentService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
-use Ibexa\Contracts\Core\Repository\Exceptions;
+use Ibexa\Contracts\Core\Repository\Exceptions\NotFoundException;
+use Ibexa\Contracts\Core\Repository\Exceptions\UnauthorizedException;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -23,23 +20,17 @@ class EepSectionAssignContentCommand extends Command
 {
     public function __construct
     (
-        SectionService $sectionService,
-        ContentService $contentService,
-        PermissionResolver $permissionResolver,
-        UserService $userService,
-        EepLogger $logger
+        private readonly SectionService $sectionService,
+        private readonly ContentService $contentService,
+        private readonly PermissionResolver $permissionResolver,
+        private readonly UserService $userService,
+        private readonly EepLogger $logger
     )
     {
-        $this->sectionService = $sectionService;
-        $this->contentService = $contentService;
-        $this->permissionResolver = $permissionResolver;
-        $this->userService = $userService;
-        $this->logger = $logger;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $help = <<<EOD
 TODO
@@ -57,7 +48,7 @@ EOD;
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $inputSectionIdentifier = $input->getArgument('section-identifier');
         $inputContentId = $input->getArgument( 'content-id' );
@@ -99,7 +90,12 @@ EOD;
                 $io->success('Assignment successful');
                 $this->logger->info($this->getName() . " successful");
             }
-            catch (UnauthorizedException $e)
+            catch
+            (
+                NotFoundException |
+                UnauthorizedException
+                $e
+            )
             {
                 $io->error($e->getMessage());
                 $this->logger->error($this->getName() . " error", array($e->getMessage()));

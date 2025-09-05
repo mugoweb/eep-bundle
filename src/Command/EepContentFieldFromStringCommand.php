@@ -7,6 +7,11 @@ use Ibexa\Contracts\Core\Repository\ContentService;
 use Ibexa\Contracts\Core\Repository\FieldTypeService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
+use Ibexa\Contracts\Core\Repository\Exceptions\BadStateException;
+use Ibexa\Contracts\Core\Repository\Exceptions\ContentFieldValidationException;
+use Ibexa\Contracts\Core\Repository\Exceptions\ContentValidationException;
+use Ibexa\Contracts\Core\Repository\Exceptions\InvalidArgumentException;
+use Ibexa\Contracts\Core\Repository\Exceptions\UnauthorizedException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,23 +23,17 @@ class EepContentFieldFromStringCommand extends Command
 {
     public function __construct
     (
-        ContentService $contentService,
-        FieldTypeService $fieldTypeService,
-        PermissionResolver $permissionResolver,
-        UserService $userService,
-        EepLogger $logger
+        private readonly ContentService $contentService,
+        private readonly FieldTypeService $fieldTypeService,
+        private readonly PermissionResolver $permissionResolver,
+        private readonly UserService $userService,
+        private readonly EepLogger $logger
     )
     {
-        $this->contentService = $contentService;
-        $this->fieldTypeService = $fieldTypeService;
-        $this->permissionResolver = $permissionResolver;
-        $this->userService = $userService;
-        $this->logger = $logger;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $help = <<<EOD
 TODO
@@ -55,7 +54,7 @@ EOD;
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $inputContentId = $input->getArgument('content-id');
         $inputContentFieldIdentifier = $input->getArgument('content-field-identifier');
@@ -99,7 +98,7 @@ EOD;
 
             switch ($field->fieldTypeIdentifier)
             {
-                case 'ezboolean':
+                case 'ibexa_boolean':
                 {
                     // need to cast; fromString not implemented to support boolean like values
                     $inputFieldData = (boolean) $inputFieldData;
@@ -124,8 +123,10 @@ EOD;
         }
         catch
         (
+            BadStateException |
             ContentFieldValidationException |
             ContentValidationException |
+            InvalidArgumentException |
             UnauthorizedException
             $e
         )

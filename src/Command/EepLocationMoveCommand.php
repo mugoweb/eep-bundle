@@ -3,12 +3,13 @@
 namespace MugoWeb\Eep\Bundle\Command;
 
 use MugoWeb\Eep\Bundle\Services\EepLogger;
-use eZ\Publish\Core\Base\Exceptions\InvalidArgumentException;
 use Ibexa\Contracts\Core\Repository\LocationService;
 use Ibexa\Contracts\Core\Repository\ContentTypeService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
-use Ibexa\Contracts\Core\Repository\Exceptions;
+use Ibexa\Contracts\Core\Exception\InvalidArgumentException as ContractsInvalidArgumentException;
+use Ibexa\Contracts\Core\Repository\Exceptions\InvalidArgumentException;
+use Ibexa\Contracts\Core\Repository\Exceptions\UnauthorizedException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,23 +21,17 @@ class EepLocationMoveCommand extends Command
 {
     public function __construct
     (
-        LocationService $locationService,
-        ContentTypeService $contentTypeService,
-        PermissionResolver $permissionResolver,
-        UserService $userService,
-        EepLogger $logger
+        private readonly LocationService $locationService,
+        private readonly ContentTypeService $contentTypeService,
+        private readonly PermissionResolver $permissionResolver,
+        private readonly UserService $userService,
+        private readonly EepLogger $logger
     )
     {
-        $this->locationService = $locationService;
-        $this->contentTypeService = $contentTypeService;
-        $this->permissionResolver = $permissionResolver;
-        $this->userService = $userService;
-        $this->logger = $logger;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $help = <<<EOD
 TODO
@@ -54,7 +49,7 @@ EOD;
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $inputSourceLocationId = $input->getArgument('source-location-id');
         $inputTargetLocationId = $input->getArgument('target-location-id');
@@ -66,13 +61,13 @@ EOD;
         $targetLocation = $this->locationService->loadLocation($inputTargetLocationId);
         if (stripos($targetLocation->pathString, $sourceLocation->pathString) !== false)
         {
-            throw new InvalidArgumentException('target-location-id', 'Target location is a sub location of the source subtree');
+            throw new ContractsInvalidArgumentException('target-location-id', 'Target location is a sub location of the source subtree');
         }
 
         $targetContentType = $this->contentTypeService->loadContentType($targetLocation->getContentInfo()->contentTypeId);
         if (!$targetContentType->isContainer)
         {
-            throw new InvalidArgumentException('target-location-id', 'Cannot move location to a parent that is not a container');
+            throw new ContractsInvalidArgumentException('target-location-id', 'Cannot move location to a parent that is not a container');
         }
 
         $io = new SymfonyStyle($input, $output);
@@ -108,7 +103,12 @@ EOD;
                 $io->success('Move successful');
                 $this->logger->info($this->getName() . " successful");
             }
-            catch(UnauthorizedException $e)
+            catch
+            (
+                InvalidArgumentException |
+                UnauthorizedException
+                $e
+            )
             {
                 $io->error($e->getMessage());
                 $this->logger->error($this->getName() . " error", array($e->getMessage()));

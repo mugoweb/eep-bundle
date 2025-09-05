@@ -7,7 +7,11 @@ use MugoWeb\Eep\Bundle\Services\EepLogger;
 use Ibexa\Contracts\Core\Repository\ContentService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
-use Ibexa\Contracts\Core\Repository\Exceptions;
+use Ibexa\Contracts\Core\Repository\Exceptions\BadStateException;
+use Ibexa\Contracts\Core\Repository\Exceptions\ContentFieldValidationException;
+use Ibexa\Contracts\Core\Repository\Exceptions\ContentValidationException;
+use Ibexa\Contracts\Core\Repository\Exceptions\InvalidArgumentException;
+use Ibexa\Contracts\Core\Repository\Exceptions\UnauthorizedException;
 use Ibexa\Contracts\Core\Persistence\Content\VersionInfo;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
@@ -21,21 +25,16 @@ class EepContentUpdateCommand extends Command
 {
     public function __construct
     (
-        ContentService $contentService,
-        PermissionResolver $permissionResolver,
-        UserService $userService,
-        EepLogger $logger
+        private readonly ContentService $contentService,
+        private readonly PermissionResolver $permissionResolver,
+        private readonly UserService $userService,
+        private readonly EepLogger $logger
     )
     {
-        $this->contentService = $contentService;
-        $this->permissionResolver = $permissionResolver;
-        $this->userService = $userService;
-        $this->logger = $logger;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $help = <<<EOD
 TODO
@@ -59,7 +58,7 @@ EOD;
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $inputContentId = $input->getArgument('content-id');
         $inputFieldData = ($input->getOption('from-file'))? file_get_contents($input->getArgument('field-data')) : $input->getArgument('field-data');
@@ -123,7 +122,7 @@ EOD;
                 {
                     switch ($contentType->getFieldDefinition($fieldIdentifier)->fieldTypeIdentifier)
                     {
-                        case 'ezboolean':
+                        case 'ibexa_boolean':
                         {
                             // need to cast; fromString not implemented to support boolean like values
                             $fieldValue = (boolean) $fieldValue;
@@ -200,8 +199,10 @@ EOD;
             }
             catch
             (
+                BadStateException |
                 ContentFieldValidationException |
                 ContentValidationException |
+                InvalidArgumentException |
                 UnauthorizedException
                 $e
             )
