@@ -12,9 +12,9 @@ use Ibexa\Contracts\Core\Repository\LocationService;
 use Ibexa\Contracts\Core\Repository\ContentTypeService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
+use Ibexa\Contracts\Core\Repository\Exceptions\InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
-use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -104,7 +104,7 @@ EOD;
         {
             $result = $this->searchService->findLocations($query);
         }
-        catch(Exception $e)
+        catch(InvalidArgumentException $e)
         {
             $io->error($e->getMessage());
             $this->logger->error($this->getName() . " error", array($e->getMessage()));
