@@ -7,6 +7,11 @@ use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\FieldTypeService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
+use eZ\Publish\API\Repository\Exceptions\BadStateException;
+use eZ\Publish\API\Repository\Exceptions\ContentFieldValidationException;
+use eZ\Publish\API\Repository\Exceptions\ContentValidationException;
+use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
+use eZ\Publish\API\Repository\Exceptions\UnauthorizedException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -124,9 +129,11 @@ EOD;
         }
         catch
         (
+            BadStateException |
+            UnauthorizedException |
             ContentFieldValidationException |
             ContentValidationException |
-            UnauthorizedException
+            InvalidArgumentException
             $e
         )
         {

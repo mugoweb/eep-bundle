@@ -2,12 +2,14 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
-use eZ\Publish\Core\Base\Exceptions\BadStateException;
 use MugoWeb\Eep\Bundle\Services\EepLogger;
 use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
+use eZ\Publish\API\Repository\Exceptions\BadStateException;
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
+use eZ\Publish\API\Repository\Exceptions\UnauthorizedException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -96,8 +98,10 @@ EOD;
             }
             catch
             (
-                UnauthorizedException |
-                BadStateException $e
+                BadStateException |
+                NotFoundException |
+                UnauthorizedException
+                $e
             )
             {
                 $io->error($e->getMessage());

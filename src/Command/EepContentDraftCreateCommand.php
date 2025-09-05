@@ -6,7 +6,7 @@ use MugoWeb\Eep\Bundle\Services\EepLogger;
 use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
-use eZ\Publish\SPI\Persistence\Content\VersionInfo;
+use eZ\Publish\API\Repository\Exceptions\UnauthorizedException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -99,11 +99,7 @@ EOD;
                 $io->success("Draft create successful. id: {$draftVersionInfo->id} versionNo: {$draftVersionInfo->versionNo} contentId: {$contentInfo->id}");
                 $this->logger->info($this->getName() . " successful", array($draftVersionInfo->id, $draftVersionInfo->versionNo, $contentInfo->id));
             }
-            catch
-            (
-            UnauthorizedException
-            $e
-            )
+            catch (UnauthorizedException $e)
             {
                 $io->error($e->getMessage());
                 $this->logger->error($this->getName() . " error", array($e->getMessage()));

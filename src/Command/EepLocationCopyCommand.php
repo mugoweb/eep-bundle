@@ -3,12 +3,13 @@
 namespace MugoWeb\Eep\Bundle\Command;
 
 use MugoWeb\Eep\Bundle\Services\EepLogger;
-use eZ\Publish\Core\Base\Exceptions\InvalidArgumentException;
 use eZ\Publish\API\Repository\LocationService;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
-use eZ\Publish\API\Repository\Exceptions;
+use eZ\Publish\Core\Base\Exceptions\InvalidArgumentException as BaseInvalidArgumentException;
+use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
+use eZ\Publish\API\Repository\Exceptions\UnauthorizedException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -66,13 +67,13 @@ EOD;
         $targetLocation = $this->locationService->loadLocation($inputTargetLocationId);
         if (stripos($targetLocation->pathString, $sourceLocation->pathString) !== false)
         {
-            throw new InvalidArgumentException('target-location-id', 'Target location is a sub location of the source subtree');
+            throw new BaseInvalidArgumentException('target-location-id', 'Target location is a sub location of the source subtree');
         }
 
         $targetContentType = $this->contentTypeService->loadContentType($targetLocation->getContentInfo()->contentTypeId);
         if (!$targetContentType->isContainer)
         {
-            throw new InvalidArgumentException('target-location-id', 'Cannot copy location to a parent that is not a container');
+            throw new BaseInvalidArgumentException('target-location-id', 'Cannot copy location to a parent that is not a container');
         }
 
         $io = new SymfonyStyle($input, $output);
@@ -107,7 +108,12 @@ EOD;
                 $io->success('Copy successful');
                 $this->logger->info($this->getName() . " successful");
             }
-            catch(UnauthorizedException $e)
+            catch
+            (
+                InvalidArgumentException |
+                UnauthorizedException
+                $e
+            )
             {
                 $io->error($e->getMessage());
                 $this->logger->error($this->getName() . " error", array($e->getMessage()));

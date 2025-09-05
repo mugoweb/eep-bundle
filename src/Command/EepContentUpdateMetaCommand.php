@@ -2,13 +2,13 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
-use eZ\Publish\API\Repository\Values\Content\ContentInfo;
-use eZ\Publish\API\Repository\Values\Content\ContentMetadataUpdateStruct;
 use MugoWeb\Eep\Bundle\Services\EepLogger;
 use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
-use eZ\Publish\API\Repository\Exceptions;
+use eZ\Publish\API\Repository\Exceptions\BadStateException;
+use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
+use eZ\Publish\API\Repository\Exceptions\UnauthorizedException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -199,6 +199,7 @@ EOD;
             }
             catch
             (
+                BadStateException |
                 InvalidArgumentException |
                 UnauthorizedException
                 $e
