@@ -14,6 +14,3 @@ services:
     tags:
       - { name: ibexa.search.solr.query.content.criterion.visitor }
       - { name: ibexa.search.solr.query.location.criterion.visitor }
-
-  EzSystems\PlatformHttpCacheBundle\PurgeClient\RepositoryPrefixDecorator:
-    alias: ibexa.cache.http.purge_client_decorator
