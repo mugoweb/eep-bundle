@@ -69,7 +69,7 @@ EOD;
         {
             case 'ezboolean':
             {
-                $fieldValueString = (boolean) $field->value ? 1 : 0;
+                $fieldValueString = (boolean) $field->value->bool ? 1 : 0;
             }
             break;
 
