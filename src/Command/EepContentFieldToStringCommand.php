@@ -101,7 +101,5 @@ EOD;
         {
             $io->writeln($fieldValueString);
         }
-
-        return Command::SUCCESS;
     }
 }
