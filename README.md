@@ -79,6 +79,15 @@ eep:section:assigncontent    [eep:se:assigncontent] Assign content to section
 eep:section:list             [eep:se:list] Returns section list
 eep:section:listcontent      [eep:se:listcontent] Returns content list by section identifier
 
+eep:urlalias:create          [eep:ua:create] Creates a custom URL alias for a location
+eep:urlalias:createglobal    [eep:ua:createglobal] Creates a global URL alias
+eep:urlalias:deletecorrupted [eep:ua:deletecorrupted] Deletes corrupted URL aliases
+eep:urlalias:info            [eep:ua:info] Returns URL alias by URL
+eep:urlalias:listglobal      [eep:ua:listglobal] Lists global URL aliases
+eep:urlalias:listlocation    [eep:ua:listlocation] Lists URL aliases for a location
+eep:urlalias:refreshsystem   [eep:ua:refreshsystem] Refreshes system URL aliases for a location
+eep:urlalias:remove          [eep:ua:remove] Removes URL aliases
+
 eep:user:info                [eep:us:info] Returns user information
 eep:user:list                [eep:us:list] Returns user list
 ```
