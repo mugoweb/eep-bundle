@@ -44,6 +44,43 @@ class EepUtilities
         return (isset($labels[$hashAlgorithmId]))? $labels[$hashAlgorithmId] : 'N/A';
     }
 
+    public static function getLocationSortFieldLabel($sortFieldId)
+    {
+        $labels = array
+        (
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_PATH => 'PATH',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_PUBLISHED => 'PUBLISHED',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_MODIFIED => 'MODIFIED',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_SECTION => 'SECTION',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_DEPTH => 'DEPTH',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_CLASS_IDENTIFIER => 'CLASS_IDENTIFIER',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_CLASS_NAME => 'CLASS_NAME',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_PRIORITY => 'PRIORITY',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_NAME => 'NAME',
+
+            /**
+             * @deprecated
+             */
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_MODIFIED_SUBNODE => 'MODIFIED_SUBNODE',
+
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_NODE_ID => 'NODE_ID',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_CONTENTOBJECT_ID => 'CONTENTOBJECT_ID',
+        );
+
+        return (isset($labels[$sortFieldId]))? $labels[$sortFieldId] : 'N/A';
+    }
+
+    public static function getLocationSortOrderLabel($sortOrderId)
+    {
+        $labels = array
+        (
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_ORDER_DESC => 'DESC',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_ORDER_ASC => 'ASC',
+        );
+
+        return (isset($labels[$sortOrderId]))? $labels[$sortOrderId] : 'N/A';
+    }
+
     public static function stripColumnMarkers($columnIdentifier)
     {
         $s = array( ' *' );
