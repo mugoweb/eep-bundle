@@ -6,7 +6,6 @@ use MugoWeb\Eep\Bundle\Services\EepLogger;
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
 use MugoWeb\Eep\Bundle\Services\EepUtilities;
 use eZ\Publish\API\Repository\LocationService;
-use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
@@ -25,7 +24,6 @@ class EepLocationInfoCommand extends Command
     public function __construct
     (
         LocationService $locationService,
-        ContentService $contentService,
         ContentTypeService $contentTypeService,
         PermissionResolver $permissionResolver,
         UserService $userService,
@@ -34,7 +32,6 @@ class EepLocationInfoCommand extends Command
     )
     {
         $this->locationService = $locationService;
-        $this->contentService = $contentService;
         $this->contentTypeService = $contentTypeService;
         $this->permissionResolver = $permissionResolver;
         $this->userService = $userService;
@@ -72,11 +69,6 @@ EOD;
 
         $location = $this->locationService->loadLocation($inputLocationId);
 
-        if ($inputWithContentInfo)
-        {
-            $content = $this->contentService->loadContent($location->getContentInfo()->id);
-        }
-
         $headers = array
         (
             array
@@ -89,8 +81,8 @@ EOD;
         $legendHeaders = array
         (
             new TableCell("# 2nd data section(s) shows custom/composite/lookup values", array('colspan' => $colWidth)),
-            new TableCell("# contentInfo values shown with custom 'content' key prefix", array('colspan' => $colWidth)),
         );
+        if ($inputWithContentInfo){ $legendHeaders[] = new TableCell("# contentInfo values shown with custom 'content' key prefix", array('colspan' => $colWidth)); }
         $legendHeaders = array_reverse($legendHeaders);
         foreach ($legendHeaders as $row)
         {
@@ -148,6 +140,7 @@ EOD;
         );
         if ($inputWithContentInfo)
         {
+            $contentInfo = $location->getContentInfo();
             $rows = array_merge
             (
                 $rows,
@@ -187,24 +180,24 @@ EOD;
                         )
                     */
                     // location contentInfo details
-                    array('contentId', $location->getContentInfo()->id),
-                    array('contentTypeId', $location->getContentInfo()->contentTypeId),
-                    array('contentName', $location->getContentInfo()->name),
-                    array('contentSectionId', $location->getContentInfo()->sectionId),
-                    array('contentCurrentVersionNo', $location->getContentInfo()->currentVersionNo),
-                    array('contentPublished', $location->getContentInfo()->published),
-                    array('contentOwnerId', $location->getContentInfo()->ownerId),
-                    array('contentModificationDate', $location->getContentInfo()->modificationDate->format('c')),
-                    array('contentPublishedDate', $location->getContentInfo()->publishedDate->format('c')),
-                    array('contentAlwaysAvailable', $location->getContentInfo()->alwaysAvailable),
-                    array('contentRemoteId', $location->getContentInfo()->remoteId),
-                    array('contentMainLanguageCode', $location->getContentInfo()->mainLanguageCode),
-                    array('contentMainLocationId', $location->getContentInfo()->mainLocationId),
-                    array('contentStatus', $location->getContentInfo()->status),
+                    array('contentId', $contentInfo->id),
+                    array('contentTypeId', $contentInfo->contentTypeId),
+                    array('contentName', $contentInfo->name),
+                    array('contentSectionId', $contentInfo->sectionId),
+                    array('contentCurrentVersionNo', $contentInfo->currentVersionNo),
+                    array('contentPublished', (integer) $contentInfo->published),
+                    array('contentOwnerId', $contentInfo->ownerId),
+                    array('contentModificationDate', $contentInfo->modificationDate->format('c')),
+                    array('contentPublishedDate', $contentInfo->publishedDate->format('c')),
+                    array('contentAlwaysAvailable', (integer) $contentInfo->alwaysAvailable),
+                    array('contentRemoteId', $contentInfo->remoteId),
+                    array('contentMainLanguageCode', $contentInfo->mainLanguageCode),
+                    array('contentMainLocationId', $contentInfo->mainLocationId),
+                    array('contentStatus', $contentInfo->status),
                     new TableSeparator(),
-                    array('contentTypeIdentifier', $this->contentTypeService->loadContentType($location->getContentInfo()->contentTypeId)->identifier),
-                    array('contentModificationDateTimestamp', $location->getContentInfo()->modificationDate->format('U')),
-                    array('contentPublishedDateTimestamp', $location->getContentInfo()->publishedDate->format('U')),
+                    array('contentTypeIdentifier', $this->contentTypeService->loadContentType($contentInfo->contentTypeId)->identifier),
+                    array('contentModificationDateTimestamp', $contentInfo->modificationDate->format('U')),
+                    array('contentPublishedDateTimestamp', $contentInfo->publishedDate->format('U')),
                     // reverse related count?
                 )
             );
