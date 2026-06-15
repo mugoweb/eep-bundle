@@ -67,7 +67,7 @@ EOD;
         $versionInfo = $this->contentService->loadVersionInfoById($inputContentId, $inputVersionNumber);
 
         $io = new SymfonyStyle($input, $output);
-        $isDraftVersion = ($versionInfo->status === \eZ\Publish\API\Repository\Values\Content\VersionInfo::STATUS_DRAFT)? true : false;
+        $isDraftVersion = ($versionInfo->status === \Ibexa\Contracts\Core\Repository\Values\Content\VersionInfo::STATUS_DRAFT)? true : false;
         if (!$isDraftVersion)
         {
             $isNotDraftError = sprintf(

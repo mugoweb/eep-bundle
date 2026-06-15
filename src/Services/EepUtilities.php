@@ -10,11 +10,11 @@ class EepUtilities
     {
         $labels = array
         (
-            \eZ\Publish\API\Repository\Values\Content\Relation::COMMON => 'COMMON',
-            \eZ\Publish\API\Repository\Values\Content\Relation::EMBED => 'EMBED',
-            \eZ\Publish\API\Repository\Values\Content\Relation::LINK => 'LINK',
-            \eZ\Publish\API\Repository\Values\Content\Relation::FIELD => 'FIELD',
-            \eZ\Publish\API\Repository\Values\Content\Relation::ASSET => 'ASSET',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Relation::COMMON => 'COMMON',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Relation::EMBED => 'EMBED',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Relation::LINK => 'LINK',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Relation::FIELD => 'FIELD',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Relation::ASSET => 'ASSET',
         );
 
         return (isset($labels[$relationTypeId]))? $labels[$relationTypeId] : 'N/A';
@@ -24,9 +24,9 @@ class EepUtilities
     {
         $labels = array
         (
-            \eZ\Publish\API\Repository\Values\Content\VersionInfo::STATUS_DRAFT => 'DRAFT',
-            \eZ\Publish\API\Repository\Values\Content\VersionInfo::STATUS_PUBLISHED => 'PUBLISHED',
-            \eZ\Publish\API\Repository\Values\Content\VersionInfo::STATUS_ARCHIVED => 'ARCHIVED',
+            \Ibexa\Contracts\Core\Repository\Values\Content\VersionInfo::STATUS_DRAFT => 'DRAFT',
+            \Ibexa\Contracts\Core\Repository\Values\Content\VersionInfo::STATUS_PUBLISHED => 'PUBLISHED',
+            \Ibexa\Contracts\Core\Repository\Values\Content\VersionInfo::STATUS_ARCHIVED => 'ARCHIVED',
         );
 
         return (isset($labels[$statusId]))? $labels[$statusId] : 'N/A';
@@ -36,8 +36,8 @@ class EepUtilities
     {
         $labels = array
         (
-            \eZ\Publish\API\Repository\Values\User\User::PASSWORD_HASH_BCRYPT => 'BCRYPT',
-            \eZ\Publish\API\Repository\Values\User\User::PASSWORD_HASH_PHP_DEFAULT => 'PHP_DEFAULT',
+            \Ibexa\Contracts\Core\Repository\Values\User\User::PASSWORD_HASH_BCRYPT => 'BCRYPT',
+            \Ibexa\Contracts\Core\Repository\Values\User\User::PASSWORD_HASH_PHP_DEFAULT => 'PHP_DEFAULT',
         );
 
         return (isset($labels[$hashAlgorithmId]))? $labels[$hashAlgorithmId] : 'N/A';
@@ -47,23 +47,23 @@ class EepUtilities
     {
         $labels = array
         (
-            \eZ\Publish\API\Repository\Values\Content\Location::SORT_FIELD_PATH => 'PATH',
-            \eZ\Publish\API\Repository\Values\Content\Location::SORT_FIELD_PUBLISHED => 'PUBLISHED',
-            \eZ\Publish\API\Repository\Values\Content\Location::SORT_FIELD_MODIFIED => 'MODIFIED',
-            \eZ\Publish\API\Repository\Values\Content\Location::SORT_FIELD_SECTION => 'SECTION',
-            \eZ\Publish\API\Repository\Values\Content\Location::SORT_FIELD_DEPTH => 'DEPTH',
-            \eZ\Publish\API\Repository\Values\Content\Location::SORT_FIELD_CLASS_IDENTIFIER => 'CLASS_IDENTIFIER',
-            \eZ\Publish\API\Repository\Values\Content\Location::SORT_FIELD_CLASS_NAME => 'CLASS_NAME',
-            \eZ\Publish\API\Repository\Values\Content\Location::SORT_FIELD_PRIORITY => 'PRIORITY',
-            \eZ\Publish\API\Repository\Values\Content\Location::SORT_FIELD_NAME => 'NAME',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_PATH => 'PATH',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_PUBLISHED => 'PUBLISHED',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_MODIFIED => 'MODIFIED',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_SECTION => 'SECTION',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_DEPTH => 'DEPTH',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_CLASS_IDENTIFIER => 'CLASS_IDENTIFIER',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_CLASS_NAME => 'CLASS_NAME',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_PRIORITY => 'PRIORITY',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_NAME => 'NAME',
 
             /**
              * @deprecated
              */
-            \eZ\Publish\API\Repository\Values\Content\Location::SORT_FIELD_MODIFIED_SUBNODE => 'MODIFIED_SUBNODE',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_MODIFIED_SUBNODE => 'MODIFIED_SUBNODE',
 
-            \eZ\Publish\API\Repository\Values\Content\Location::SORT_FIELD_NODE_ID => 'NODE_ID',
-            \eZ\Publish\API\Repository\Values\Content\Location::SORT_FIELD_CONTENTOBJECT_ID => 'CONTENTOBJECT_ID',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_NODE_ID => 'NODE_ID',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_CONTENTOBJECT_ID => 'CONTENTOBJECT_ID',
         );
 
         return (isset($labels[$sortFieldId]))? $labels[$sortFieldId] : 'N/A';
@@ -73,8 +73,8 @@ class EepUtilities
     {
         $labels = array
         (
-            \eZ\Publish\API\Repository\Values\Content\Location::SORT_ORDER_DESC => 'DESC',
-            \eZ\Publish\API\Repository\Values\Content\Location::SORT_ORDER_ASC => 'ASC',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_ORDER_DESC => 'DESC',
+            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_ORDER_ASC => 'ASC',
         );
 
         return (isset($labels[$sortOrderId]))? $labels[$sortOrderId] : 'N/A';
