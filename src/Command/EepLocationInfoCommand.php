@@ -4,6 +4,7 @@ namespace MugoWeb\Eep\Bundle\Command;
 
 use MugoWeb\Eep\Bundle\Services\EepLogger;
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
+use MugoWeb\Eep\Bundle\Services\EepUtilities;
 use eZ\Publish\API\Repository\LocationService;
 use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\ContentTypeService;
@@ -140,7 +141,10 @@ EOD;
             array('sortOrder', $location->sortOrder),
             new TableSeparator(),
             array('childCount', $this->locationService->getLocationChildCount($location)),
-            array('urlAlias', $this->urlAliasService->reverseLookup($location)->path)
+            array('urlAlias', $this->urlAliasService->reverseLookup($location)->path),
+            array('sortFieldLabel', EepUtilities::getLocationSortFieldLabel($location->sortField)),
+            array('sortOrderLabel', EepUtilities::getLocationSortOrderLabel($location->sortOrder)),
+
         );
         if ($inputWithContentInfo)
         {
