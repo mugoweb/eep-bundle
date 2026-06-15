@@ -4,6 +4,7 @@ namespace MugoWeb\Eep\Bundle\Command;
 
 use MugoWeb\Eep\Bundle\Services\EepLogger;
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
+use MugoWeb\Eep\Bundle\Services\EepUtilities;
 use Ibexa\Contracts\Core\Repository\LocationService;
 use Ibexa\Contracts\Core\Repository\ContentService;
 use Ibexa\Contracts\Core\Repository\ContentTypeService;
@@ -142,6 +143,8 @@ EOD;
             array('childCount', $this->locationService->getLocationChildCount($location)),
             array('subtreeSize', $this->locationService->getSubtreeSize($location)),
             array('urlAlias', $this->urlAliasService->reverseLookup($location)->path),
+            array('sortFieldLabel', EepUtilities::getLocationSortFieldLabel($location->sortField)),
+            array('sortOrderLabel', EepUtilities::getLocationSortOrderLabel($location->sortOrder)),
         );
         if ($inputWithContentInfo)
         {

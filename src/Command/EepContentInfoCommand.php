@@ -4,6 +4,7 @@ namespace MugoWeb\Eep\Bundle\Command;
 
 use MugoWeb\Eep\Bundle\Services\EepLogger;
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
+use MugoWeb\Eep\Bundle\Services\EepUtilities;
 use Ibexa\Contracts\Core\Repository\ContentService;
 use Ibexa\Contracts\Core\Repository\ContentTypeService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
@@ -108,6 +109,7 @@ EOD;
             array('contentTypeIdentifier', $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId)->identifier),
             array('modificationDateTimestamp', $content->contentInfo->modificationDate->format('U')),
             array('publishedDateTimestamp', $content->contentInfo->publishedDate->format('U')),
+            array('statusLabel', EepUtilities::getContentVersionStatusLabel($content->contentInfo->status)),
         );
 
         $io = new SymfonyStyle($input, $output);
