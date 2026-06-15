@@ -4,7 +4,6 @@ namespace MugoWeb\Eep\Bundle\Command;
 
 use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
 use Ibexa\Contracts\Core\Repository\LocationService;
-use Ibexa\Contracts\Core\Repository\ContentService;
 use Ibexa\Contracts\Core\Repository\ContentTypeService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
@@ -24,7 +23,6 @@ class EepLocationInfoCommand extends Command
     public function __construct
     (
         private readonly LocationService $locationService,
-        private readonly ContentService $contentService,
         private readonly ContentTypeService $contentTypeService,
         private readonly PermissionResolver $permissionResolver,
         private readonly UserService $userService,
@@ -62,11 +60,6 @@ EOD;
 
         $location = $this->locationService->loadLocation($inputLocationId);
 
-        if ($inputWithContentInfo)
-        {
-            $content = $this->contentService->loadContent($location->getContentInfo()->id);
-        }
-
         $headers = array
         (
             array
@@ -79,8 +72,8 @@ EOD;
         $legendHeaders = array
         (
             new TableCell("# 2nd data section(s) shows custom/composite/lookup values", array('colspan' => $colWidth)),
-            new TableCell("# contentInfo values shown with custom 'content' key prefix", array('colspan' => $colWidth)),
         );
+        if ($inputWithContentInfo){ $legendHeaders[] = new TableCell("# contentInfo values shown with custom 'content' key prefix", array('colspan' => $colWidth)); }
         $legendHeaders = array_reverse($legendHeaders);
         foreach ($legendHeaders as $row)
         {
@@ -119,6 +112,7 @@ EOD;
         );
         if ($inputWithContentInfo)
         {
+            $contentInfo = $location->getContentInfo();
             $rows = array_merge
             (
                 $rows,
@@ -127,24 +121,24 @@ EOD;
                     new TableSeparator(),
                     new TableSeparator(),
                     // location contentInfo details
-                    array('contentId', $location->getContentInfo()->id),
-                    array('contentTypeId', $location->getContentInfo()->contentTypeId),
-                    array('contentName', $location->getContentInfo()->name),
-                    array('contentSectionId', $location->getContentInfo()->sectionId),
-                    array('contentCurrentVersionNo', $location->getContentInfo()->currentVersionNo),
-                    array('contentPublished', $location->getContentInfo()->published),
-                    array('contentOwnerId', $location->getContentInfo()->ownerId),
-                    array('contentModificationDate', $location->getContentInfo()->modificationDate->format('c')),
-                    array('contentPublishedDate', $location->getContentInfo()->publishedDate->format('c')),
-                    array('contentAlwaysAvailable', $location->getContentInfo()->alwaysAvailable),
-                    array('contentRemoteId', $location->getContentInfo()->remoteId),
-                    array('contentMainLanguageCode', $location->getContentInfo()->mainLanguageCode),
-                    array('contentMainLocationId', $location->getContentInfo()->mainLocationId),
-                    array('contentStatus', $location->getContentInfo()->status),
+                    array('contentId', $contentInfo->id),
+                    array('contentTypeId', $contentInfo->contentTypeId),
+                    array('contentName', $contentInfo->name),
+                    array('contentSectionId', $contentInfo->sectionId),
+                    array('contentCurrentVersionNo', $contentInfo->currentVersionNo),
+                    array('contentPublished', $contentInfo->published),
+                    array('contentOwnerId', $contentInfo->ownerId),
+                    array('contentModificationDate', $contentInfo->modificationDate->format('c')),
+                    array('contentPublishedDate', $contentInfo->publishedDate->format('c')),
+                    array('contentAlwaysAvailable', $contentInfo->alwaysAvailable),
+                    array('contentRemoteId', $contentInfo->remoteId),
+                    array('contentMainLanguageCode', $contentInfo->mainLanguageCode),
+                    array('contentMainLocationId', $contentInfo->mainLocationId),
+                    array('contentStatus', $contentInfo->status),
                     new TableSeparator(),
-                    array('contentTypeIdentifier', $this->contentTypeService->loadContentType($location->getContentInfo()->contentTypeId)->identifier),
-                    array('contentModificationDateTimestamp', $location->getContentInfo()->modificationDate->format('U')),
-                    array('contentPublishedDateTimestamp', $location->getContentInfo()->publishedDate->format('U')),
+                    array('contentTypeIdentifier', $this->contentTypeService->loadContentType($contentInfo->contentTypeId)->identifier),
+                    array('contentModificationDateTimestamp', $contentInfo->modificationDate->format('U')),
+                    array('contentPublishedDateTimestamp', $contentInfo->publishedDate->format('U')),
                 )
             );
         }
