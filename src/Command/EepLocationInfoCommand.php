@@ -9,6 +9,7 @@ use Ibexa\Contracts\Core\Repository\ContentTypeService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
 use Ibexa\Contracts\Core\Repository\URLAliasService;
+use MugoWeb\Eep\Bundle\Services\EepUtilities;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableSeparator;
@@ -113,6 +114,8 @@ EOD;
             array('childCount', $this->locationService->getLocationChildCount($location)),
             array('subtreeSize', $this->locationService->getSubtreeSize($location)),
             array('urlAlias', $this->urlAliasService->reverseLookup($location)->path),
+            array('sortFieldLabel', EepUtilities::getLocationSortFieldLabel($location->sortField)),
+            array('sortOrderLabel', EepUtilities::getLocationSortOrderLabel($location->sortOrder)),
         );
         if ($inputWithContentInfo)
         {
