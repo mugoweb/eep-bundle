@@ -79,6 +79,14 @@ eep:section:assigncontent    [eep:se:assigncontent] Assign content to section
 eep:section:list             [eep:se:list] Returns section list
 eep:section:listcontent      [eep:se:listcontent] Returns content list by section identifier
 
+eep:trash:delete              [eep:tr:delete] Deletes a trashed item
+eep:trash:empty               [eep:tr:empty] Empties the trash
+eep:trash:info                [eep:tr:info] Returns trash item information
+eep:trash:list                [eep:tr:list] Returns trashed content list
+eep:trash:recover             [eep:tr:recover] Recovers a trashed item
+eep:trash:search              [eep:tr:search] Search trashed content
+eep:trash:trash               [eep:tr:trash] Trashes a location subtree
+
 eep:urlalias:create          [eep:ua:create] Creates a custom URL alias for a location
 eep:urlalias:createglobal    [eep:ua:createglobal] Creates a global URL alias
 eep:urlalias:deletecorrupted [eep:ua:deletecorrupted] Deletes corrupted URL aliases
