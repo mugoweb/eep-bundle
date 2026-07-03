@@ -1,0 +1,100 @@
+<?php
+
+namespace MugoWeb\Eep\Bundle\Command;
+
+use MugoWeb\Eep\Bundle\Services\EepLogger;
+use MugoWeb\Eep\Bundle\Component\Console\Helper\Table;
+use Ibexa\Contracts\Core\Repository\ObjectStateService;
+use Ibexa\Contracts\Core\Repository\ContentService;
+use Ibexa\Contracts\Core\Repository\PermissionResolver;
+use Ibexa\Contracts\Core\Repository\UserService;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\TableCell;
+use Symfony\Component\Console\Helper\TableSeparator;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+class EepObjectStateGetContentCommand extends Command
+{
+    public function __construct
+    (
+        private readonly ObjectStateService $objectStateService,
+        private readonly ContentService $contentService,
+        private readonly PermissionResolver $permissionResolver,
+        private readonly UserService $userService,
+        private readonly EepLogger $logger
+    )
+    {
+        parent::__construct();
+    }
+
+    protected function configure(): void
+    {
+        $help = <<<EOD
+TODO
+
+EOD;
+
+        $this
+            ->setName('eep:objectstate:getcontent')
+            ->setAliases(array('eep:os:getcontent'))
+            ->setDescription('Returns object state assigned to content, for a given object state group')
+            ->addArgument('content-id', InputArgument::REQUIRED, 'Content id')
+            ->addArgument('group-id', InputArgument::REQUIRED, 'Object state group id')
+            ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
+            ->setHelp($help)
+        ;
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $inputContentId = $input->getArgument('content-id');
+        $inputGroupId = $input->getArgument('group-id');
+        $inputUserId = $input->getOption('user-id');
+
+        $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
+
+        $contentInfo = $this->contentService->loadContentInfo($inputContentId);
+        $objectStateGroup = $this->objectStateService->loadObjectStateGroup($inputGroupId);
+        $objectState = $this->objectStateService->getContentState($contentInfo, $objectStateGroup);
+
+        $headers = array
+        (
+            array
+            (
+                'key',
+                'value',
+            ),
+        );
+        $colWidth = count($headers[0]);
+        $infoHeader = array
+        (
+            new TableCell("{$this->getName()} [$inputContentId, $inputGroupId]", array('colspan' => $colWidth))
+        );
+        array_unshift($headers, $infoHeader);
+
+        $rows = array
+        (
+            array('contentId', $contentInfo->id),
+            array('contentName', $contentInfo->name),
+            new TableSeparator(),
+            array('groupId', $objectStateGroup->id),
+            array('groupIdentifier', $objectStateGroup->identifier),
+            new TableSeparator(),
+            array('stateId', $objectState->id),
+            array('stateIdentifier', $objectState->identifier),
+        );
+
+        $io = new SymfonyStyle($input, $output);
+        $table = new Table($output);
+        $table->setHeaders($headers);
+        $table->setRows($rows);
+        $table->render();
+        $io->newLine();
+
+        return Command::SUCCESS;
+    }
+}

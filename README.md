@@ -73,19 +73,27 @@ eep:location:reveal          [eep:lo:reveal] Reveal location subtree
 eep:location:subtree         [eep:lo:subtree] Returns subtree information
 eep:location:swap            [eep:lo:swap] Swap source- and target locations
 
+eep:objectstate:getcontent   [eep:os:getcontent] Returns object state assigned to content, for a given object state group
+eep:objectstate:groupinfo    [eep:os:groupinfo] Returns object state group information
+eep:objectstate:grouplist    [eep:os:grouplist] Returns object state group list
+eep:objectstate:info         [eep:os:info] Returns object state information
+eep:objectstate:list         [eep:os:list] Returns object state list for a given object state group
+eep:objectstate:listcontent  [eep:os:listcontent] Returns content list for a given object state
+eep:objectstate:setcontent   [eep:os:setcontent] Set object state for content
+
 eep:search:search            [eep:sr:search] Returns search result information
 
 eep:section:assigncontent    [eep:se:assigncontent] Assign content to section
 eep:section:list             [eep:se:list] Returns section list
 eep:section:listcontent      [eep:se:listcontent] Returns content list by section identifier
 
-eep:trash:delete              [eep:tr:delete] Deletes a trashed item
-eep:trash:empty               [eep:tr:empty] Empties the trash
-eep:trash:info                [eep:tr:info] Returns trash item information
-eep:trash:list                [eep:tr:list] Returns trashed content list
-eep:trash:recover             [eep:tr:recover] Recovers a trashed item
-eep:trash:search              [eep:tr:search] Search trashed content
-eep:trash:trash               [eep:tr:trash] Trashes a location subtree
+eep:trash:delete             [eep:tr:delete] Deletes a trashed item
+eep:trash:empty              [eep:tr:empty] Empties the trash
+eep:trash:info               [eep:tr:info] Returns trash item information
+eep:trash:list               [eep:tr:list] Returns trashed content list
+eep:trash:recover            [eep:tr:recover] Recovers a trashed item
+eep:trash:search             [eep:tr:search] Search trashed content
+eep:trash:trash              [eep:tr:trash] Trashes a location subtree
 
 eep:urlalias:create          [eep:ua:create] Creates a custom URL alias for a location
 eep:urlalias:createglobal    [eep:ua:createglobal] Creates a global URL alias
