@@ -7,7 +7,6 @@ use Ibexa\Contracts\Core\Repository\ObjectStateService;
 use Ibexa\Contracts\Core\Repository\ContentService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
-use Ibexa\Contracts\Core\Repository\Exceptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -94,13 +93,7 @@ EOD;
                 $io->success('Object state set successfully');
                 $this->logger->info($this->getName() . " successful");
             }
-            catch
-            (
-                Exceptions\NotFoundException |
-                Exceptions\UnauthorizedException |
-                Exceptions\InvalidArgumentException
-                $e
-            )
+            catch (\Exception $e)
             {
                 $io->error($e->getMessage());
                 $this->logger->error($this->getName() . " error", array($e->getMessage()));

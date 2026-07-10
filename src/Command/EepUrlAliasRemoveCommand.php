@@ -6,7 +6,6 @@ use MugoWeb\Eep\Bundle\Services\EepLogger;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
 use Ibexa\Contracts\Core\Repository\URLAliasService;
-use Ibexa\Contracts\Core\Repository\Exceptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -88,13 +87,7 @@ EOD;
                 $io->success(sprintf('Remove successful. urlAliasIds: %s', implode(',', $urlAliasIds)));
                 $this->logger->info($this->getName() . " successful", array($inputUrlAliasIds));
             }
-            catch
-            (
-                Exceptions\InvalidArgumentException |
-                Exceptions\UnauthorizedException |
-                Exceptions\NotFoundException
-                $e
-            )
+            catch (\Exception $e)
             {
                 $io->error($e->getMessage());
                 $this->logger->error($this->getName() . " error", array($e->getMessage()));
