@@ -123,12 +123,7 @@ EOD;
             $this->logger->info($this->getName() . " successful");
         }
         catch
-        (
-            ContentFieldValidationException |
-            ContentValidationException |
-            UnauthorizedException
-            $e
-        )
+        (\Exception $e)
         {
             $io->error($e->getMessage());
             $this->logger->error($this->getName() . " error", array($e->getMessage()));

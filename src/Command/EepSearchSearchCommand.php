@@ -104,7 +104,7 @@ EOD;
         {
             $result = $this->searchService->findLocations($query);
         }
-        catch(Exception $e)
+        catch(\Exception $e)
         {
             $io->error($e->getMessage());
             $this->logger->error($this->getName() . " error", array($e->getMessage()));

@@ -2,7 +2,6 @@
 
 namespace MugoWeb\Eep\Bundle\Command;
 
-use eZ\Publish\Core\Base\Exceptions\BadStateException;
 use MugoWeb\Eep\Bundle\Services\EepLogger;
 use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\ContentTypeService;
@@ -107,11 +106,7 @@ EOD;
                 $io->success('Delete successful');
                 $this->logger->info($this->getName() . " successful");
             }
-            catch
-            (
-                UnauthorizedException |
-                BadStateException $e
-            )
+            catch (\Exception $e)
             {
                 $io->error($e->getMessage());
                 $this->logger->error($this->getName() . " error", array($e->getMessage()));

@@ -8,7 +8,6 @@ use eZ\Publish\API\Repository\LocationService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
 use eZ\Publish\API\Repository\URLAliasService;
-use eZ\Publish\API\Repository\Exceptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Input\InputArgument;
@@ -187,13 +186,7 @@ EOD;
 
                 $this->logger->info($this->getName() . " successful", array($urlAlias->id, $urlAlias->path));
             }
-            catch
-            (
-                Exceptions\InvalidArgumentException |
-                Exceptions\UnauthorizedException |
-                Exceptions\NotFoundException
-                $e
-            )
+            catch (\Exception $e)
             {
                 $io->error($e->getMessage());
                 $this->logger->error($this->getName() . " error", array($e->getMessage()));

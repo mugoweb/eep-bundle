@@ -8,7 +8,6 @@ use MugoWeb\Eep\Bundle\Services\EepLogger;
 use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
-use eZ\Publish\API\Repository\Exceptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -197,12 +196,7 @@ EOD;
                 $io->success('Update successful');
                 $this->logger->info($this->getName() . " successful");
             }
-            catch
-            (
-                InvalidArgumentException |
-                UnauthorizedException
-                $e
-            )
+            catch (\Exception $e)
             {
                 $io->error($e->getMessage());
                 $this->logger->error($this->getName() . " error", array($e->getMessage()));

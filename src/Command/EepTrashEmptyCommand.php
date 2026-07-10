@@ -7,7 +7,6 @@ use eZ\Publish\API\Repository\TrashService;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
-use eZ\Publish\API\Repository\Exceptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -81,7 +80,7 @@ EOD;
                 $io->success('Empty successful');
                 $this->logger->info($this->getName() . " successful");
             }
-            catch(Exceptions\UnauthorizedException $e)
+            catch(\Exception $e)
             {
                 $io->error($e->getMessage());
                 $this->logger->error($this->getName() . " error", array($e->getMessage()));
