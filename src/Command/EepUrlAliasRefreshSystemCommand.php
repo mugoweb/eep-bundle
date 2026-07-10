@@ -7,7 +7,6 @@ use Ibexa\Contracts\Core\Repository\LocationService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
 use Ibexa\Contracts\Core\Repository\URLAliasService;
-use Ibexa\Contracts\Core\Repository\Exceptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -83,24 +82,10 @@ EOD;
             );
             $this->logger->info($this->getName() . " confirmed", $loggerContext);
 
-            try
-            {
-                $this->urlAliasService->refreshSystemUrlAliasesForLocation($location);
+            $this->urlAliasService->refreshSystemUrlAliasesForLocation($location);
 
-                $io->success(sprintf('Refresh successful. locationId: %s', $inputLocationId));
-                $this->logger->info($this->getName() . " successful", array($inputLocationId));
-            }
-            catch
-            (
-                Exceptions\InvalidArgumentException |
-                Exceptions\UnauthorizedException |
-                Exceptions\NotFoundException
-                $e
-            )
-            {
-                $io->error($e->getMessage());
-                $this->logger->error($this->getName() . " error", array($e->getMessage()));
-            }
+            $io->success(sprintf('Refresh successful. locationId: %s', $inputLocationId));
+            $this->logger->info($this->getName() . " successful", array($inputLocationId));
         }
         else
         {

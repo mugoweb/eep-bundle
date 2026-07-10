@@ -9,7 +9,6 @@ use Ibexa\Contracts\Core\Repository\ObjectStateService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\SearchService;
 use Ibexa\Contracts\Core\Repository\UserService;
-use Ibexa\Contracts\Core\Repository\Exceptions;
 use Ibexa\Contracts\Core\Repository\Values\Content\Query;
 use Ibexa\Contracts\Core\Repository\Values\Content\Query\Criterion;
 use Symfony\Component\Console\Command\Command;
@@ -86,7 +85,7 @@ EOD;
         {
             $searchResult = $this->searchService->findContent($query);
         }
-        catch (Exceptions\InvalidArgumentException $e)
+        catch (\Exception $e)
         {
             $io->error($e->getMessage());
             $this->logger->error($this->getName() . " error", array($e->getMessage()));

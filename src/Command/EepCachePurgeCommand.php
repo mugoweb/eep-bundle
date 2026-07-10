@@ -79,17 +79,9 @@ EOD;
             );
             $this->logger->info($this->getName() . " confirmed", $loggerContext);
 
-            try
-            {
-                $this->purgeClient->purge($inputTags);
-                $io->success('Purged: ' . $tagString);
-                $this->logger->info($this->getName() . " successful");
-            }
-            catch (\Exception $e)
-            {
-                $io->error($e->getMessage());
-                $this->logger->error($this->getName() . " error", array($e->getMessage()));
-            }
+            $this->purgeClient->purge($inputTags);
+            $io->success('Purged: ' . $tagString);
+            $this->logger->info($this->getName() . " successful");
         }
         else
         {
