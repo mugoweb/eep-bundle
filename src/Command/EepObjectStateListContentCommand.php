@@ -9,7 +9,6 @@ use eZ\Publish\API\Repository\ObjectStateService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\SearchService;
 use eZ\Publish\API\Repository\UserService;
-use eZ\Publish\API\Repository\Exceptions;
 use eZ\Publish\API\Repository\Values\Content\Query;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion;
 use Symfony\Component\Console\Command\Command;
@@ -86,7 +85,7 @@ EOD;
         {
             $searchResult = $this->searchService->findContent($query);
         }
-        catch (Exceptions\InvalidArgumentException $e)
+        catch (\Exception $e)
         {
             $io->error($e->getMessage());
             $this->logger->error($this->getName() . " error", array($e->getMessage()));

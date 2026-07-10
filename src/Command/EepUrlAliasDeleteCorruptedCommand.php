@@ -6,7 +6,6 @@ use MugoWeb\Eep\Bundle\Services\EepLogger;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
 use eZ\Publish\API\Repository\URLAliasService;
-use eZ\Publish\API\Repository\Exceptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -71,23 +70,10 @@ EOD;
             );
             $this->logger->info($this->getName() . " confirmed", $loggerContext);
 
-            try
-            {
-                $deletedCount = $this->urlAliasService->deleteCorruptedUrlAliases();
+            $deletedCount = $this->urlAliasService->deleteCorruptedUrlAliases();
 
-                $io->success(sprintf('Delete successful. deletedCount: %d', $deletedCount));
-                $this->logger->info($this->getName() . " successful", array($deletedCount));
-            }
-            catch
-            (
-                Exceptions\InvalidArgumentException |
-                Exceptions\UnauthorizedException
-                $e
-            )
-            {
-                $io->error($e->getMessage());
-                $this->logger->error($this->getName() . " error", array($e->getMessage()));
-            }
+            $io->success(sprintf('Delete successful. deletedCount: %d', $deletedCount));
+            $this->logger->info($this->getName() . " successful", array($deletedCount));
         }
         else
         {

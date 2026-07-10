@@ -7,9 +7,6 @@ use eZ\Publish\API\Repository\LocationService;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
-use eZ\Publish\Core\Base\Exceptions\InvalidArgumentException as BaseInvalidArgumentException;
-use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
-use eZ\Publish\API\Repository\Exceptions\UnauthorizedException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -108,12 +105,7 @@ EOD;
                 $io->success('Copy successful');
                 $this->logger->info($this->getName() . " successful");
             }
-            catch
-            (
-                InvalidArgumentException |
-                UnauthorizedException
-                $e
-            )
+            catch(\Exception $e)
             {
                 $io->error($e->getMessage());
                 $this->logger->error($this->getName() . " error", array($e->getMessage()));

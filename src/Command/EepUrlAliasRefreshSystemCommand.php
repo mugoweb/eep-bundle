@@ -7,7 +7,6 @@ use eZ\Publish\API\Repository\LocationService;
 use eZ\Publish\API\Repository\PermissionResolver;
 use eZ\Publish\API\Repository\UserService;
 use eZ\Publish\API\Repository\URLAliasService;
-use eZ\Publish\API\Repository\Exceptions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -83,24 +82,10 @@ EOD;
             );
             $this->logger->info($this->getName() . " confirmed", $loggerContext);
 
-            try
-            {
-                $this->urlAliasService->refreshSystemUrlAliasesForLocation($location);
+            $this->urlAliasService->refreshSystemUrlAliasesForLocation($location);
 
-                $io->success(sprintf('Refresh successful. locationId: %s', $inputLocationId));
-                $this->logger->info($this->getName() . " successful", array($inputLocationId));
-            }
-            catch
-            (
-                Exceptions\InvalidArgumentException |
-                Exceptions\UnauthorizedException |
-                Exceptions\NotFoundException
-                $e
-            )
-            {
-                $io->error($e->getMessage());
-                $this->logger->error($this->getName() . " error", array($e->getMessage()));
-            }
+            $io->success(sprintf('Refresh successful. locationId: %s', $inputLocationId));
+            $this->logger->info($this->getName() . " successful", array($inputLocationId));
         }
         else
         {
