@@ -56,6 +56,8 @@ eep:contentfield:fromstring  [eep:cf:fromstring] Set content field value from JS
 eep:contentfield:info        [eep:cf:info] Returns content field information
 eep:contentfield:tostring    [eep:cf:tostring] Returns content field value as JSON string
 
+eep:contenttype:create       [eep:ct:create] Create a content type in a content type group
+eep:contenttype:export       [eep:ct:export] Export a content type definition to JSON
 eep:contenttype:info         [eep:ct:info] Returns content type information
 eep:contenttype:list         [eep:ct:list] Returns content type list
 eep:contenttype:listcontent  [eep:ct:listcontent] Returns content information by content type identifier
