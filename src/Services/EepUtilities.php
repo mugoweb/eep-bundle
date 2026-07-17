@@ -57,12 +57,6 @@ class EepUtilities
             \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_CLASS_NAME => 'CLASS_NAME',
             \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_PRIORITY => 'PRIORITY',
             \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_NAME => 'NAME',
-
-            /**
-             * @deprecated
-             */
-            \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_MODIFIED_SUBNODE => 'MODIFIED_SUBNODE',
-
             \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_NODE_ID => 'NODE_ID',
             \Ibexa\Contracts\Core\Repository\Values\Content\Location::SORT_FIELD_CONTENTOBJECT_ID => 'CONTENTOBJECT_ID',
         );
