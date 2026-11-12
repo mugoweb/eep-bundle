@@ -8,6 +8,7 @@ use Ibexa\Contracts\Core\Repository\ContentTypeService;
 use Ibexa\Contracts\Core\Repository\PermissionResolver;
 use Ibexa\Contracts\Core\Repository\UserService;
 use Ibexa\Contracts\Core\Repository\URLAliasService;
+use Ibexa\Contracts\Core\Repository\Exceptions\NotFoundException;
 use MugoWeb\Eep\Bundle\Services\EepUtilities;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableCell;
@@ -46,6 +47,7 @@ EOD;
             ->addArgument('location-id', InputArgument::REQUIRED, 'Location id')
             ->addOption('user-id', 'u', InputOption::VALUE_OPTIONAL, 'User id for content operations', 14)
             ->addOption('with-content-info', 'w', InputOption::VALUE_NONE, 'Display location\'s content info')
+            ->addOption('language', 'l', InputOption::VALUE_OPTIONAL, 'Language code to use (e.g. eng-GB)', null)
             ->setHelp($help)
         ;
     }
@@ -55,10 +57,12 @@ EOD;
         $inputLocationId = $input->getArgument('location-id');
         $inputUserId = $input->getOption('user-id');
         $inputWithContentInfo = $input->getOption('with-content-info');
+        $inputLanguage = $input->getOption('language');
+        $languageCodes = $inputLanguage ? [$inputLanguage] : null;
 
         $this->permissionResolver->setCurrentUserReference($this->userService->loadUser($inputUserId));
 
-        $location = $this->locationService->loadLocation($inputLocationId);
+        $location = $this->locationService->loadLocation($inputLocationId, $languageCodes);
 
         $headers = array
         (
@@ -106,7 +110,13 @@ EOD;
             new TableSeparator(),
             array('childCount', $this->locationService->getLocationChildCount($location)),
             array('subtreeSize', $this->locationService->getSubtreeSize($location)),
-            array('urlAlias', $this->urlAliasService->reverseLookup($location)->path),
+            array('urlAlias', (function() use ($location, $inputLanguage, $languageCodes) {
+                try {
+                    return $this->urlAliasService->reverseLookup($location, $inputLanguage, true, $languageCodes)->path;
+                } catch (NotFoundException $e) {
+                    return null;
+                }
+            })()),
             array('sortFieldLabel', EepUtilities::getLocationSortFieldLabel($location->sortField)),
             array('sortOrderLabel', EepUtilities::getLocationSortOrderLabel($location->sortOrder)),
         );
